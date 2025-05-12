@@ -1,0 +1,86 @@
+import React, { createContext, useContext, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { router } from "expo-router";
+import { useEffect } from "react";
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [tokenChecked, setTokenChecked] = useState(false);
+
+  const api_url = "http://localhost:8000/api";
+
+  const fetchUser = async (token) => {
+    if (!token) return null;
+
+    try {
+      const response = await axios.get(`${api_url}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      return null;
+    }
+  };
+
+  const login = async (email, password) => {
+    try {
+      const response = await axios.post(`${api_url}/users/login`, {
+        email,
+        password,
+      });
+
+      const { token } = response.data;
+      await AsyncStorage.setItem("token", token);
+
+      const userData = await fetchUser(token);
+      if (userData) {
+        setUser(userData);
+        router.replace("/(protected)/home");
+      } else {
+        throw new Error("Failed to fetch user data");
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    await AsyncStorage.removeItem("token");
+    setUser(null);
+    router.replace("/(auth)/login");
+  };
+
+  const checkToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) throw new Error("No token");
+
+      const userData = await fetchUser(token);
+      if (userData) {
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
+    } catch (err) {
+      setUser(null);
+    } finally {
+      setTokenChecked(true);
+    }
+  };
+
+  useEffect(() => {
+    checkToken();
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, tokenChecked }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);

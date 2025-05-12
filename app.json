@@ -1,7 +1,17 @@
 {
   "expo": {
     "name": "flashnest-mobile",
+    "main": "expo-router/entry",
     "slug": "flashnest-mobile",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "scheme": "flashnest-mobile",
+    "web": {
+      "bundler": "metro"
+    },
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
