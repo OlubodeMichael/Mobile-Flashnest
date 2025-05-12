@@ -21,10 +21,10 @@ export default function DeckDetail() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1" edges={["right", "left", "bottom"]}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="bg-white px-6 pt-6 pb-8">
+        <View className=" px-6 pt-6 pb-8">
           <Text className="text-3xl font-bold text-gray-900 mb-2">
             {deck.title}
           </Text>

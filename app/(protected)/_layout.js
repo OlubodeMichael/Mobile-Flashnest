@@ -34,16 +34,21 @@ export default function ProtectedTabsLayout() {
 
   return (
     <Tabs
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: "#FFD700", // Yellow color for active tab
-        tabBarInactiveTintColor: "#666666", // Gray color for inactive tabs
-        tabBarStyle: {
-          backgroundColor: "white",
-          borderTopWidth: 1,
-          borderTopColor: "#E5E5E5",
-        },
-      }}>
+        tabBarActiveTintColor: "#FFD700",
+        tabBarInactiveTintColor: "#666666",
+        tabBarStyle:
+          route.name === "home" ||
+          route.name === "profile" ||
+          route.name === "decks"
+            ? {
+                backgroundColor: "white",
+                borderTopWidth: 1,
+                borderTopColor: "#E5E5E5",
+              }
+            : { display: "none" },
+      })}>
       <Tabs.Screen
         name="home"
         options={{
@@ -53,11 +58,11 @@ export default function ProtectedTabsLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="decks"
         options={{
           title: "Decks",
+          popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="albums" size={size} color={color} />
           ),

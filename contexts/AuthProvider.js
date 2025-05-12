@@ -50,6 +50,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("isOnboarded");
     setUser(null);
     router.replace("/(auth)/login");
   };

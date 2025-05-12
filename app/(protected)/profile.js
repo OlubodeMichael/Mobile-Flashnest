@@ -3,12 +3,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { useStudy } from "../../contexts/StudyProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Profile() {
   const { logout, user } = useAuth();
   const { decks } = useStudy();
 
   const handleLogout = async () => {
+    await AsyncStorage.removeItem("token");
     await logout();
   };
 
@@ -40,24 +42,6 @@ export default function Profile() {
                 <Text className="text-xl font-semibold text-gray-900">
                   {user?.user?.email}
                 </Text>
-                <Text className="text-gray-500">
-                  Member since {new Date(user?.createdAt).toLocaleDateString()}
-                </Text>
-              </View>
-            </View>
-
-            <View className="flex-row justify-between mb-6">
-              <View className="items-center">
-                <Text className="text-2xl font-bold text-gray-900">
-                  {decks?.decks?.length || 0}
-                </Text>
-                <Text className="text-gray-500">Decks</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-2xl font-bold text-gray-900">
-                  {totalCards}
-                </Text>
-                <Text className="text-gray-500">Cards</Text>
               </View>
             </View>
           </View>

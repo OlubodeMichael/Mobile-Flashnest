@@ -1,9 +1,16 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import LogoText from "../LogoText";
 
 export default function Onboarding() {
+  const router = useRouter();
+
+  const handleGetStarted = () => {
+    AsyncStorage.setItem("isOnboarded", "true");
+    router.replace("/login");
+  };
   const features = [
     {
       title: "Smart Flashcards",
@@ -54,13 +61,13 @@ export default function Onboarding() {
 
       {/* Get Started Button */}
       <View className="flex-1 justify-end px-6 pb-8">
-        <Link
-          href="/login"
+        <TouchableOpacity
+          onPress={handleGetStarted}
           className="bg-yellow-400 py-4 rounded-xl shadow-sm active:bg-yellow-500">
           <Text className="text-black text-center text-lg font-semibold">
             Get Started
           </Text>
-        </Link>
+        </TouchableOpacity>
       </View>
     </View>
   );
