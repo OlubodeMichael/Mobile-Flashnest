@@ -49,11 +49,6 @@ export default function DecksLayout() {
           headerShown: true,
           headerTitle: "",
           headerBackTitle: "Back",
-          headerRight: ({ color }) => (
-            <TouchableOpacity onPress={showOptions}>
-              <Ionicons name="ellipsis-vertical" size={24} color={color} />
-            </TouchableOpacity>
-          ),
           headerBackVisible: true,
           headerStyle: {
             backgroundColor: "#F9FAFB",

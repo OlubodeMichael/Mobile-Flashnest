@@ -1,14 +1,54 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Modal,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useStudy } from "../../../contexts/StudyProvider";
 import { Ionicons } from "@expo/vector-icons";
+import { useLayoutEffect, useState } from "react";
+import DeckForm from "../../../components/Form/deckForm";
 
 export default function DeckDetail() {
   const { id } = useLocalSearchParams();
-  const { decks } = useStudy();
-
+  const navigation = useNavigation();
+  const { decks, deleteDeck, fetchDecks, updateDeck } = useStudy();
+  const router = useRouter();
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const deck = decks?.decks?.find((d) => d._id === id);
+
+  const handleDelete = async () => {
+    await deleteDeck(id);
+    await fetchDecks();
+    router.replace("/decks");
+  };
+
+  const handleUpdate = async (updatedDeck) => {
+    await updateDeck(id, updatedDeck);
+    await fetchDecks();
+    setIsEditModalVisible(false);
+  };
+
+  const showOptions = () => {
+    Alert.alert(
+      "Options",
+      "What would you like to do?",
+      [
+        { text: "Edit", onPress: () => setIsEditModalVisible(true) },
+        {
+          text: "Delete",
+          onPress: handleDelete,
+          style: "destructive",
+        },
+        { text: "Cancel", style: "cancel" },
+      ],
+      { cancelable: true }
+    );
+  };
 
   if (!deck) {
     return (
@@ -20,11 +60,21 @@ export default function DeckDetail() {
     );
   }
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: ({ color }) => (
+        <TouchableOpacity onPress={showOptions}>
+          <Ionicons name="ellipsis-vertical" size={24} color={color} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
   return (
     <SafeAreaView className="flex-1" edges={["right", "left", "bottom"]}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className=" px-6 pt-6 pb-8">
+        <View className="px-6 pt-6 pb-8">
           <Text className="text-3xl font-bold text-gray-900 mb-2">
             {deck.title}
           </Text>
@@ -90,6 +140,40 @@ export default function DeckDetail() {
           )}
         </View>
       </ScrollView>
+
+      {/* Edit Deck Modal */}
+      <Modal
+        visible={isEditModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIsEditModalVisible(false)}>
+        <View className="flex-1 bg-black/50 justify-center items-center">
+          <View className="bg-white w-[90%] max-w-[500px] rounded-xl">
+            {/* Modal Header */}
+            <View className="border-b border-gray-100 px-6 py-4">
+              <Text className="text-xl font-semibold text-gray-900">
+                Edit Deck
+              </Text>
+            </View>
+
+            {/* Close button */}
+            <TouchableOpacity
+              onPress={() => setIsEditModalVisible(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
+              <Ionicons name="close" size={24} color="#9CA3AF" />
+            </TouchableOpacity>
+
+            {/* Modal Content */}
+            <View className="p-6">
+              <DeckForm
+                deck={deck}
+                onSuccess={handleUpdate}
+                onCancel={() => setIsEditModalVisible(false)}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

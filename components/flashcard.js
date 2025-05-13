@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -8,6 +8,7 @@ import Animated, {
   interpolate,
   useSharedValue,
 } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width * 0.9;
@@ -25,21 +26,31 @@ export default function Flashcard({
   hint = "",
 }) {
   const [internalIsFlipped, setInternalIsFlipped] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const flipProgress = useSharedValue(0);
 
   // Use external state if provided, otherwise use internal state
   const isFlipped =
     externalIsFlipped !== undefined ? externalIsFlipped : internalIsFlipped;
 
-  const handleFlip = () => {
-    if (externalIsFlipped === undefined) {
-      setInternalIsFlipped(!internalIsFlipped);
+  const handleFlip = useCallback(async () => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+    try {
+      if (externalIsFlipped === undefined) {
+        setInternalIsFlipped(!internalIsFlipped);
+      }
+      if (onFlip) {
+        onFlip(!isFlipped);
+      }
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      flipProgress.value = withTiming(isFlipped ? 0 : 1, { duration: 600 });
+    } finally {
+      // Reset animation lock after animation duration
+      setTimeout(() => setIsAnimating(false), 600);
     }
-    if (onFlip) {
-      onFlip(!isFlipped);
-    }
-    flipProgress.value = withTiming(isFlipped ? 0 : 1, { duration: 600 });
-  };
+  }, [isAnimating, externalIsFlipped, internalIsFlipped, isFlipped, onFlip]);
 
   const frontAnimatedStyle = useAnimatedStyle(() => {
     const rotateY = interpolate(flipProgress.value, [0, 1], [0, 180]);
@@ -59,14 +70,20 @@ export default function Flashcard({
 
   return (
     <TouchableOpacity
-      className={`w-[${CARD_WIDTH}px] h-[${CARD_HEIGHT}px] ${className}`}
+      style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
+      className={className}
       onPress={handleFlip}
-      activeOpacity={0.9}>
+      activeOpacity={0.9}
+      accessible={true}
+      accessibilityLabel={`Flashcard ${cardNumber} from ${deckName}. ${
+        isFlipped ? "Showing answer" : "Showing question"
+      }`}
+      accessibilityHint="Double tap to flip the card">
       <View className="w-full h-full relative">
         {/* Front of Card */}
         <Animated.View
           className="absolute w-full h-full rounded-2xl shadow-lg overflow-hidden bg-yellow-400 p-4"
-          style={frontAnimatedStyle}>
+          style={[frontAnimatedStyle, { elevation: 5 }]}>
           <View className="flex-row justify-between items-center mb-4">
             <View className="bg-yellow-200/60 px-3 py-1.5 rounded-full">
               <Text className="text-xs font-medium text-yellow-900">
@@ -105,7 +122,7 @@ export default function Flashcard({
         {/* Back of Card */}
         <Animated.View
           className="absolute w-full h-full rounded-2xl shadow-lg overflow-hidden bg-white p-4"
-          style={backAnimatedStyle}>
+          style={[backAnimatedStyle, { elevation: 5 }]}>
           <View className="flex-row justify-between items-center mb-4">
             <View className="bg-yellow-200/60 px-3 py-1.5 rounded-full">
               <Text className="text-xs font-medium text-yellow-900">

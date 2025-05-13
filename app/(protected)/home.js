@@ -21,10 +21,10 @@ export default function Home() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Welcome Section with Gradient Background */}
         <View className="bg-gradient-to-b from-yellow-400 to-yellow-500 px-6 pt-6 pb-12 rounded-b-3xl">
-          <Text className="text-3xl font-bold text-yellow-400 mb-2">
+          <Text className="text-3xl font-bold text-black mb-2">
             Welcome Back!
           </Text>
-          <Text className="text-yellow-400 text-lg">
+          <Text className="text-black text-lg">
             Ready to boost your learning?
           </Text>
         </View>
