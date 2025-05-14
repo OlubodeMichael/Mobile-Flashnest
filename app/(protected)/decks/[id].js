@@ -12,6 +12,8 @@ import { useStudy } from "../../../contexts/StudyProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { useLayoutEffect, useState } from "react";
 import DeckForm from "../../../components/Form/deckForm";
+import Button from "../../../components/Button";
+import FlashcardForm from "../../../components/Form/flashcardForm";
 
 export default function DeckDetail() {
   const { id } = useLocalSearchParams();
@@ -19,6 +21,8 @@ export default function DeckDetail() {
   const { decks, deleteDeck, fetchDecks, updateDeck } = useStudy();
   const router = useRouter();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isAddFlashcardModalVisible, setIsAddFlashcardModalVisible] =
+    useState(false);
   const deck = decks?.decks?.find((d) => d._id === id);
 
   const handleDelete = async () => {
@@ -31,6 +35,16 @@ export default function DeckDetail() {
     await updateDeck(id, updatedDeck);
     await fetchDecks();
     setIsEditModalVisible(false);
+  };
+
+  const openAddFlashcardModal = () => {
+    setIsAddFlashcardModalVisible(true);
+  };
+
+  const handleAddFlashcard = async (newFlashcard) => {
+    await addFlashcard(id, newFlashcard);
+    await fetchDecks();
+    setIsAddFlashcardModalVisible(false);
   };
 
   const showOptions = () => {
@@ -135,6 +149,7 @@ export default function DeckDetail() {
                 <Text className="text-gray-500 text-center text-sm mt-1">
                   Add your first flashcard to get started!
                 </Text>
+                <Button onPress={openAddFlashcardModal}>Add Flashcard</Button>
               </View>
             </View>
           )}
@@ -171,6 +186,39 @@ export default function DeckDetail() {
                 onCancel={() => setIsEditModalVisible(false)}
               />
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Add Flashcard Modal */}
+      <Modal
+        visible={isAddFlashcardModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIsAddFlashcardModalVisible(false)}>
+        <View className="flex-1 bg-black/50 justify-center items-center">
+          <View className="bg-white w-[90%] max-w-[500px] rounded-xl">
+            <View className="border-b border-gray-100 px-6 py-4">
+              <Text className="text-xl font-semibold text-gray-900">
+                Add Flashcard
+              </Text>
+            </View>
+
+            {/* Close button */}
+            <TouchableOpacity
+              onPress={() => setIsAddFlashcardModalVisible(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
+              <Ionicons name="close" size={24} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Modal Content */}
+          <View className="p-6">
+            <FlashcardForm
+              deckId={id}
+              onSuccess={handleAddFlashcard}
+              onCancel={() => setIsAddFlashcardModalVisible(false)}
+            />
           </View>
         </View>
       </Modal>

@@ -1,6 +1,5 @@
 import { Stack } from "expo-router";
-import { TouchableOpacity, Alert } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 
 export default function DecksLayout() {

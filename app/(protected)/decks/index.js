@@ -3,15 +3,25 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useStudy } from "../../../contexts/StudyProvider";
 import Deck from "../../../components/deck";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { useState, useEffect } from "react";
 import DeckForm from "../../../components/Form/deckForm";
 
 export default function Index() {
   const { decks, fetchDecks } = useStudy();
   const router = useRouter();
+  const params = useLocalSearchParams();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  useEffect(() => {
+    const shouldOpenModal = params.create === "true";
+    if (shouldOpenModal) {
+      setIsModalVisible(true);
+      // Remove the create parameter from the URL
+      router.setParams({});
+    }
+  }, [params.create]);
 
   const handleModalVisibility = () => {
     setIsModalVisible(!isModalVisible);

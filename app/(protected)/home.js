@@ -32,9 +32,7 @@ export default function Home() {
         {/* Stats Cards */}
         <View className="px-6 -mt-8">
           <View className="flex-row justify-between">
-            <TouchableOpacity
-              onPress={() => router.replace("/decks")}
-              className="bg-white p-5 rounded-2xl flex-1 mr-3 shadow-sm">
+            <TouchableOpacity className="bg-white p-5 rounded-2xl flex-1 mr-3 shadow-sm">
               <View className="bg-yellow-100 w-12 h-12 rounded-full items-center justify-center mb-3">
                 <Ionicons name="book-outline" size={24} color="#F59E0B" />
               </View>
@@ -43,9 +41,7 @@ export default function Home() {
               </Text>
               <Text className="text-gray-600">Total Decks</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => router.replace("/study")}
-              className="bg-white p-5 rounded-2xl flex-1 shadow-sm">
+            <TouchableOpacity className="bg-white p-5 rounded-2xl flex-1 shadow-sm">
               <View className="bg-blue-100 w-12 h-12 rounded-full items-center justify-center mb-3">
                 <Ionicons name="school-outline" size={24} color="#3B82F6" />
               </View>
@@ -62,10 +58,15 @@ export default function Home() {
           <Text className="text-xl font-bold text-gray-900 mb-4">
             Quick Actions
           </Text>
-          <View className="flex-row space-x-4">
+          <View className="flex-row ">
             <TouchableOpacity
-              onPress={() => router.replace("/decks")}
-              className="flex-1 bg-white p-5 rounded-2xl shadow-sm">
+              onPress={() => {
+                router.push("/decks");
+                setTimeout(() => {
+                  router.setParams({ create: "true" });
+                }, 100);
+              }}
+              className="flex-1 bg-white p-5 rounded-2xl mr-3 shadow-sm">
               <View className="bg-yellow-100 w-12 h-12 rounded-full items-center justify-center mb-3">
                 <Ionicons name="add-circle-outline" size={24} color="#F59E0B" />
               </View>
@@ -76,7 +77,7 @@ export default function Home() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => router.replace("/study")}
-              className="flex-1 bg-white p-5 rounded-2xl shadow-sm">
+              className="flex-1 bg-white p-5 rounded-2xl  shadow-sm">
               <View className="bg-blue-100 w-12 h-12 rounded-full items-center justify-center mb-3">
                 <Ionicons name="flash-outline" size={24} color="#3B82F6" />
               </View>

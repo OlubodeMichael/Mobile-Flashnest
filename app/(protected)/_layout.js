@@ -41,7 +41,8 @@ export default function ProtectedTabsLayout() {
         tabBarStyle:
           route.name === "home" ||
           route.name === "profile" ||
-          route.name === "decks"
+          route.name === "decks" ||
+          route.name === "study"
             ? {
                 backgroundColor: "white",
                 borderTopWidth: 1,
@@ -65,6 +66,15 @@ export default function ProtectedTabsLayout() {
           popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="albums" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="study"
+        options={{
+          title: "Study",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="book" size={size} color={color} />
           ),
         }}
       />
