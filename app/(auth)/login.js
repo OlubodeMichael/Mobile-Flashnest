@@ -9,6 +9,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Alert,
+  Linking,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,6 +23,10 @@ export default function Login() {
     email: "",
     password: "",
   });
+
+  const handleForgotPassword = () => {
+    Linking.openURL("https://www.flashnest.app/forgot-password");
+  };
 
   const handleLogin = async () => {
     if (!form.email || !form.password) {
@@ -78,7 +83,7 @@ export default function Login() {
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity className="mt-4">
+              <TouchableOpacity onPress={handleForgotPassword} className="mt-4">
                 <Text className="text-blue-600 text-center">
                   Forgot Password?
                 </Text>

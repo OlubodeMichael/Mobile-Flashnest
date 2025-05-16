@@ -11,6 +11,7 @@ export default function Profile() {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("isOnboarded");
     await logout();
   };
 
