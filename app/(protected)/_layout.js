@@ -73,6 +73,7 @@ export default function ProtectedTabsLayout() {
         name="study"
         options={{
           title: "Study",
+          popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book" size={size} color={color} />
           ),

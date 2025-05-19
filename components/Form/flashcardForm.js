@@ -15,8 +15,8 @@ export default function FlashcardForm({
   const [formData, setFormData] = useState({
     question: "",
     answer: "",
-    deckId: deckId || "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Populate form with flashcard data if editing
   useEffect(() => {
@@ -24,17 +24,13 @@ export default function FlashcardForm({
       setFormData({
         question: flashcard.question || "",
         answer: flashcard.answer || "",
-        deckId: flashcard.deckId || deckId || "",
       });
-    } else if (deckId) {
-      setFormData((prev) => ({
-        ...prev,
-        deckId: deckId,
-      }));
     }
-  }, [flashcard, deckId]);
+  }, [flashcard]);
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
     if (!formData.question.trim()) {
       setError("Question is required");
       return;
@@ -44,6 +40,7 @@ export default function FlashcardForm({
       return;
     }
 
+    setIsSubmitting(true);
     setIsLoading(true);
     setError("");
 
@@ -51,26 +48,26 @@ export default function FlashcardForm({
       const flashcardData = {
         question: formData.question.trim(),
         answer: formData.answer.trim(),
-        deckId: formData.deckId,
       };
 
       if (flashcard) {
-        await updateFlashcard(formData.deckId, flashcard._id, flashcardData);
+        await updateFlashcard(deckId, flashcard._id, flashcardData);
       } else {
-        await createFlashcard(formData.deckId, flashcardData);
+        await createFlashcard(deckId, flashcardData);
       }
-      onSuccess?.();
+      onSuccess?.(flashcardData);
     } catch (err) {
       setError(err.message || "Something went wrong");
     } finally {
       setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <View className="space-y-6">
+    <View className="space-y-8">
       {/* Question Input */}
-      <View className="space-y-2">
+      <View className="space-y-3">
         <Text className="text-base font-semibold text-gray-800">Question</Text>
         <TextInput
           className="bg-white border-2 border-gray-200 rounded-xl px-4 py-3.5 text-gray-900 text-base min-h-[120px]"
@@ -88,7 +85,7 @@ export default function FlashcardForm({
       </View>
 
       {/* Answer Input */}
-      <View className="space-y-2">
+      <View className="space-y-3">
         <Text className="text-base font-semibold text-gray-800">Answer</Text>
         <TextInput
           className="bg-white border-2 border-gray-200 rounded-xl px-4 py-3.5 text-gray-900 text-base min-h-[120px]"
@@ -113,12 +110,12 @@ export default function FlashcardForm({
       ) : null}
 
       {/* Action Buttons */}
-      <View className="flex-row space-x-3">
+      <View className="flex-row space-x-4 pt-2">
         {onCancel && (
           <Button
             variant="secondary"
             onPress={onCancel}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
             className="flex-1"
             size="lg">
             Cancel
@@ -126,7 +123,7 @@ export default function FlashcardForm({
         )}
         <Button
           onPress={handleSubmit}
-          disabled={isLoading}
+          disabled={isLoading || isSubmitting}
           className={onCancel ? "flex-1" : "w-full"}
           size="lg">
           {isLoading

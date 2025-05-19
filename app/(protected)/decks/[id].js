@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useStudy } from "../../../contexts/StudyProvider";
 import { Ionicons } from "@expo/vector-icons";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 import DeckForm from "../../../components/Form/deckForm";
 import Button from "../../../components/Button";
 import FlashcardForm from "../../../components/Form/flashcardForm";
@@ -18,23 +18,63 @@ import FlashcardForm from "../../../components/Form/flashcardForm";
 export default function DeckDetail() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
-  const { decks, deleteDeck, fetchDecks, updateDeck } = useStudy();
   const router = useRouter();
+  const { decks, deleteDeck, fetchDecks, updateDeck, createFlashcard } =
+    useStudy();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isAddFlashcardModalVisible, setIsAddFlashcardModalVisible] =
     useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const deck = decks?.decks?.find((d) => d._id === id);
 
+  useEffect(() => {
+    const loadDeck = async () => {
+      setIsLoading(true);
+      try {
+        await fetchDecks();
+      } catch (error) {
+        console.error("Error loading deck:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDeck();
+  }, []);
+
+  useLayoutEffect(() => {
+    if (deck) {
+      navigation.setOptions({
+        headerRight: ({ color }) => (
+          <TouchableOpacity onPress={showOptions}>
+            <Ionicons name="ellipsis-vertical" size={24} color={color} />
+          </TouchableOpacity>
+        ),
+      });
+    }
+  }, [navigation, deck]);
+
   const handleDelete = async () => {
-    await deleteDeck(id);
-    await fetchDecks();
-    router.replace("/decks");
+    try {
+      await deleteDeck(id);
+      await fetchDecks();
+      router.replace("/decks");
+    } catch (error) {
+      console.error("Error deleting deck:", error);
+      Alert.alert("Error", "Failed to delete deck. Please try again.");
+    }
   };
 
   const handleUpdate = async (updatedDeck) => {
-    await updateDeck(id, updatedDeck);
-    await fetchDecks();
-    setIsEditModalVisible(false);
+    try {
+      await updateDeck(id, updatedDeck);
+      await fetchDecks();
+      setIsEditModalVisible(false);
+    } catch (error) {
+      console.error("Error updating deck:", error);
+      Alert.alert("Error", "Failed to update deck. Please try again.");
+    }
   };
 
   const openAddFlashcardModal = () => {
@@ -42,9 +82,13 @@ export default function DeckDetail() {
   };
 
   const handleAddFlashcard = async (newFlashcard) => {
-    await addFlashcard(id, newFlashcard);
-    await fetchDecks();
-    setIsAddFlashcardModalVisible(false);
+    try {
+      await fetchDecks(); // Refresh the deck data
+      setIsAddFlashcardModalVisible(false);
+    } catch (error) {
+      console.error("Error refreshing deck:", error);
+      Alert.alert("Error", "Failed to refresh deck data. Please try again.");
+    }
   };
 
   const showOptions = () => {
@@ -64,6 +108,16 @@ export default function DeckDetail() {
     );
   };
 
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="flex-1 items-center justify-center p-6">
+          <Text className="text-gray-600">Loading deck...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   if (!deck) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
@@ -73,16 +127,6 @@ export default function DeckDetail() {
       </SafeAreaView>
     );
   }
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: ({ color }) => (
-        <TouchableOpacity onPress={showOptions}>
-          <Ionicons name="ellipsis-vertical" size={24} color={color} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
 
   return (
     <SafeAreaView className="flex-1" edges={["right", "left", "bottom"]}>
@@ -109,7 +153,9 @@ export default function DeckDetail() {
                   {deck.flashcards?.length || 0} Cards
                 </Text>
               </View>
-              <TouchableOpacity className="bg-yellow-400 px-4 py-2 rounded-full">
+              <TouchableOpacity
+                onPress={() => router.push(`/study/${deck._id}`)}
+                className="bg-yellow-400 px-4 py-2 rounded-full">
                 <Text className="font-medium">Start Study</Text>
               </TouchableOpacity>
             </View>
@@ -117,10 +163,10 @@ export default function DeckDetail() {
         </View>
 
         {/* Flashcards List */}
-        <View className="px-6 mt-6 mb-6">
-          <Text className="text-xl font-bold text-gray-900 mb-4">
-            Flashcards
-          </Text>
+        <View className="px-6 mt-6 mb-24">
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className="text-xl font-bold text-gray-900">Flashcards</Text>
+          </View>
 
           {deck.flashcards?.length > 0 ? (
             deck.flashcards.map((card, index) => (
@@ -138,7 +184,7 @@ export default function DeckDetail() {
               <View className="items-center">
                 <View className="bg-gray-100 w-16 h-16 rounded-full items-center justify-center mb-3">
                   <Ionicons
-                    name="add-circle-outline"
+                    name="document-text-outline"
                     size={32}
                     color="#9CA3AF"
                   />
@@ -149,12 +195,18 @@ export default function DeckDetail() {
                 <Text className="text-gray-500 text-center text-sm mt-1">
                   Add your first flashcard to get started!
                 </Text>
-                <Button onPress={openAddFlashcardModal}>Add Flashcard</Button>
               </View>
             </View>
           )}
         </View>
       </ScrollView>
+
+      {/* Fixed Add Flashcard Button */}
+      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
+        <Button onPress={openAddFlashcardModal} size="lg">
+          Add Flashcard
+        </Button>
+      </View>
 
       {/* Edit Deck Modal */}
       <Modal
@@ -210,15 +262,15 @@ export default function DeckDetail() {
               className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
               <Ionicons name="close" size={24} color="#9CA3AF" />
             </TouchableOpacity>
-          </View>
 
-          {/* Modal Content */}
-          <View className="p-6">
-            <FlashcardForm
-              deckId={id}
-              onSuccess={handleAddFlashcard}
-              onCancel={() => setIsAddFlashcardModalVisible(false)}
-            />
+            {/* Modal Content */}
+            <View className="p-6">
+              <FlashcardForm
+                deckId={id}
+                onSuccess={handleAddFlashcard}
+                onCancel={() => setIsAddFlashcardModalVisible(false)}
+              />
+            </View>
           </View>
         </View>
       </Modal>

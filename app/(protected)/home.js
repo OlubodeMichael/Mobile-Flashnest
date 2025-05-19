@@ -1,11 +1,13 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useStudy } from "../../contexts/StudyProvider";
+import { useAuth } from "../../contexts/AuthProvider";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function Home() {
   const { decks } = useStudy();
+  const { user } = useAuth();
   const router = useRouter();
 
   const totalCards =
@@ -22,7 +24,7 @@ export default function Home() {
         {/* Welcome Section with Gradient Background */}
         <View className="bg-gradient-to-b from-yellow-400 to-yellow-500 px-6 pt-6 pb-12 rounded-b-3xl">
           <Text className="text-3xl font-bold text-black mb-2">
-            Welcome Back!
+            Welcome Back, {user?.user.firstName}!
           </Text>
           <Text className="text-black text-lg">
             Ready to boost your learning?
