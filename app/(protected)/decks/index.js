@@ -39,11 +39,19 @@ export default function Index() {
         <View className="bg-white px-6 pt-6 pb-4">
           <View className="flex-row justify-between items-center mb-2">
             <Text className="text-3xl font-bold text-gray-900">Your Decks</Text>
-            <TouchableOpacity
-              onPress={handleModalVisibility}
-              className="bg-yellow-400 p-2 rounded-full">
-              <Ionicons name="add" size={24} color="black" />
-            </TouchableOpacity>
+            <View className="flex-row space-x-2">
+              <TouchableOpacity
+                onPress={handleModalVisibility}
+                className="bg-yellow-400 p-2 rounded-full">
+                <Ionicons name="add" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push("/decks/ai-generate")}
+                className="bg-yellow-100 p-2 rounded-full flex-row items-center">
+                <Ionicons name="sparkles-outline" size={20} color="#fbbf24" />
+                <Text className="ml-1 text-yellow-700 font-semibold">AI</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <Text className="text-gray-600 text-lg">
             Manage your flashcard decks here
@@ -83,6 +91,12 @@ export default function Index() {
                 onPress={handleModalVisibility}
                 className="mt-6 bg-yellow-400 px-6 py-3 rounded-full">
                 <Text className="font-medium">Create Deck</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push("/decks/ai-generate")}
+                className="mt-3 bg-yellow-100 px-6 py-3 rounded-full flex-row items-center justify-center">
+                <Ionicons name="sparkles-outline" size={20} color="#fbbf24" />
+                <Text className="ml-2 text-yellow-700 font-semibold">AI</Text>
               </TouchableOpacity>
             </View>
           )}

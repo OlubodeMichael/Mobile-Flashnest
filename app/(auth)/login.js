@@ -55,7 +55,7 @@ export default function Login() {
               <View className="space-y-2">
                 <Text className="text-gray-700 font-medium">Email</Text>
                 <TextInput
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg"
                   placeholder="Enter your email"
                   value={form.email}
                   onChangeText={(text) => setForm({ ...form, email: text })}
@@ -67,7 +67,7 @@ export default function Login() {
               <View className="space-y-2">
                 <Text className="text-gray-700 font-medium">Password</Text>
                 <TextInput
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg"
                   placeholder="Enter your password"
                   value={form.password}
                   onChangeText={(text) => setForm({ ...form, password: text })}
@@ -77,7 +77,7 @@ export default function Login() {
 
               <TouchableOpacity
                 onPress={handleLogin}
-                className="w-full bg-blue-600 py-3 rounded-lg mt-6">
+                className="w-full bg-blue-600 py-3 text-gray-700 rounded-lg mt-6">
                 <Text className="text-white text-center font-semibold text-lg">
                   Login
                 </Text>

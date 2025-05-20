@@ -8,7 +8,6 @@ export default function Onboarding() {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    //AsyncStorage.setItem("isOnboarded", "true");
     router.replace("/(auth)");
   };
   const features = [

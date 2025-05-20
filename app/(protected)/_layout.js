@@ -11,7 +11,7 @@ export default function ProtectedTabsLayout() {
 
   useEffect(() => {
     if (tokenChecked && !user) {
-      router.replace("/(auth)/login");
+      router.replace("/(auth)");
     }
   }, [tokenChecked, user]);
 
