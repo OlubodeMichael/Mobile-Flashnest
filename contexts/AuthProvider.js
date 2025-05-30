@@ -8,8 +8,9 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [tokenChecked, setTokenChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const api_url = "http://localhost:8000/api";
+  const api_url = "http://localhost:8000/api"; // "https://api.flashnest.app/api";
 
   const fetchUser = async (token) => {
     if (!token) return null;
@@ -27,6 +28,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      setIsLoading(true);
       const response = await axios.post(`${api_url}/users/login`, {
         email,
         password,
@@ -45,6 +47,8 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Login failed", error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,7 +82,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, tokenChecked }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, tokenChecked, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,7 +4,7 @@ import axios from "axios";
 
 const StudyContext = createContext();
 
-const api_url = "http://localhost:8000/api";
+const api_url = "http://localhost:8000/api"; // "https://api.flashnest.app/api";
 
 const getApi = async () => {
   const token = await AsyncStorage.getItem("token");

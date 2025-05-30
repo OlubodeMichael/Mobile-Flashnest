@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
 import { useStudy } from "../../../contexts/StudyProvider";
 import Flashcard from "../../../components/flashcard";
 import * as Haptics from "expo-haptics";
+import PagerView from "react-native-pager-view";
 
 export default function StudyDetail() {
   const { id } = useLocalSearchParams();
@@ -90,53 +91,69 @@ export default function StudyDetail() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 items-center justify-center p-4">
-        <Flashcard
-          front={currentCard.question}
-          back={currentCard.answer}
-          deckName={currentDeck.title}
-          cardNumber={`${currentCardIndex + 1}/${
-            currentDeck.flashcards.length
-          }`}
-          tags={currentCard.tags || []}
-          isFlipped={isFlipped}
-          onFlip={setIsFlipped}
-        />
+      <PagerView
+        style={{ flex: 1 }}
+        initialPage={0}
+        scrollEnabled={true}
+        onPageSelected={(e) => {
+          const position = e.nativeEvent.position;
+          setCurrentCardIndex(position);
+          setIsFlipped(false);
+        }}>
+        {currentDeck.flashcards.map((card, index) => (
+          <View key={index} className="items-center justify-center p-4">
+            <Flashcard
+              front={card.question}
+              back={card.answer}
+              deckName={currentDeck.title}
+              cardNumber={`${index + 1}/${currentDeck.flashcards.length}`}
+              tags={card.tags || []}
+              isFlipped={index === currentCardIndex ? isFlipped : false}
+              onFlip={setIsFlipped}
+            />
+            <View className="flex justify-center items-center w-full mt-4 px-4 pb-4">
+              <Text className="text-gray-500">Swipe to go to next card</Text>
+            </View>
+          </View>
+        ))}
+      </PagerView>
 
-        <View className="flex-row justify-between w-full mt-8 px-4">
-          <TouchableOpacity
-            onPress={handlePrevious}
-            disabled={currentCardIndex === 0}
-            className={`px-6 py-3 rounded-full ${
-              currentCardIndex === 0 ? "bg-gray-200" : "bg-yellow-500"
+      {/* Optional: Add page indicator or buttons below 
+      <View className="flex-row justify-between w-full mt-4 px-4 pb-4">
+        <TouchableOpacity
+          onPress={handlePrevious}
+          disabled={currentCardIndex === 0}
+          className={`px-6 py-3 rounded-full ${
+            currentCardIndex === 0 ? "bg-gray-200" : "bg-yellow-500"
+          }`}>
+          <Text
+            className={`font-medium ${
+              currentCardIndex === 0 ? "text-gray-500" : "text-yellow-900"
             }`}>
-            <Text
-              className={`font-medium ${
-                currentCardIndex === 0 ? "text-gray-500" : "text-yellow-900"
-              }`}>
-              Previous
-            </Text>
-          </TouchableOpacity>
+            Previous
+          </Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={handleNext}
-            disabled={currentCardIndex === currentDeck.flashcards.length - 1}
-            className={`px-6 py-3 rounded-full ${
+        <TouchableOpacity
+          onPress={handleNext}
+          disabled={currentCardIndex === currentDeck.flashcards.length - 1}
+          className={`px-6 py-3 rounded-full ${
+            currentCardIndex === currentDeck.flashcards.length - 1
+              ? "bg-gray-200"
+              : "bg-yellow-500"
+          }`}>
+          <Text
+            className={`font-medium ${
               currentCardIndex === currentDeck.flashcards.length - 1
-                ? "bg-gray-200"
-                : "bg-yellow-500"
+                ? "text-gray-500"
+                : "text-yellow-900"
             }`}>
-            <Text
-              className={`font-medium ${
-                currentCardIndex === currentDeck.flashcards.length - 1
-                  ? "text-gray-500"
-                  : "text-yellow-900"
-              }`}>
-              Next
-            </Text>
-          </TouchableOpacity>
-        </View>
+            Next
+          </Text>
+        </TouchableOpacity>
       </View>
+
+      */}
     </SafeAreaView>
   );
 }

@@ -11,6 +11,7 @@ import {
   Alert,
   Linking,
 } from "react-native";
+import Loading from "../../components/Loading";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthProvider";
@@ -18,7 +19,7 @@ import { useAuth } from "../../contexts/AuthProvider";
 import LogoText from "../../components/LogoText";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, isLoading, error } = useAuth();
   const [form, setForm] = useState({
     email: "",
     password: "",
