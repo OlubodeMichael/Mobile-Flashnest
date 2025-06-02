@@ -11,12 +11,12 @@ import {
   Alert,
   Linking,
 } from "react-native";
-import Loading from "../../components/Loading";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthProvider";
 
 import LogoText from "../../components/LogoText";
+import { router } from "expo-router";
 
 export default function Login() {
   const { login, isLoading, error } = useAuth();
@@ -27,6 +27,10 @@ export default function Login() {
 
   const handleForgotPassword = () => {
     Linking.openURL("https://www.flashnest.app/forgot-password");
+  };
+
+  const handleSignUp = () => {
+    router.replace("/register");
   };
 
   const handleLogin = async () => {
@@ -53,12 +57,13 @@ export default function Login() {
             <LogoText />
 
             <View className="w-full space-y-4 mt-8">
-              <View className="space-y-2">
-                <Text className="text-gray-700 font-medium">Email</Text>
+              <View className="space-y-2 py-4">
+                <Text className="text-gray-700 font-medium text-lg">Email</Text>
                 <TextInput
-                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg"
+                  className="w-full px-4 py-3 h-12 border text-gray-700 border-gray-300 rounded-lg"
                   placeholder="Enter your email"
                   value={form.email}
+                  placeholderTextColor="#9CA3AF"
                   onChangeText={(text) => setForm({ ...form, email: text })}
                   keyboardType="email-address"
                   autoCapitalize="none"
@@ -66,10 +71,13 @@ export default function Login() {
               </View>
 
               <View className="space-y-2">
-                <Text className="text-gray-700 font-medium">Password</Text>
+                <Text className="text-gray-700 font-medium text-lg">
+                  Password
+                </Text>
                 <TextInput
-                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg"
+                  className="w-full px-4 py-3 h-12 border text-gray-700 border-gray-300 rounded-lg"
                   placeholder="Enter your password"
+                  placeholderTextColor="#9CA3AF"
                   value={form.password}
                   onChangeText={(text) => setForm({ ...form, password: text })}
                   secureTextEntry
@@ -80,13 +88,18 @@ export default function Login() {
                 onPress={handleLogin}
                 className="w-full bg-blue-600 py-3 text-gray-700 rounded-lg mt-6">
                 <Text className="text-white text-center font-semibold text-lg">
-                  Login
+                  {isLoading ? "Logging in..." : "Login"}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={handleForgotPassword} className="mt-4">
                 <Text className="text-blue-600 text-center">
                   Forgot Password?
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleSignUp} className="mt-4">
+                <Text className="text-blue-600 text-center">
+                  Don't have an account? Sign up
                 </Text>
               </TouchableOpacity>
             </View>

@@ -24,7 +24,7 @@ export default function AuthPage() {
         <View className="w-full space-y-4 mb-8">
           <TouchableOpacity
             onPress={() => router.push("/login")}
-            className="bg-yellow-400 py-4 rounded-xl">
+            className="bg-yellow-400 py-4 rounded-xl mb-4">
             <Text className="text-center font-semibold text-gray-900 text-lg">
               Sign In
             </Text>

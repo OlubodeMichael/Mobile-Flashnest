@@ -3,12 +3,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { router } from "expo-router";
 import { useEffect } from "react";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [tokenChecked, setTokenChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const api_url = "http://localhost:8000/api"; // "https://api.flashnest.app/api";
 
@@ -23,6 +25,43 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Error fetching user:", error);
       return null;
+    }
+  };
+  const signUp = async (
+    firstName,
+    lastName,
+    email,
+    password,
+    passwordConfirm
+  ) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await axios.post(`${api_url}/users/signup`, {
+        firstName,
+        lastName,
+        email,
+        password,
+        passwordConfirm,
+      });
+
+      const { token } = response.data;
+      await AsyncStorage.setItem("token", token);
+
+      const userData = await fetchUser(token);
+      if (userData) {
+        setUser(userData);
+        router.replace("/(protected)/home");
+      } else {
+        throw new Error("Failed to fetch user data");
+      }
+
+      return response.data;
+    } catch (err) {
+      setError(err.response.data.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -83,7 +122,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, tokenChecked, isLoading }}>
+      value={{ user, signUp, login, logout, tokenChecked, isLoading, error }}>
       {children}
     </AuthContext.Provider>
   );
