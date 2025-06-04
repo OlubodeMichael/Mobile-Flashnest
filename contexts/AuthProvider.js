@@ -3,6 +3,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { router } from "expo-router";
 import { useEffect } from "react";
+import { signUp, signIn } from "flashnest-backend/authHelper";
+import { initSupabase } from "flashnest-backend/supabaseClient";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
 const AuthContext = createContext();
 
@@ -12,52 +15,42 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  initSupabase({
+    url: SUPABASE_URL,
+    key: SUPABASE_ANON_KEY,
+    options: {
+      auth: {
+        storage: AsyncStorage,
+      },
+    },
+  });
+
   const api_url = "http://localhost:8000/api"; // "https://api.flashnest.app/api";
 
-  const fetchUser = async (token) => {
-    if (!token) return null;
-
-    try {
-      const response = await axios.get(`${api_url}/users/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return response.data.data;
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      return null;
-    }
-  };
   const signUp = async (
     firstName,
     lastName,
     email,
     password,
-    passwordConfirm
+    confirmPassword
   ) => {
     try {
-      setIsLoading(true);
-      setError(null);
-
-      const response = await axios.post(`${api_url}/users/signup`, {
+      const response = await signUp({
         firstName,
         lastName,
         email,
         password,
-        passwordConfirm,
+        confirmPassword,
       });
 
-      const { token } = response.data;
-      await AsyncStorage.setItem("token", token);
+      const { session, user, profile } = response;
 
-      const userData = await fetchUser(token);
-      if (userData) {
-        setUser(userData);
-        router.replace("/(protected)/home");
-      } else {
-        throw new Error("Failed to fetch user data");
-      }
+      if (!session) throw new Error("No session returned");
+      await AsyncStorage.setItem("token", session.access_token);
+      setUser(profile);
+      router.replace("/(protected)/home");
 
-      return response.data;
+      return response;
     } catch (err) {
       setError(err.response.data.message);
     } finally {
@@ -68,23 +61,23 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setIsLoading(true);
-      const response = await axios.post(`${api_url}/users/login`, {
-        email,
-        password,
-      });
+      setError(null);
 
-      const { token } = response.data;
-      await AsyncStorage.setItem("token", token);
+      const response = await signIn({ email, password });
+      const { session, user, profile } = response;
+      console.log(profile);
+      console.log(user);
+      console.log(session);
 
-      const userData = await fetchUser(token);
-      if (userData) {
-        setUser(userData);
-        router.replace("/(protected)/home");
-      } else {
-        throw new Error("Failed to fetch user data");
-      }
+      if (!session) throw new Error("No session returned");
+
+      await AsyncStorage.setItem("token", session.access_token);
+      setUser(profile);
+
+      router.replace("/(protected)/home");
     } catch (error) {
       console.error("Login failed", error);
+      setError(error.message || "Login error");
       throw error;
     } finally {
       setIsLoading(false);

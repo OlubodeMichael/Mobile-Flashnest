@@ -24,7 +24,7 @@ export default function Home() {
         {/* Welcome Section with Gradient Background */}
         <View className="bg-gradient-to-b from-yellow-400 to-yellow-500 px-6 pt-6 pb-12 rounded-b-3xl">
           <Text className="text-3xl font-bold text-black mb-2">
-            Welcome Back, {user?.user.firstName}!
+            Welcome Back, {user?.first_name}!
           </Text>
           <Text className="text-black text-lg">
             Ready to boost your learning?

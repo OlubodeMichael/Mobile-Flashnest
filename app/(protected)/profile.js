@@ -39,10 +39,17 @@ export default function Profile() {
               <View className="bg-yellow-100 w-16 h-16 rounded-full items-center justify-center mr-4">
                 <Ionicons name="person" size={32} color="#F59E0B" />
               </View>
-              <View>
-                <Text className="text-xl font-semibold text-gray-900">
-                  {user?.user?.email}
-                </Text>
+              <View className="flex-col">
+                <View>
+                  <Text className="text-xl font-semibold text-gray-900">
+                    {user?.first_name} {user?.last_name}
+                  </Text>
+                </View>
+                <View>
+                  <Text className="text-xl font-semibold text-gray-900">
+                    {user?.email}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
