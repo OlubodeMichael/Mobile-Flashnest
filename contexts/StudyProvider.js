@@ -100,26 +100,20 @@ export const StudyProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
+
   const createFlashcard = async (deckId, question, answer) => {
     try {
       setIsLoading(true);
       setError(null);
       const user = await getCurrentUser();
-      const response = await createFlashcardHelper(
-        user.id,
-        deckId,
-        question,
-        answer
+      await createFlashcardHelper(user.id, deckId, question, answer);
+
+      // No manual setFlashcards here!
+      setDeck((prev) =>
+        prev
+          ? { ...prev, flashcards_count: (prev.flashcards_count || 0) + 1 }
+          : null
       );
-      setFlashcards((prev) => [...prev, response]);
-      setDeck((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          flashcards_count: (prev.flashcards_count || 0) + 1,
-        };
-      });
-      return response;
     } catch (err) {
       setError(err.message || "Failed to create flashcard");
       throw err;

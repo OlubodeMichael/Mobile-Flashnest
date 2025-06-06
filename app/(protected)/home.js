@@ -139,7 +139,7 @@ export default function Home() {
                 onPress={() => {
                   router.push({
                     pathname: `/decks/${deck?.id}`,
-                    params: { screen: "decks" },
+                    params: { screen: "decks", from: "home" },
                   });
                 }}
                 className="bg-white p-5 rounded-2xl mb-3 shadow-sm">

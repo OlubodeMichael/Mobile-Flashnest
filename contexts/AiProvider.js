@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AiContext = createContext();
 
-const api_url =  "http://localhost:8000/api"; // "https://api.flashnest.app/api";
+const api_url = "http://localhost:8000/api"; // "https://api.flashnest.app/api";
 const getApi = async () => {
   const token = await AsyncStorage.getItem("token");
   return axios.create({

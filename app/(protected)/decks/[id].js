@@ -22,7 +22,6 @@ export default function DeckDetail() {
   const {
     deck,
     deleteDeck,
-    fetchDecks,
     updateDeck,
     createFlashcard,
     fetchDeck,
@@ -33,7 +32,6 @@ export default function DeckDetail() {
   const [isAddFlashcardModalVisible, setIsAddFlashcardModalVisible] =
     useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  console.log("flashcards", flashcards);
 
   useEffect(() => {
     const loadDeck = async () => {
@@ -49,7 +47,7 @@ export default function DeckDetail() {
     };
 
     loadDeck();
-  }, []);
+  }, [id]);
 
   useLayoutEffect(() => {
     if (deck) {
@@ -92,7 +90,6 @@ export default function DeckDetail() {
   const handleAddFlashcard = async (newFlashcard) => {
     try {
       await createFlashcard(id, newFlashcard.question, newFlashcard.answer);
-      await fetchDeck(id);
       await fetchFlashcards(id);
       setIsAddFlashcardModalVisible(false);
     } catch (error) {
@@ -181,7 +178,7 @@ export default function DeckDetail() {
           {flashcards && flashcards.length > 0 ? (
             flashcards.map((card) => (
               <View
-                key={card.id}
+                key={`flashcard-${card.id}`}
                 className="bg-white p-5 rounded-2xl mb-3 shadow-sm">
                 <Text className="text-gray-900 font-medium mb-2">
                   {card.question}
