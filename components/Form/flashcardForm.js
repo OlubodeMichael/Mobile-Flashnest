@@ -51,9 +51,13 @@ export default function FlashcardForm({
       };
 
       if (flashcard) {
-        await updateFlashcard(deckId, flashcard._id, flashcardData);
+        await updateFlashcard(deckId, flashcard.id, flashcardData);
       } else {
-        await createFlashcard(deckId, flashcardData);
+        await createFlashcard(
+          deckId,
+          flashcardData.question,
+          flashcardData.answer
+        );
       }
       onSuccess?.(flashcardData);
     } catch (err) {

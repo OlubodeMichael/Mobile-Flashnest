@@ -14,7 +14,7 @@ export default function Deck({ deck, onPress }) {
         </View>
         <View style={styles.cardCountContainer}>
           <Text style={styles.cardCountText}>
-            {deck.flashcards?.length || 0} cards
+            {deck.flashcards_count || 0} cards
           </Text>
         </View>
       </View>

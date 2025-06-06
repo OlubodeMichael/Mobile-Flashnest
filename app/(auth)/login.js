@@ -40,6 +40,7 @@ export default function Login() {
     }
     try {
       await login(form.email, form.password);
+      router.replace("/(protected)/home");
       console.log("Login successful");
     } catch (error) {
       Alert.alert("Login Failed", error.message);

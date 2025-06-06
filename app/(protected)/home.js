@@ -2,21 +2,47 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useStudy } from "../../contexts/StudyProvider";
 import { useAuth } from "../../contexts/AuthProvider";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useCallback, useState } from "react";
 
 export default function Home() {
-  const { decks } = useStudy();
-  const { user } = useAuth();
+  const { decks, fetchDecks } = useStudy();
+  const { userProfile } = useAuth();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch decks when the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const loadDecks = async () => {
+        try {
+          setIsLoading(true);
+          await fetchDecks();
+        } catch (error) {
+          console.error("Error fetching decks:", error);
+        } finally {
+          if (isActive) {
+            setIsLoading(false);
+          }
+        }
+      };
+
+      loadDecks();
+
+      // Cleanup function
+      return () => {
+        isActive = false;
+      };
+    }, [fetchDecks])
+  );
 
   const totalCards =
-    decks?.decks?.reduce(
-      (acc, deck) => acc + (deck.flashcards?.length || 0),
-      0
-    ) || 0;
+    decks?.reduce((acc, deck) => acc + (deck?.flashcards_count || 0), 0) || 0;
 
-  const recentDecks = decks?.decks?.slice(0, 3) || [];
+  const recentDecks = decks?.slice(0, 3) || [];
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -24,7 +50,7 @@ export default function Home() {
         {/* Welcome Section with Gradient Background */}
         <View className="bg-gradient-to-b from-yellow-400 to-yellow-500 px-6 pt-6 pb-12 rounded-b-3xl">
           <Text className="text-3xl font-bold text-black mb-2">
-            Welcome Back, {user?.first_name}!
+            Welcome Back, {userProfile?.first_name}!
           </Text>
           <Text className="text-black text-lg">
             Ready to boost your learning?
@@ -39,7 +65,7 @@ export default function Home() {
                 <Ionicons name="book-outline" size={24} color="#F59E0B" />
               </View>
               <Text className="text-2xl font-bold text-gray-900">
-                {decks?.decks?.length || 0}
+                {decks?.length || 0}
               </Text>
               <Text className="text-gray-600">Total Decks</Text>
             </TouchableOpacity>
@@ -97,18 +123,25 @@ export default function Home() {
             <Text className="text-xl font-bold text-gray-900">
               Recent Decks
             </Text>
-            <TouchableOpacity
-              onPress={() => router.replace("/decks")}
-              className="bg-yellow-100 px-4 py-2 rounded-full">
-              <Text className="text-yellow-900 font-medium">See All</Text>
-            </TouchableOpacity>
+            {recentDecks.length > 0 && (
+              <TouchableOpacity
+                onPress={() => router.replace("/decks")}
+                className="bg-yellow-100 px-4 py-2 rounded-full">
+                <Text className="text-yellow-900 font-medium">See All</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {recentDecks.length > 0 ? (
             recentDecks.map((deck) => (
               <TouchableOpacity
-                key={deck._id}
-                onPress={() => router.replace(`/decks/${deck._id}`)}
+                key={deck?.id || `deck-${Math.random()}`}
+                onPress={() => {
+                  router.push({
+                    pathname: `/decks/${deck?.id}`,
+                    params: { screen: "decks" },
+                  });
+                }}
                 className="bg-white p-5 rounded-2xl mb-3 shadow-sm">
                 <View className="flex-row items-center">
                   <View className="bg-yellow-100 w-12 h-12 rounded-full items-center justify-center mr-4">
@@ -116,10 +149,10 @@ export default function Home() {
                   </View>
                   <View className="flex-1">
                     <Text className="font-semibold text-gray-900 text-lg mb-1">
-                      {deck.title}
+                      {deck?.title}
                     </Text>
                     <Text className="text-gray-600 text-sm" numberOfLines={1}>
-                      {deck.description}
+                      {deck?.description}
                     </Text>
                     <View className="flex-row items-center mt-2">
                       <Ionicons
@@ -128,7 +161,7 @@ export default function Home() {
                         color="#6B7280"
                       />
                       <Text className="text-gray-500 text-sm ml-1">
-                        {deck.flashcards?.length || 0} cards
+                        {deck?.flashcards_count || 0} cards
                       </Text>
                     </View>
                   </View>

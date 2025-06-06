@@ -8,10 +8,9 @@ import { useState, useEffect } from "react";
 import DeckForm from "../../../components/Form/deckForm";
 
 export default function Index() {
-  const { decks, fetchDecks } = useStudy();
+  const { decks = [], fetchDecks, fetchDeck } = useStudy();
   const router = useRouter();
   const params = useLocalSearchParams();
-
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
@@ -36,25 +35,24 @@ export default function Index() {
     <SafeAreaView className="flex-1 bg-gray-50">
       <View className="flex-1">
         {/* Header */}
-        <View className="bg-white px-6 pt-6 pb-4">
+        <View className="px-6 pt-6 pb-4">
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-3xl font-bold text-gray-900">Your Decks</Text>
+            <Text className="text-3xl font-bold text-gray-900">My Decks</Text>
             <View className="flex-row space-x-2">
               <TouchableOpacity
                 onPress={handleModalVisibility}
-                className="bg-yellow-400 p-2 rounded-full">
-                <Ionicons name="add" size={24} color="black" />
+                className="bg-yellow-400 w-10 h-10 rounded-full items-center justify-center">
+                <Ionicons name="add" size={24} color="#92400E" />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => router.push("/decks/ai-generate")}
-                className="bg-yellow-100 p-2 rounded-full flex-row items-center">
-                <Ionicons name="sparkles-outline" size={20} color="#fbbf24" />
-                <Text className="ml-1 text-yellow-700 font-semibold">AI</Text>
+                className="bg-yellow-100 w-10 h-10 rounded-full items-center justify-center">
+                <Ionicons name="sparkles-outline" size={24} color="#fbbf24" />
               </TouchableOpacity>
             </View>
           </View>
           <Text className="text-gray-600 text-lg">
-            Manage your flashcard decks here
+            Create and manage your study decks
           </Text>
         </View>
 
@@ -62,17 +60,22 @@ export default function Index() {
         <ScrollView
           className="flex-1 px-6 pt-4"
           showsVerticalScrollIndicator={false}>
-          {decks?.decks?.length > 0 ? (
-            decks.decks.map((deck) => (
+          {decks?.length > 0 ? (
+            decks.map((deck) => (
               <Deck
-                key={deck._id}
-                onPress={() => router.push(`/decks/${deck._id}`)}
+                key={deck?.id || `deck-${Math.random()}`}
+                onPress={() => {
+                  if (deck?.id) {
+                    fetchDeck(deck.id);
+                    router.push(`/decks/${deck.id}`);
+                  }
+                }}
                 deck={{
-                  id: deck._id,
-                  title: deck.title,
-                  description: deck.description,
-                  flashcards: deck.flashcards,
-                  createdAt: deck.createdAt,
+                  id: deck?.id,
+                  title: deck?.title || "",
+                  description: deck?.description || "",
+                  createdAt: deck?.created_at,
+                  flashcards_count: deck?.flashcards_count || 0,
                 }}
               />
             ))
@@ -126,7 +129,10 @@ export default function Index() {
 
               {/* Modal Content */}
               <View className="p-6">
-                <DeckForm onSuccess={handleSuccess} />
+                <DeckForm
+                  onSuccess={handleSuccess}
+                  onCancel={handleModalVisibility}
+                />
               </View>
             </View>
           </View>

@@ -6,10 +6,14 @@ export default function AuthLayout() {
   const { tokenChecked, user } = useAuth();
 
   useEffect(() => {
+    // Only redirect after token has been checked
     if (tokenChecked && user) {
-      router.replace("/(protected)/home"); // ✅ safe navigation
+      router.replace("/(protected)/home");
     }
   }, [tokenChecked, user]);
+
+  // Don’t render until token check is done to avoid flicker
+  if (!tokenChecked) return null;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

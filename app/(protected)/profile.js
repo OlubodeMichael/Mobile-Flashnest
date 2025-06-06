@@ -6,7 +6,7 @@ import { useStudy } from "../../contexts/StudyProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Profile() {
-  const { logout, user } = useAuth();
+  const { logout, userProfile, user } = useAuth();
   const { decks } = useStudy();
 
   const handleLogout = async () => {
@@ -42,7 +42,7 @@ export default function Profile() {
               <View className="flex-col">
                 <View>
                   <Text className="text-xl font-semibold text-gray-900">
-                    {user?.first_name} {user?.last_name}
+                    {userProfile?.first_name} {userProfile?.last_name}
                   </Text>
                 </View>
                 <View>

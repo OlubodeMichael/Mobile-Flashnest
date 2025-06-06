@@ -251,11 +251,11 @@ export default function GenerateWithAI() {
             </Text>
             {decks?.decks?.map((deck) => (
               <TouchableOpacity
-                key={deck._id}
-                onPress={() => handleDeckSelect(deck._id)}
+                key={deck?.id}
+                onPress={() => handleDeckSelect(deck?.id)}
                 className="mb-2 p-3 rounded-lg bg-yellow-100">
                 <Text className="text-yellow-700 font-semibold">
-                  {deck.title}
+                  {deck?.title}
                 </Text>
               </TouchableOpacity>
             ))}

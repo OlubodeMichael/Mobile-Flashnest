@@ -19,20 +19,28 @@ export default function DeckDetail() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
-  const { decks, deleteDeck, fetchDecks, updateDeck, createFlashcard } =
-    useStudy();
+  const {
+    deck,
+    deleteDeck,
+    fetchDecks,
+    updateDeck,
+    createFlashcard,
+    fetchDeck,
+    flashcards,
+    fetchFlashcards,
+  } = useStudy();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isAddFlashcardModalVisible, setIsAddFlashcardModalVisible] =
     useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  const deck = decks?.decks?.find((d) => d._id === id);
+  console.log("flashcards", flashcards);
 
   useEffect(() => {
     const loadDeck = async () => {
       setIsLoading(true);
       try {
-        await fetchDecks();
+        await fetchDeck(id);
+        await fetchFlashcards(id);
       } catch (error) {
         console.error("Error loading deck:", error);
       } finally {
@@ -58,7 +66,7 @@ export default function DeckDetail() {
   const handleDelete = async () => {
     try {
       await deleteDeck(id);
-      await fetchDecks();
+      await fetchDeck(id);
       router.replace("/decks");
     } catch (error) {
       console.error("Error deleting deck:", error);
@@ -69,7 +77,7 @@ export default function DeckDetail() {
   const handleUpdate = async (updatedDeck) => {
     try {
       await updateDeck(id, updatedDeck);
-      await fetchDecks();
+      await fetchDeck(id);
       setIsEditModalVisible(false);
     } catch (error) {
       console.error("Error updating deck:", error);
@@ -83,11 +91,13 @@ export default function DeckDetail() {
 
   const handleAddFlashcard = async (newFlashcard) => {
     try {
-      await fetchDecks(); // Refresh the deck data
+      await createFlashcard(id, newFlashcard.question, newFlashcard.answer);
+      await fetchDeck(id);
+      await fetchFlashcards(id);
       setIsAddFlashcardModalVisible(false);
     } catch (error) {
-      console.error("Error refreshing deck:", error);
-      Alert.alert("Error", "Failed to refresh deck data. Please try again.");
+      console.error("Error adding flashcard:", error);
+      Alert.alert("Error", "Failed to add flashcard. Please try again.");
     }
   };
 
@@ -150,11 +160,11 @@ export default function DeckDetail() {
                   <Ionicons name="document-text" size={20} color="#F59E0B" />
                 </View>
                 <Text className="text-gray-900 font-medium">
-                  {deck.flashcards?.length || 0} Cards
+                  {deck.flashcards_count || 0} Cards
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() => router.push(`/study/${deck._id}`)}
+                onPress={() => router.push(`/study/${deck?.id}`)}
                 className="bg-yellow-400 px-4 py-2 rounded-full">
                 <Text className="font-medium">Start Study</Text>
               </TouchableOpacity>
@@ -168,10 +178,10 @@ export default function DeckDetail() {
             <Text className="text-xl font-bold text-gray-900">Flashcards</Text>
           </View>
 
-          {deck.flashcards?.length > 0 ? (
-            deck.flashcards.map((card, index) => (
+          {flashcards && flashcards.length > 0 ? (
+            flashcards.map((card) => (
               <View
-                key={index}
+                key={card.id}
                 className="bg-white p-5 rounded-2xl mb-3 shadow-sm">
                 <Text className="text-gray-900 font-medium mb-2">
                   {card.question}

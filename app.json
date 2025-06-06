@@ -2,7 +2,7 @@
   "expo": {
     "name": "flashnest-mobile",
     "main": "expo-router/entry",
-    "slug": "flashnest-mobile",
+    "slug": "flashnest",
     "version": "1.0.0",
     "scheme": "flashnest-mobile",
     "web": {
@@ -12,6 +12,13 @@
     "userInterfaceStyle": "automatic",
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c84b2378-c145-4983-bc76-1ee11c3a7415"
+      }
+    },
+    "owner": "michaelolu"
   }
 }

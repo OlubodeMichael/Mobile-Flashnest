@@ -22,7 +22,7 @@ export default function StudyDeck({ deck, onPress }) {
         <View className="flex-row gap-4">
           <View className="items-center">
             <Text className="text-xl font-bold text-yellow-900">
-              {deck.flashcards?.length || 0}
+              {deck.flashcards_count || 0}
             </Text>
             <Text className="text-xs text-yellow-800 mt-0.5">Cards</Text>
           </View>

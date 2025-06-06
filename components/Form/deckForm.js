@@ -4,7 +4,7 @@ import { useStudy } from "../../contexts/StudyProvider";
 import Button from "../Button";
 
 export default function DeckForm({ deck, onSuccess, onCancel }) {
-  const { createDeck, updateDeck } = useStudy();
+  const { createDeck, updateDeck, fetchDeck } = useStudy();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -23,22 +23,29 @@ export default function DeckForm({ deck, onSuccess, onCancel }) {
   }, [deck]);
 
   const handleSubmit = async () => {
+    console.log("🚀 handleSubmit triggered");
+
     if (!formData.title.trim()) {
       setError("Title is required");
       return;
     }
 
-    setIsLoading(true);
-    setError("");
-
     try {
+      setIsLoading(true);
+      setError("");
+
       if (deck) {
-        await updateDeck(deck._id, formData);
+        console.log("📝 Updating deck", { id: deck.id, ...formData });
+        await updateDeck(deck.id, formData.title, formData.description);
+        await fetchDeck(deck.id);
       } else {
-        await createDeck(formData);
+        console.log("🆕 Creating deck", formData.title, formData.description);
+        await createDeck(formData.title, formData.description);
       }
-      onSuccess?.();
+
+      onSuccess?.(); // this should call `handleSuccess`
     } catch (err) {
+      console.error("❌ Error in handleSubmit:", err);
       setError(err.message || "Something went wrong");
     } finally {
       setIsLoading(false);

@@ -1,25 +1,20 @@
-import React, { createContext, useContext, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { getCurrentUser } from "flashnest-backend/authHelper";
+import {
+  getDecks as fetchDecksHelper,
+  getDeck as fetchDeckHelper,
+  createDeck as createDeckHelper,
+  updateDeck as updateDeckHelper,
+  deleteDeck as deleteDeckHelper,
+  createFlashcard as createFlashcardHelper,
+  getFlashcards as getFlashcardsHelper,
+} from "flashnest-backend/studyHelper";
 
 const StudyContext = createContext();
 
-const api_url = "http://localhost:8000/api"; // "https://api.flashnest.app/api";
-
-const getApi = async () => {
-  const token = await AsyncStorage.getItem("token");
-  return axios.create({
-    baseURL: api_url,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-};
-
 export const StudyProvider = ({ children }) => {
   const [decks, setDecks] = useState([]);
-  const [deck, setDeck] = useState(null); // optional: current selected deck
+  const [deck, setDeck] = useState(null); // current selected deck
   const [flashcards, setFlashcards] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,127 +22,107 @@ export const StudyProvider = ({ children }) => {
   const fetchDecks = async () => {
     try {
       setIsLoading(true);
-      const api = await getApi();
-      const response = await api.get("/decks");
-      setDecks(response.data.data);
+      setError(null);
+      const user = await getCurrentUser();
+      const response = await fetchDecksHelper(user.id);
+      setDecks(response);
     } catch (err) {
-      setError(err);
+      setError(err.message || "Failed to fetch decks");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const fetchDeck = async (id) => {
+  const fetchDeck = async (deckId) => {
     try {
       setIsLoading(true);
-      const api = await getApi();
-      const response = await api.get(`/decks/${id}`);
-
-      setDeck(response.data.data);
+      setError(null);
+      const response = await fetchDeckHelper(deckId);
+      setDeck(response);
     } catch (err) {
-      setError(err);
+      setError(err.message || "Failed to fetch deck");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const createDeck = async (deck) => {
+  const createDeck = async (title, description) => {
+    const user = await getCurrentUser();
     try {
-      const api = await getApi();
-      const response = await api.post("/decks", deck);
-
-      setDecks([...decks, response.data.data]);
-      setDeck(response.data.data);
-      await fetchDecks();
+      setIsLoading(true);
+      const response = await createDeckHelper(user.id, title, description);
+      setDecks((prev) => [...prev, response]);
     } catch (err) {
-      setError(err);
+      setError(err.message || "Failed to create deck");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const updateDeck = async (id, deck) => {
+  const updateDeck = async (deckId, title, description) => {
     try {
-      const api = await getApi();
-      const response = await api.patch(`/decks/${id}`, deck);
-
-      setDecks(decks.map((d) => (d.id === id ? response.data.data : d)));
-      setDeck(response.data.data);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const deleteDeck = async (id) => {
-    try {
-      const api = await getApi();
-      const response = await api.delete(`/decks/${id}`);
-
-      setDecks(decks.filter((d) => d.id !== id));
-      setDeck(null);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchFlashcards = async (id) => {
-    try {
-      const api = await getApi();
-      const response = await api.get(`/decks/${id}/flashcards`);
-
-      setFlashcards(response.data.data);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const createFlashcard = async (id, flashcard) => {
-    try {
-      const api = await getApi();
-      const response = await api.post(`/decks/${id}/flashcards`, flashcard);
-
-      setFlashcards([...flashcards, response.data.data]);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateFlashcard = async (id, flashcard) => {
-    try {
-      const api = await getApi();
-      const response = await api.patch(
-        `/decks/${id}/flashcards/${flashcard.id}`,
-        flashcard
+      setIsLoading(true);
+      setError(null);
+      const response = await updateDeckHelper(deckId, title, description);
+      setDecks((prev) =>
+        prev.map((deck) =>
+          deck?.id === deckId ? { ...deck, ...response } : deck
+        )
       );
-
-      setFlashcards(
-        flashcards.map((f) => (f.id === flashcard.id ? response.data.data : f))
+      setDeck((prev) =>
+        prev?.id === deckId ? { ...prev, ...response } : prev
       );
+      return response;
     } catch (err) {
-      setError(err);
+      setError(err.message || "Failed to update deck");
+      throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const deleteFlashcard = async (id, flashcard) => {
-    try {
-      const api = await getApi();
-      const response = await api.delete(
-        `/decks/${id}/flashcards/${flashcard.id}`
-      );
+  const deleteDeck = async (deckId) => {
+    await deleteDeckHelper(deckId);
+    setDecks((prev) => prev.filter((deck) => deck?.id !== deckId));
+  };
 
-      setFlashcards(flashcards.filter((f) => f.id !== flashcard.id));
+  const fetchFlashcards = async (deckId) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await getFlashcardsHelper(deckId);
+      setFlashcards(response);
+      return response;
     } catch (err) {
-      setError(err);
+      setError(err.message || "Failed to fetch flashcards");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const createFlashcard = async (deckId, question, answer) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const user = await getCurrentUser();
+      const response = await createFlashcardHelper(
+        user.id,
+        deckId,
+        question,
+        answer
+      );
+      setFlashcards((prev) => [...prev, response]);
+      setDeck((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          flashcards_count: (prev.flashcards_count || 0) + 1,
+        };
+      });
+      return response;
+    } catch (err) {
+      setError(err.message || "Failed to create flashcard");
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -168,8 +143,6 @@ export const StudyProvider = ({ children }) => {
         deleteDeck,
         fetchFlashcards,
         createFlashcard,
-        updateFlashcard,
-        deleteFlashcard,
       }}>
       {children}
     </StudyContext.Provider>

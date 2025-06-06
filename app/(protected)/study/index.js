@@ -10,8 +10,7 @@ export default function Study() {
   const router = useRouter();
 
   // Filter out empty decks
-  const studyDecks =
-    decks?.decks?.filter((deck) => deck.flashcards?.length > 0) || [];
+  const studyDecks = decks?.filter((deck) => deck?.flashcards_count > 0) || [];
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -35,14 +34,15 @@ export default function Study() {
           {studyDecks.length > 0 ? (
             studyDecks.map((deck) => (
               <StudyDeck
-                key={deck._id}
-                onPress={() => router.push(`/study/${deck._id}`)}
+                key={deck?.id}
+                onPress={() => router.push(`/study/${deck?.id}`)}
                 deck={{
-                  id: deck._id,
+                  id: deck?.id,
                   title: deck.title,
                   description: deck.description,
                   flashcards: deck.flashcards,
-                  createdAt: deck.createdAt,
+                  createdAt: deck.created_at,
+                  flashcards_count: deck.flashcards_count,
                 }}
               />
             ))

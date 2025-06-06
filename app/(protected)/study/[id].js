@@ -16,7 +16,7 @@ export default function StudyDetail() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const currentDeck = decks?.decks?.find((deck) => deck._id === id);
+  const currentDeck = decks?.decks?.find((deck) => deck?.id === id);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -69,14 +69,6 @@ export default function StudyDetail() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center">
         <Text className="text-lg text-gray-600">Loading deck...</Text>
-      </SafeAreaView>
-    );
-  }
-
-  if (!currentDeck) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center">
-        <Text className="text-lg text-gray-600">Deck not found</Text>
       </SafeAreaView>
     );
   }

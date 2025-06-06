@@ -1,10 +1,13 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { signUp, signIn } from "flashnest-backend/authHelper";
-import { initSupabase } from "flashnest-backend/supabaseClient";
+import {
+  signUp as supaSignUp,
+  signIn,
+  signOut,
+  getCurrentUser,
+} from "flashnest-backend/authHelper";
+import { initSupabase, getSupabase } from "flashnest-backend/supabaseClient";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
 const AuthContext = createContext();
@@ -12,20 +15,73 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [tokenChecked, setTokenChecked] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Initialize Supabase
   initSupabase({
     url: SUPABASE_URL,
     key: SUPABASE_ANON_KEY,
     options: {
       auth: {
         storage: AsyncStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
       },
     },
   });
 
-  const api_url = "http://localhost:8000/api"; // "https://api.flashnest.app/api";
+  // 👇 Check session on app load
+  useEffect(() => {
+    const checkSession = async () => {
+      const supabase = getSupabase();
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.warn("Session check failed", error.message);
+        setUser(null);
+      } else if (data?.session?.user) {
+        const { user } = data.session;
+        setUser(user); // optionally fetch profile here
+      } else {
+        setUser(null);
+      }
+
+      setTokenChecked(true);
+    };
+
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!tokenChecked) return;
+
+      try {
+        const profile = await getCurrentUser();
+        setUserProfile(profile);
+      } catch (err) {
+        console.warn("Failed to fetch profile:", err.message);
+        setUserProfile(null);
+      }
+    };
+
+    fetchProfile();
+
+    const { auth } = getSupabase();
+    const { data: listener } = auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        setUser(null);
+        router.replace("/(auth)/login");
+      }
+    });
+
+    return () => {
+      listener?.subscription?.unsubscribe?.();
+    };
+  }, [tokenChecked]);
 
   const signUp = async (
     firstName,
@@ -35,24 +91,21 @@ export const AuthProvider = ({ children }) => {
     confirmPassword
   ) => {
     try {
-      const response = await signUp({
+      setIsLoading(true);
+      const { session, profile } = await supaSignUp({
         firstName,
         lastName,
         email,
         password,
         confirmPassword,
       });
-
-      const { session, user, profile } = response;
-
       if (!session) throw new Error("No session returned");
+
       await AsyncStorage.setItem("token", session.access_token);
       setUser(profile);
       router.replace("/(protected)/home");
-
-      return response;
     } catch (err) {
-      setError(err.response.data.message);
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -61,61 +114,45 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setIsLoading(true);
-      setError(null);
-
-      const response = await signIn({ email, password });
-      const { session, user, profile } = response;
-      console.log(profile);
-      console.log(user);
-      console.log(session);
-
+      const { session, profile } = await signIn({ email, password });
       if (!session) throw new Error("No session returned");
 
       await AsyncStorage.setItem("token", session.access_token);
+      await AsyncStorage.setItem("onboarding", "true");
       setUser(profile);
-
       router.replace("/(protected)/home");
-    } catch (error) {
-      console.error("Login failed", error);
-      setError(error.message || "Login error");
-      throw error;
+    } catch (err) {
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = async () => {
-    await AsyncStorage.removeItem("token");
-    await AsyncStorage.removeItem("isOnboarded");
-    setUser(null);
-    router.replace("/(auth)/login");
-  };
-
-  const checkToken = async () => {
     try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) throw new Error("No token");
-
-      const userData = await fetchUser(token);
-      if (userData) {
-        setUser(userData);
-      } else {
-        setUser(null);
-      }
+      await signOut();
+      await AsyncStorage.removeItem("onboarding");
+      await AsyncStorage.removeItem("token");
     } catch (err) {
-      setUser(null);
+      console.error(err);
     } finally {
-      setTokenChecked(true);
+      setUser(null);
+      router.replace("/(auth)/login");
     }
   };
 
-  useEffect(() => {
-    checkToken();
-  }, []);
-
   return (
     <AuthContext.Provider
-      value={{ user, signUp, login, logout, tokenChecked, isLoading, error }}>
+      value={{
+        user,
+        userProfile,
+        signUp,
+        login,
+        logout,
+        isLoading,
+        error,
+        tokenChecked, // 👈 Now exposed
+      }}>
       {children}
     </AuthContext.Provider>
   );
