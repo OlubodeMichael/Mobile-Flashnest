@@ -35,7 +35,16 @@ export default function DecksLayout() {
   };
 
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerShown: true,
+        headerBackTitle: "Back",
+        headerBackVisible: true,
+        headerStyle: {
+          backgroundColor: "#F9FAFB",
+        },
+        headerShadowVisible: false,
+      }}>
       <Stack.Screen
         name="index"
         options={{
@@ -45,14 +54,7 @@ export default function DecksLayout() {
       <Stack.Screen
         name="[id]"
         options={{
-          headerShown: true,
           headerTitle: "",
-          headerBackTitle: "Back",
-          headerBackVisible: true,
-          headerStyle: {
-            backgroundColor: "#F9FAFB",
-          },
-          headerShadowVisible: false,
           presentation: "card",
         }}
       />

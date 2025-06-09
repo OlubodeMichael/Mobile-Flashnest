@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { getCurrentUser } from "flashnest-backend/authHelper";
 import {
   getDecks as fetchDecksHelper,
@@ -8,6 +8,8 @@ import {
   deleteDeck as deleteDeckHelper,
   createFlashcard as createFlashcardHelper,
   getFlashcards as getFlashcardsHelper,
+  updateFlashcard as updateFlashcardHelper,
+  deleteFlashcard as deleteFlashcardHelper,
 } from "flashnest-backend/studyHelper";
 
 const StudyContext = createContext();
@@ -34,26 +36,32 @@ export const StudyProvider = ({ children }) => {
   };
 
   const fetchDeck = async (deckId) => {
+    setDeck(null); // Clear current deck first
     try {
       setIsLoading(true);
       setError(null);
       const response = await fetchDeckHelper(deckId);
       setDeck(response);
+      return response;
     } catch (err) {
       setError(err.message || "Failed to fetch deck");
+      return null;
     } finally {
       setIsLoading(false);
     }
   };
 
   const createDeck = async (title, description) => {
-    const user = await getCurrentUser();
     try {
       setIsLoading(true);
+      setError(null);
+      const user = await getCurrentUser();
       const response = await createDeckHelper(user.id, title, description);
-      setDecks((prev) => [...prev, response]);
+      await fetchDecks(); // Refresh decks list
+      return response;
     } catch (err) {
       setError(err.message || "Failed to create deck");
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -64,14 +72,7 @@ export const StudyProvider = ({ children }) => {
       setIsLoading(true);
       setError(null);
       const response = await updateDeckHelper(deckId, title, description);
-      setDecks((prev) =>
-        prev.map((deck) =>
-          deck?.id === deckId ? { ...deck, ...response } : deck
-        )
-      );
-      setDeck((prev) =>
-        prev?.id === deckId ? { ...prev, ...response } : prev
-      );
+      await fetchDecks(); // Refresh decks list
       return response;
     } catch (err) {
       setError(err.message || "Failed to update deck");
@@ -82,11 +83,21 @@ export const StudyProvider = ({ children }) => {
   };
 
   const deleteDeck = async (deckId) => {
-    await deleteDeckHelper(deckId);
-    setDecks((prev) => prev.filter((deck) => deck?.id !== deckId));
+    try {
+      setIsLoading(true);
+      setError(null);
+      await deleteDeckHelper(deckId);
+      await fetchDecks(); // Refresh decks list
+    } catch (err) {
+      setError(err.message || "Failed to delete deck");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const fetchFlashcards = async (deckId) => {
+    setFlashcards([]); // Clear flashcards first
     try {
       setIsLoading(true);
       setError(null);
@@ -107,15 +118,37 @@ export const StudyProvider = ({ children }) => {
       setError(null);
       const user = await getCurrentUser();
       await createFlashcardHelper(user.id, deckId, question, answer);
-
-      // No manual setFlashcards here!
-      setDeck((prev) =>
-        prev
-          ? { ...prev, flashcards_count: (prev.flashcards_count || 0) + 1 }
-          : null
-      );
+      await fetchFlashcards(deckId); // Refresh flashcards list
     } catch (err) {
       setError(err.message || "Failed to create flashcard");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateFlashcard = async (deckId, flashcardId, question, answer) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await updateFlashcardHelper(deckId, flashcardId, question, answer);
+      await fetchFlashcards(deckId); // Refresh flashcards list
+    } catch (err) {
+      setError(err.message || "Failed to update flashcard");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteFlashcard = async (flashcardId, deckId) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await deleteFlashcardHelper(flashcardId, deckId);
+      await fetchFlashcards(deckId); // Refresh flashcards list
+    } catch (err) {
+      setError(err.message || "Failed to delete flashcard");
       throw err;
     } finally {
       setIsLoading(false);
@@ -127,6 +160,7 @@ export const StudyProvider = ({ children }) => {
       value={{
         decks,
         deck,
+        setDeck,
         flashcards,
         isLoading,
         error,
@@ -137,10 +171,18 @@ export const StudyProvider = ({ children }) => {
         deleteDeck,
         fetchFlashcards,
         createFlashcard,
+        updateFlashcard,
+        deleteFlashcard,
       }}>
       {children}
     </StudyContext.Provider>
   );
 };
 
-export const useStudy = () => useContext(StudyContext);
+export const useStudy = () => {
+  const context = useContext(StudyContext);
+  if (!context) {
+    throw new Error("useStudy must be used within a StudyProvider");
+  }
+  return context;
+};

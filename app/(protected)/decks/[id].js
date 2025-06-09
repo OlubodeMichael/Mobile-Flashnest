@@ -27,10 +27,17 @@ export default function DeckDetail() {
     fetchDeck,
     flashcards,
     fetchFlashcards,
+    fetchDecks,
+    deleteFlashcard,
+    setDeck,
+    updateFlashcard,
   } = useStudy();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isAddFlashcardModalVisible, setIsAddFlashcardModalVisible] =
     useState(false);
+  const [isEditFlashcardModalVisible, setIsEditFlashcardModalVisible] =
+    useState(false);
+  const [selectedFlashcard, setSelectedFlashcard] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -52,6 +59,8 @@ export default function DeckDetail() {
   useLayoutEffect(() => {
     if (deck) {
       navigation.setOptions({
+        headerShown: true,
+        headerBackVisible: true,
         headerRight: ({ color }) => (
           <TouchableOpacity onPress={showOptions}>
             <Ionicons name="ellipsis-vertical" size={24} color={color} />
@@ -64,6 +73,7 @@ export default function DeckDetail() {
   const handleDelete = async () => {
     try {
       await deleteDeck(id);
+      await fetchDecks();
       await fetchDeck(id);
       router.replace("/decks");
     } catch (error) {
@@ -89,12 +99,34 @@ export default function DeckDetail() {
 
   const handleAddFlashcard = async (newFlashcard) => {
     try {
-      await createFlashcard(id, newFlashcard.question, newFlashcard.answer);
-      await fetchFlashcards(id);
+      const createdFlashcard = await createFlashcard(
+        id,
+        newFlashcard.question,
+        newFlashcard.answer
+      );
+      if (createdFlashcard) {
+        await fetchFlashcards(id);
+      }
       setIsAddFlashcardModalVisible(false);
     } catch (error) {
       console.error("Error adding flashcard:", error);
       Alert.alert("Error", "Failed to add flashcard. Please try again.");
+    }
+  };
+
+  const handleEditFlashcard = async (updatedFlashcard) => {
+    try {
+      await updateFlashcard(
+        id,
+        selectedFlashcard.id,
+        updatedFlashcard.question,
+        updatedFlashcard.answer
+      );
+      setIsEditFlashcardModalVisible(false);
+      setSelectedFlashcard(null);
+    } catch (error) {
+      console.error("Error updating flashcard:", error);
+      Alert.alert("Error", "Failed to update flashcard. Please try again.");
     }
   };
 
@@ -176,13 +208,72 @@ export default function DeckDetail() {
           </View>
 
           {flashcards && flashcards.length > 0 ? (
-            flashcards.map((card) => (
+            flashcards.map((card, index) => (
               <View
-                key={`flashcard-${card.id}`}
+                key={card?.id ? `flashcard-${card.id}` : `flashcard-${index}`}
                 className="bg-white p-5 rounded-2xl mb-3 shadow-sm">
-                <Text className="text-gray-900 font-medium mb-2">
-                  {card.question}
-                </Text>
+                <View className="flex-row justify-between items-start mb-2">
+                  <Text className="text-gray-900 font-medium flex-1 mr-4">
+                    {card.question}
+                  </Text>
+                  <View className="flex-row">
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedFlashcard(card);
+                        setIsEditFlashcardModalVisible(true);
+                      }}
+                      className="p-2 mr-2">
+                      <Ionicons
+                        name="pencil-outline"
+                        size={20}
+                        color="#6B7280"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        Alert.alert(
+                          "Delete Flashcard",
+                          "Are you sure you want to delete this flashcard?",
+                          [
+                            {
+                              text: "Cancel",
+                              style: "cancel",
+                            },
+                            {
+                              text: "Delete",
+                              style: "destructive",
+                              onPress: async () => {
+                                try {
+                                  await deleteFlashcard(card.id, id);
+                                  setDeck((prev) => ({
+                                    ...prev,
+                                    flashcards_count:
+                                      (prev?.flashcards_count || 1) - 1,
+                                  }));
+                                } catch (error) {
+                                  console.error(
+                                    "Error deleting flashcard:",
+                                    error
+                                  );
+                                  Alert.alert(
+                                    "Error",
+                                    "Failed to delete flashcard. Please try again."
+                                  );
+                                }
+                              },
+                            },
+                          ]
+                        );
+                      }}
+                      className="p-2">
+                      <Ionicons
+                        name="trash-outline"
+                        size={20}
+                        color="#EF4444"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
                 <Text className="text-gray-600">{card.answer}</Text>
               </View>
             ))
@@ -276,6 +367,49 @@ export default function DeckDetail() {
                 deckId={id}
                 onSuccess={handleAddFlashcard}
                 onCancel={() => setIsAddFlashcardModalVisible(false)}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Edit Flashcard Modal */}
+      <Modal
+        visible={isEditFlashcardModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => {
+          setIsEditFlashcardModalVisible(false);
+          setSelectedFlashcard(null);
+        }}>
+        <View className="flex-1 bg-black/50 justify-center items-center">
+          <View className="bg-white w-[90%] max-w-[500px] rounded-xl">
+            <View className="border-b border-gray-100 px-6 py-4">
+              <Text className="text-xl font-semibold text-gray-900">
+                Edit Flashcard
+              </Text>
+            </View>
+
+            {/* Close button */}
+            <TouchableOpacity
+              onPress={() => {
+                setIsEditFlashcardModalVisible(false);
+                setSelectedFlashcard(null);
+              }}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
+              <Ionicons name="close" size={24} color="#9CA3AF" />
+            </TouchableOpacity>
+
+            {/* Modal Content */}
+            <View className="p-6">
+              <FlashcardForm
+                flashcard={selectedFlashcard}
+                deckId={id}
+                onSuccess={handleEditFlashcard}
+                onCancel={() => {
+                  setIsEditFlashcardModalVisible(false);
+                  setSelectedFlashcard(null);
+                }}
               />
             </View>
           </View>

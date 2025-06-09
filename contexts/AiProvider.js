@@ -1,20 +1,9 @@
 import React, { createContext, useContext, useState } from "react";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import FlashcardService from "../service/flashcardGenerator";
+import { getCurrentUser } from "flashnest-backend/authHelper";
+import { addBulkFlashcards } from "flashnest-backend/studyHelper";
 
 const AiContext = createContext();
-
-const api_url = "http://localhost:8000/api"; // "https://api.flashnest.app/api";
-const getApi = async () => {
-  const token = await AsyncStorage.getItem("token");
-  return axios.create({
-    baseURL: api_url,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-};
 
 const AiProvider = ({ children }) => {
   const [aiFlashcards, setAiFlashcards] = useState([]);
@@ -27,15 +16,20 @@ const AiProvider = ({ children }) => {
       setError(null);
       setAiFlashcards([]);
 
-      const formData = new FormData();
-      if (file) formData.append("file", file);
-      if (topic) formData.append("topic", topic);
-      if (text) formData.append("text", text);
-      formData.append("count", count);
+      const options = {
+        count,
+        topic,
+        text,
+      };
 
-      const api = await getApi();
-      const { data } = await api.post("/ai/preview-flashcards", formData);
-      setAiFlashcards(data.flashcards);
+      // If there's a file, add it to the options
+      if (file) {
+        options.fileBuffer = file;
+        options.fileType = file.type;
+      }
+
+      const flashcards = await FlashcardService.generateFlashcards(options);
+      setAiFlashcards(flashcards);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -48,10 +42,10 @@ const AiProvider = ({ children }) => {
       setIsLoading(true);
       setError(null);
 
-      const api = await getApi();
-      const { data } = await api.post(`/decks/${deckId}/flashcards/bulk`, {
-        flashcards: aiFlashcards,
-      });
+      const { data } = await FlashcardService.saveFlashcards(
+        deckId,
+        aiFlashcards
+      );
 
       if (data.status === "success") {
         console.log("✅ Flashcards saved:", data.data.flashcards);
@@ -75,6 +69,7 @@ const AiProvider = ({ children }) => {
     <AiContext.Provider
       value={{
         aiFlashcards,
+        setAiFlashcards,
         isLoading,
         error,
         setError,

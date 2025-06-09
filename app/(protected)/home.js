@@ -138,8 +138,8 @@ export default function Home() {
                 key={deck?.id || `deck-${Math.random()}`}
                 onPress={() => {
                   router.push({
-                    pathname: `/decks/${deck?.id}`,
-                    params: { screen: "decks", from: "home" },
+                    pathname: "/decks/[id]",
+                    params: { id: deck?.id },
                   });
                 }}
                 className="bg-white p-5 rounded-2xl mb-3 shadow-sm">
