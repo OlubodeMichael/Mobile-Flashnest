@@ -137,6 +137,14 @@ export default function DeckDetail() {
       [
         { text: "Edit", onPress: () => setIsEditModalVisible(true) },
         {
+          text: "Generate with AI",
+          onPress: () =>
+            router.push({
+              pathname: "/decks/ai-generate",
+              params: { deckId: id },
+            }),
+        },
+        {
           text: "Delete",
           onPress: handleDelete,
           style: "destructive",

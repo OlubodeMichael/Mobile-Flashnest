@@ -37,7 +37,7 @@ const AiProvider = ({ children }) => {
     }
   };
 
-  const saveFlashcards = async (deckId) => {
+  const saveFlashcards = async (deckId, flashcardsToSave) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -50,7 +50,7 @@ const AiProvider = ({ children }) => {
       const savedFlashcards = await addBulkFlashcards(
         user.id,
         deckId,
-        aiFlashcards
+        flashcardsToSave || aiFlashcards
       );
 
       if (savedFlashcards) {

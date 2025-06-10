@@ -9,14 +9,14 @@ import PagerView from "react-native-pager-view";
 
 export default function StudyDetail() {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
   const navigation = useNavigation();
-  const { decks, fetchDecks } = useStudy();
+  const { fetchDeck, deck, fetchFlashcards, flashcards } = useStudy();
+
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const currentDeck = decks?.find((deck) => deck?.id === id);
+  const currentDeck = deck;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -32,7 +32,8 @@ export default function StudyDetail() {
     const loadDeck = async () => {
       setIsLoading(true);
       try {
-        await fetchDecks();
+        await fetchDeck(id);
+        await fetchFlashcards(id);
       } catch (error) {
         console.error("Error loading deck:", error);
       } finally {
@@ -41,9 +42,9 @@ export default function StudyDetail() {
     };
 
     loadDeck();
-  }, []);
+  }, [id]);
 
-  const currentCard = currentDeck?.flashcards?.[currentCardIndex];
+  const currentCard = flashcards?.[currentCardIndex];
 
   const handleNext = async () => {
     if (currentCardIndex < currentDeck?.flashcards?.length - 1) {
@@ -92,13 +93,13 @@ export default function StudyDetail() {
           setCurrentCardIndex(position);
           setIsFlipped(false);
         }}>
-        {currentDeck.flashcards.map((card, index) => (
+        {flashcards.map((card, index) => (
           <View key={index} className="items-center justify-center p-4">
             <Flashcard
               front={card.question}
               back={card.answer}
               deckName={currentDeck.title}
-              cardNumber={`${index + 1}/${currentDeck.flashcards.length}`}
+              cardNumber={`${index + 1}/${flashcards.length}`}
               tags={card.tags || []}
               isFlipped={index === currentCardIndex ? isFlipped : false}
               onFlip={setIsFlipped}

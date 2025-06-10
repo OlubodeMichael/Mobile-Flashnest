@@ -7,9 +7,11 @@ export default function Index() {
 
   useEffect(() => {
     const checkOnboarding = async () => {
-      const isOnboarded = await AsyncStorage.getItem("isOnboarded");
+      const isOnboarded = await AsyncStorage.getItem("onboarding");
       //console.log("isOnboarded", isOnboarded);
       const isLoggedIn = await AsyncStorage.getItem("token");
+
+      // check if onboarding is true
       if (isOnboarded === "true") {
         if (isLoggedIn) {
           router.replace("/(protected)/home");
