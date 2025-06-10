@@ -16,7 +16,7 @@ export default function StudyDetail() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const currentDeck = decks?.decks?.find((deck) => deck?.id === id);
+  const currentDeck = decks?.find((deck) => deck?.id === id);
 
   useLayoutEffect(() => {
     navigation.setOptions({

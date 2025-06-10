@@ -42,19 +42,22 @@ const AiProvider = ({ children }) => {
       setIsLoading(true);
       setError(null);
 
-      const { data } = await FlashcardService.saveFlashcards(
+      const user = await getCurrentUser();
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      const savedFlashcards = await addBulkFlashcards(
+        user.id,
         deckId,
         aiFlashcards
       );
 
-      if (data.status === "success") {
-        console.log("✅ Flashcards saved:", data.data.flashcards);
+      if (savedFlashcards) {
         setAiFlashcards([]);
-        return data.data.flashcards;
+        return savedFlashcards;
       } else {
-        console.error("❌ Error saving flashcards:", data.message);
-        setError(data.message);
-        return null;
+        throw new Error("Failed to save flashcards");
       }
     } catch (err) {
       console.error("❌ Network or server error:", err);

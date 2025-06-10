@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "expo-router";
+import { createFlashcard } from "flashnest-backend/studyHelper";
 
 export default function GenerateWithAI() {
   const navigation = useNavigation();
@@ -37,6 +38,9 @@ export default function GenerateWithAI() {
   const [count, setCount] = useState(10);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [deckModalVisible, setDeckModalVisible] = useState(false);
+  const [singleSaveModalVisible, setSingleSaveModalVisible] = useState(false);
+  const [selectedFlashcard, setSelectedFlashcard] = useState(null);
+  const [savedFlashcardIds, setSavedFlashcardIds] = useState(new Set());
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -94,30 +98,85 @@ export default function GenerateWithAI() {
     }
   };
 
-  const handleSaveFlashcard = async (flashcard) => {
+  const handleSaveSingleFlashcard = async (flashcard) => {
+    setSelectedFlashcard(flashcard);
+    setSingleSaveModalVisible(true);
+  };
+
+  const handleSingleDeckSelect = async (deckId) => {
     try {
-      await createFlashcard(selectedDeckId, {
-        ...flashcard,
-        deckId: selectedDeckId,
-      });
-      await fetchDecks();
+      setIsLoading(true);
+
+      // Validate flashcard data
+      if (
+        !selectedFlashcard ||
+        !selectedFlashcard.question ||
+        !selectedFlashcard.answer
+      ) {
+        throw new Error(
+          "Invalid flashcard data. Question and answer are required."
+        );
+      }
+
+      // Ensure we have all required fields with proper values
+      const flashcardData = {
+        question: selectedFlashcard.question.trim(),
+        answer: selectedFlashcard.answer.trim(),
+        deckId: deckId,
+      };
+
+      // Additional validation
+      if (!flashcardData.question || !flashcardData.answer) {
+        throw new Error("Question and answer cannot be empty");
+      }
+
+      const savedFlashcard = await createFlashcard(deckId, flashcardData);
+
+      if (savedFlashcard) {
+        setSavedFlashcardIds(
+          (prev) => new Set([...prev, selectedFlashcard.id])
+        );
+        await fetchDecks();
+        setError(""); // Clear any existing errors
+      } else {
+        throw new Error("Failed to save flashcard");
+      }
     } catch (err) {
-      setError("Failed to save flashcard. Please try again.");
+      console.error("Save flashcard error:", err);
+      setError(err.message || "Failed to save flashcard. Please try again.");
+    } finally {
+      setIsLoading(false);
+      setSingleSaveModalVisible(false);
+      setSelectedFlashcard(null);
     }
   };
 
   const handleSaveAll = async () => {
+    if (!selectedDeckId) {
+      setDeckModalVisible(true);
+      return;
+    }
+
     try {
       setIsLoading(true);
       const savedFlashcards = await saveFlashcards(selectedDeckId);
-      if (!savedFlashcards)
-        setError("Failed to save some flashcards. Please try again.");
+      if (!savedFlashcards) {
+        throw new Error("Failed to save some flashcards");
+      }
       await fetchDecks();
+      setError(""); // Clear any existing errors
     } catch (err) {
-      setError("Failed to save flashcards. Please try again.");
+      console.error("Save all flashcards error:", err);
+      setError(err.message || "Failed to save flashcards. Please try again.");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDeckSelect = (deckId) => {
+    setSelectedDeckId(deckId);
+    setDeckModalVisible(false);
+    handleSaveAll();
   };
 
   // For FlatList key
@@ -131,6 +190,32 @@ export default function GenerateWithAI() {
         </View>
       ) : null}
 
+      {/* Save All Button */}
+      {aiFlashcards.length > 0 && (
+        <View className="px-4 py-2 border-b border-gray-200">
+          <TouchableOpacity
+            onPress={() => setDeckModalVisible(true)}
+            disabled={isLoading}
+            className="bg-yellow-500 py-2 px-4 rounded-lg flex-row items-center justify-center">
+            {isLoading ? (
+              <ActivityIndicator color="white" size="small" />
+            ) : (
+              <>
+                <Ionicons
+                  name="save"
+                  size={20}
+                  color="white"
+                  className="mr-2"
+                />
+                <Text className="text-white font-semibold ml-2">
+                  Save All Flashcards
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Flashcards as chat bubbles */}
       <FlatList
         data={aiFlashcards}
@@ -140,14 +225,25 @@ export default function GenerateWithAI() {
           <View className="mb-4">
             <View className="self-start bg-gray-100 rounded-2xl px-4 py-2 max-w-[80%]">
               <Text className="font-semibold text-gray-800 mb-1">
-                Q: {item.question}
+                Q: {item.question || "No question provided"}
               </Text>
-              <Text className="text-gray-700">A: {item.answer}</Text>
+              <Text className="text-gray-700">
+                A: {item.answer || "No answer provided"}
+              </Text>
             </View>
             <TouchableOpacity
-              onPress={() => handleSaveFlashcard(item)}
-              className="self-end mt-2 px-3 py-1 rounded-md bg-yellow-500">
-              <Text className="text-white font-semibold">Save</Text>
+              onPress={() => handleSaveSingleFlashcard(item)}
+              disabled={
+                savedFlashcardIds.has(item.id) || !item.question || !item.answer
+              }
+              className={`self-end mt-2 px-3 py-1 rounded-md ${
+                savedFlashcardIds.has(item.id) || !item.question || !item.answer
+                  ? "bg-gray-300"
+                  : "bg-yellow-500"
+              }`}>
+              <Text className="text-white font-semibold">
+                {savedFlashcardIds.has(item.id) ? "Saved" : "Save"}
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -249,18 +345,63 @@ export default function GenerateWithAI() {
             <Text className="text-lg font-bold mb-4 text-gray-800">
               Select a deck to save
             </Text>
-            {decks?.decks?.map((deck) => (
-              <TouchableOpacity
-                key={deck?.id}
-                onPress={() => handleDeckSelect(deck?.id)}
-                className="mb-2 p-3 rounded-lg bg-yellow-100">
-                <Text className="text-yellow-700 font-semibold">
-                  {deck?.title}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {decks && decks.length > 0 ? (
+              decks.map((deck) => (
+                <TouchableOpacity
+                  key={deck.id}
+                  onPress={() => handleDeckSelect(deck.id)}
+                  className="mb-2 p-3 rounded-lg bg-yellow-100">
+                  <Text className="text-yellow-700 font-semibold">
+                    {deck.title}
+                  </Text>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <Text className="text-gray-500 text-center py-4">
+                No decks available. Please create a deck first.
+              </Text>
+            )}
             <TouchableOpacity
               onPress={() => setDeckModalVisible(false)}
+              className="mt-4 p-2 rounded-lg bg-gray-200 items-center">
+              <Text className="text-gray-700 font-medium">Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Single Flashcard Save Modal */}
+      <Modal
+        visible={singleSaveModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setSingleSaveModalVisible(false)}>
+        <View className="flex-1 bg-black/40 justify-center items-center">
+          <View className="bg-white w-[90%] max-w-md rounded-xl p-6">
+            <Text className="text-lg font-bold mb-4 text-gray-800">
+              Select a deck to save this flashcard
+            </Text>
+            {decks && decks.length > 0 ? (
+              decks.map((deck) => (
+                <TouchableOpacity
+                  key={deck.id}
+                  onPress={() => handleSingleDeckSelect(deck.id)}
+                  className="mb-2 p-3 rounded-lg bg-yellow-100">
+                  <Text className="text-yellow-700 font-semibold">
+                    {deck.title}
+                  </Text>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <Text className="text-gray-500 text-center py-4">
+                No decks available. Please create a deck first.
+              </Text>
+            )}
+            <TouchableOpacity
+              onPress={() => {
+                setSingleSaveModalVisible(false);
+                setSelectedFlashcard(null);
+              }}
               className="mt-4 p-2 rounded-lg bg-gray-200 items-center">
               <Text className="text-gray-700 font-medium">Cancel</Text>
             </TouchableOpacity>
