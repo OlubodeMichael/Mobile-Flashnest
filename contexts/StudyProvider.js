@@ -59,7 +59,7 @@ export const StudyProvider = ({ children }) => {
 
   const fetchDeck = async (deckId) => {
     setDeckId(deckId);
-    return queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
+    await queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
   };
 
   const createDeck = async (title, description) => {
@@ -76,7 +76,6 @@ export const StudyProvider = ({ children }) => {
 
   const fetchFlashcards = async (deckId) => {
     setDeckId(deckId);
-    console.log("fetchFlashcards", deckId);
     await queryClient.invalidateQueries({ queryKey: ["flashcards", deckId] });
   };
 

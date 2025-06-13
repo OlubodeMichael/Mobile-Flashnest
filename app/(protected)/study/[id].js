@@ -31,14 +31,11 @@ export default function StudyDetail() {
 
   useEffect(() => {
     const loadDeck = async () => {
-      setIsLoading(true);
       try {
         await fetchDeck(id);
         await fetchFlashcards(id);
       } catch (error) {
         console.error("Error loading deck:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
