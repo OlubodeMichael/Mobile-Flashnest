@@ -19,8 +19,8 @@ export const useDecks = () => {
       const decks = await getDecks(user.id);
       return decks;
     },
-    staleTime: 1000 * 60 * 5,
-    cacheTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 30,
+    cacheTime: 1000 * 60 * 60,
   });
 };
 
@@ -63,7 +63,7 @@ export const useUpdateDeck = () => {
       if (!user) {
         throw new Error("User not found");
       }
-      return await updateDeck(user.id, deckId, title, description);
+      return await updateDeck(deckId, title, description);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["decks"] });

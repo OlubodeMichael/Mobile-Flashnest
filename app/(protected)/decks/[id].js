@@ -24,12 +24,9 @@ export default function DeckDetail() {
     deleteDeck,
     updateDeck,
     createFlashcard,
-    fetchDeck,
     flashcards,
     fetchFlashcards,
-    fetchDecks,
     deleteFlashcard,
-    setDeck,
     updateFlashcard,
   } = useStudy();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
@@ -38,18 +35,14 @@ export default function DeckDetail() {
   const [isEditFlashcardModalVisible, setIsEditFlashcardModalVisible] =
     useState(false);
   const [selectedFlashcard, setSelectedFlashcard] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading: isLoadingDeck } = useStudy();
 
   useEffect(() => {
     const loadDeck = async () => {
-      setIsLoading(true);
       try {
-        await fetchDeck(id);
         await fetchFlashcards(id);
       } catch (error) {
         console.error("Error loading deck:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -73,8 +66,6 @@ export default function DeckDetail() {
   const handleDelete = async () => {
     try {
       await deleteDeck(id);
-      await fetchDecks();
-      await fetchDeck(id);
       router.replace("/decks");
     } catch (error) {
       console.error("Error deleting deck:", error);
@@ -85,7 +76,6 @@ export default function DeckDetail() {
   const handleUpdate = async (updatedDeck) => {
     try {
       await updateDeck(id, updatedDeck);
-      await fetchDeck(id);
       setIsEditModalVisible(false);
     } catch (error) {
       console.error("Error updating deck:", error);
@@ -155,7 +145,7 @@ export default function DeckDetail() {
     );
   };
 
-  if (isLoading) {
+  if (isLoadingDeck) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
         <View className="flex-1 items-center justify-center p-6">

@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import FlashcardService from "../service/flashcardGenerator";
-import { getCurrentUser } from "flashnest-backend/authHelper";
-import { addBulkFlashcards } from "flashnest-backend/studyHelper";
+import { useAddBulkFlashcards } from "../hooks/flashcards/useFlashcards";
 import * as FileSystem from "expo-file-system";
 
 const AiContext = createContext();
@@ -10,7 +9,7 @@ const AiProvider = ({ children }) => {
   const [aiFlashcards, setAiFlashcards] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const addBulkFlashcardsMutation = useAddBulkFlashcards();
   const previewFlashcards = async ({ topic, text, file, count = 10 }) => {
     try {
       setIsLoading(true);
@@ -48,16 +47,10 @@ const AiProvider = ({ children }) => {
       setIsLoading(true);
       setError(null);
 
-      const user = await getCurrentUser();
-      if (!user) {
-        throw new Error("User not authenticated");
-      }
-
-      const savedFlashcards = await addBulkFlashcards(
-        user.id,
+      const savedFlashcards = await addBulkFlashcardsMutation.mutateAsync({
         deckId,
-        flashcardsToSave || aiFlashcards
-      );
+        flashcards: flashcardsToSave || aiFlashcards,
+      });
 
       if (savedFlashcards) {
         setAiFlashcards([]);

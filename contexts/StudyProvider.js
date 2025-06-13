@@ -1,11 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { getCurrentUser } from "flashnest-backend/authHelper";
 import {
-  getDecks as fetchDecksHelper,
-  getDeck as fetchDeckHelper,
-  createDeck as createDeckHelper,
-  updateDeck as updateDeckHelper,
-  deleteDeck as deleteDeckHelper,
   createFlashcard as createFlashcardHelper,
   getFlashcards as getFlashcardsHelper,
   updateFlashcard as updateFlashcardHelper,
@@ -18,19 +13,42 @@ import {
   useUpdateDeck,
   useDeleteDeck,
 } from "../hooks/decks/useDeck";
+import {
+  useFlashcards,
+  useCreateFlashcard,
+  useUpdateFlashcard,
+  useDeleteFlashcard,
+} from "../hooks/flashcards/useFlashcards";
 import { useQueryClient } from "@tanstack/react-query";
 
 const StudyContext = createContext();
 
 export const StudyProvider = ({ children }) => {
+  const queryClient = useQueryClient();
+  const createDeckMutation = useCreateDeck();
+  const updateDeckMutation = useUpdateDeck();
+  const deleteDeckMutation = useDeleteDeck();
+  const createFlashcardMutation = useCreateFlashcard();
+  const updateFlashcardMutation = useUpdateFlashcard();
+  const deleteFlashcardMutation = useDeleteFlashcard();
   const {
     data: decks,
     isLoading: isLoadingDecks,
     error: errorDecks,
   } = useDecks();
-  const queryClient = useQueryClient();
-  const [deck, setDeck] = useState(null); // current selected deck
-  const [flashcards, setFlashcards] = useState([]);
+  const [deckId, setDeckId] = useState(null);
+  const {
+    data: deck,
+    isLoading: isLoadingDeck,
+    error: errorDeck,
+  } = useDeck(deckId);
+
+  const {
+    data: flashcards,
+    isLoading: isLoadingFlashcards,
+    error: errorFlashcards,
+  } = useFlashcards(deckId);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -40,123 +58,43 @@ export const StudyProvider = ({ children }) => {
   };
 
   const fetchDeck = async (deckId) => {
-    setDeck(null); // Clear current deck first
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await fetchDeckHelper(deckId);
-      setDeck(response);
-      return response;
-    } catch (err) {
-      setError(err.message || "Failed to fetch deck");
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
+    setDeckId(deckId);
+    return queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
   };
 
   const createDeck = async (title, description) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const user = await getCurrentUser();
-      const response = await createDeckHelper(user.id, title, description);
-      await fetchDecks(); // Refresh decks list
-      return response;
-    } catch (err) {
-      setError(err.message || "Failed to create deck");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+    return createDeckMutation.mutateAsync({ title, description });
   };
 
   const updateDeck = async (deckId, title, description) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await updateDeckHelper(deckId, title, description);
-      await fetchDecks(); // Refresh decks list
-      return response;
-    } catch (err) {
-      setError(err.message || "Failed to update deck");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+    return updateDeckMutation.mutateAsync({ deckId, title, description });
   };
 
   const deleteDeck = async (deckId) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      await deleteDeckHelper(deckId);
-      await fetchDecks(); // Refresh decks list
-    } catch (err) {
-      setError(err.message || "Failed to delete deck");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+    return deleteDeckMutation.mutateAsync({ deckId });
   };
 
   const fetchFlashcards = async (deckId) => {
-    setFlashcards([]); // Clear flashcards first
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await getFlashcardsHelper(deckId);
-      setFlashcards(response);
-      return response;
-    } catch (err) {
-      setError(err.message || "Failed to fetch flashcards");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+    setDeckId(deckId);
+    console.log("fetchFlashcards", deckId);
+    await queryClient.invalidateQueries({ queryKey: ["flashcards", deckId] });
   };
 
   const createFlashcard = async (deckId, question, answer) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const user = await getCurrentUser();
-      await createFlashcardHelper(user.id, deckId, question, answer);
-      await fetchFlashcards(deckId); // Refresh flashcards list
-    } catch (err) {
-      setError(err.message || "Failed to create flashcard");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+    return createFlashcardMutation.mutateAsync({ deckId, question, answer });
   };
 
   const updateFlashcard = async (deckId, flashcardId, question, answer) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      await updateFlashcardHelper(deckId, flashcardId, question, answer);
-      await fetchFlashcards(deckId); // Refresh flashcards list
-    } catch (err) {
-      setError(err.message || "Failed to update flashcard");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+    return updateFlashcardMutation.mutateAsync({
+      deckId,
+      flashcardId,
+      question,
+      answer,
+    });
   };
 
   const deleteFlashcard = async (flashcardId, deckId) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      await deleteFlashcardHelper(flashcardId, deckId);
-      await fetchFlashcards(deckId); // Refresh flashcards list
-    } catch (err) {
-      setError(err.message || "Failed to delete flashcard");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+    return deleteFlashcardMutation.mutateAsync({ deckId, flashcardId });
   };
 
   return (
@@ -164,10 +102,9 @@ export const StudyProvider = ({ children }) => {
       value={{
         decks,
         deck,
-        setDeck,
         flashcards,
-        isLoading,
-        error,
+        isLoading: isLoadingDecks || isLoadingDeck || isLoadingFlashcards,
+        error: errorDecks || errorDeck || errorFlashcards,
         fetchDecks,
         fetchDeck,
         createDeck,
