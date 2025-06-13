@@ -11,28 +11,32 @@ import {
   updateFlashcard as updateFlashcardHelper,
   deleteFlashcard as deleteFlashcardHelper,
 } from "flashnest-backend/studyHelper";
+import {
+  useDecks,
+  useDeck,
+  useCreateDeck,
+  useUpdateDeck,
+  useDeleteDeck,
+} from "../hooks/decks/useDeck";
+import { useQueryClient } from "@tanstack/react-query";
 
 const StudyContext = createContext();
 
 export const StudyProvider = ({ children }) => {
-  const [decks, setDecks] = useState([]);
+  const {
+    data: decks,
+    isLoading: isLoadingDecks,
+    error: errorDecks,
+  } = useDecks();
+  const queryClient = useQueryClient();
   const [deck, setDeck] = useState(null); // current selected deck
   const [flashcards, setFlashcards] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchDecks = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const user = await getCurrentUser();
-      const response = await fetchDecksHelper(user.id);
-      setDecks(response);
-    } catch (err) {
-      setError(err.message || "Failed to fetch decks");
-    } finally {
-      setIsLoading(false);
-    }
+    console.log("fetchDecks");
+    await queryClient.invalidateQueries({ queryKey: ["decks"] });
   };
 
   const fetchDeck = async (deckId) => {

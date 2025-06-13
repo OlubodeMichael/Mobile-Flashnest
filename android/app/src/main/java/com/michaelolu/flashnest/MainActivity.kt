@@ -1,4 +1,4 @@
-package com.flashnestmobile
+package com.michaelolu.flashnest
 
 import android.os.Build
 import android.os.Bundle

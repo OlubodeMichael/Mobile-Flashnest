@@ -2,29 +2,53 @@ import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AuthProvider } from "../contexts/AuthProvider";
 import { StudyProvider } from "../contexts/StudyProvider";
-import { AiProvider } from "../contexts/AiProvider";
-import { useColorScheme } from "react-native";
-import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import AiProvider from "../contexts/AiProvider";
+import { useColorScheme, View } from "react-native";
+import { useState, useEffect } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function RootLayoutContent() {
+  const colorScheme = useColorScheme() || "light";
   const [onboarding, setOnboarding] = useState(false);
-  const getOnboarding = async () => {
-    const onboarding = await AsyncStorage.getItem("onboarding");
-    setOnboarding(onboarding);
-  };
-  getOnboarding();
+
+  useEffect(() => {
+    const getOnboarding = async () => {
+      try {
+        const onboardingValue = await AsyncStorage.getItem("onboarding");
+        setOnboarding(onboardingValue);
+      } catch (error) {
+        console.error("Error getting onboarding status:", error);
+      }
+    };
+
+    getOnboarding();
+  }, []);
 
   return (
-    <AuthProvider>
-      <StudyProvider>
-        <AiProvider>
-          <Slot />
-          <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-        </AiProvider>
-      </StudyProvider>
-    </AuthProvider>
+    <View style={{ flex: 1 }}>
+      <Slot />
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+    </View>
+  );
+}
+
+export default function RootLayout() {
+  const queryClient = new QueryClient();
+
+  return (
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <StudyProvider>
+            <AiProvider>
+              <RootLayoutContent />
+            </AiProvider>
+          </StudyProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }

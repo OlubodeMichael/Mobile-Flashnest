@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   Alert,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LogoText from "../../components/LogoText";
@@ -17,7 +18,7 @@ import { router } from "expo-router";
 import { useAuth } from "../../contexts/AuthProvider";
 
 export default function Register() {
-  const { signUp, isLoading, error } = useAuth();
+  const { signUp, isLoading, error, handleGoogleSignIn } = useAuth();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -257,6 +258,25 @@ export default function Register() {
                   </Text>
                 )}
               </TouchableOpacity>
+
+              <View className="flex-row items-center my-4">
+                <View className="flex-1 h-[1px] bg-gray-300" />
+                <Text className="mx-4 text-gray-500">or</Text>
+                <View className="flex-1 h-[1px] bg-gray-300" />
+              </View>
+
+              <TouchableOpacity
+                onPress={handleGoogleSignIn}
+                className="w-full flex-row items-center justify-center bg-white py-3 border border-gray-300 rounded-lg">
+                <Image
+                  source={require("../../assets/google-icon.png")}
+                  className="w-6 h-6 mr-2"
+                />
+                <Text className="text-gray-700 font-semibold text-lg">
+                  Sign up with Google
+                </Text>
+              </TouchableOpacity>
+
               <TouchableOpacity onPress={handleLogin} className="mt-4">
                 <Text className="text-blue-600 text-center">
                   Already have an account? Login

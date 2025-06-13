@@ -7,7 +7,7 @@ class FlashcardService {
    * @param {string} [options.topic] - Topic to generate flashcards about
    * @param {string} [options.text] - Text content to generate flashcards from
    * @param {number} [options.count=10] - Number of flashcards to generate (1-50)
-   * @param {Buffer} [options.fileBuffer] - File buffer for PDF or DOCX
+   * @param {string} [options.fileContent] - File content for PDF or DOCX
    * @param {string} [options.fileType] - MIME type of the file
    * @returns {Promise<Array>} Array of flashcards with question and answer
    * @throws {Error} If the API request fails or returns invalid data
@@ -16,7 +16,7 @@ class FlashcardService {
     topic,
     text,
     count = 10,
-    fileBuffer,
+    fileContent,
     fileType,
   }) {
     // Validate count
@@ -31,15 +31,12 @@ class FlashcardService {
       content = `Generate ${validatedCount} flashcards on "${topic}".`;
     } else if (text) {
       content = `Generate ${validatedCount} flashcards from the following:\n\n${text}`;
-    } else if (fileBuffer) {
-      if (fileType === "application/pdf") {
-        const { default: pdfParse } = await import("pdf-parse");
-        const data = await pdfParse(fileBuffer);
-        content = `Generate ${validatedCount} flashcards from this PDF:\n\n${data.text}`;
-      } else if (fileType.includes("wordprocessingml.document")) {
-        const mammoth = await import("mammoth");
-        const result = await mammoth.extractRawText({ buffer: fileBuffer });
-        content = `Generate ${validatedCount} flashcards from this DOCX:\n\n${result.value}`;
+    } else if (fileContent) {
+      if (
+        fileType === "application/pdf" ||
+        fileType.includes("wordprocessingml.document")
+      ) {
+        content = `Generate ${validatedCount} flashcards from this document:\n\n${fileContent}`;
       } else {
         throw new Error("Unsupported file type");
       }

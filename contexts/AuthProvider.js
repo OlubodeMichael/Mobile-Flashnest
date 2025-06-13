@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import * as WebBrowser from "expo-web-browser";
+import * as AuthSession from "expo-auth-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import {
@@ -6,6 +8,7 @@ import {
   signIn,
   signOut,
   getCurrentUser,
+  signInWithOAuth,
 } from "flashnest-backend/authHelper";
 import { initSupabase, getSupabase } from "flashnest-backend/supabaseClient";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
@@ -111,6 +114,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+
+      const { url } = await signInWithOAuth({
+        provider: "google",
+        redirectTo: redirectUri,
+      });
+      console.log("Redirect URI:", redirectUri);
+      const result = await WebBrowser.openAuthSessionAsync(url, redirectUri);
+
+      if (result.type === "success") {
+        const supabase = getSupabase();
+        const { data } = await supabase.auth.getUser();
+        setUser(data.user);
+        router.replace("/(protected)/home");
+      } else {
+        console.log("OAuth flow cancelled or failed:", result);
+      }
+    } catch (error) {
+      console.error("Google sign-in failed:", error);
+    }
+  };
+
   const login = async (email, password) => {
     try {
       setIsLoading(true);
@@ -152,6 +179,7 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         error,
         tokenChecked, // 👈 Now exposed
+        handleGoogleSignIn,
       }}>
       {children}
     </AuthContext.Provider>

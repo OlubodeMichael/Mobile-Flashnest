@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import FlashcardService from "../service/flashcardGenerator";
 import { getCurrentUser } from "flashnest-backend/authHelper";
 import { addBulkFlashcards } from "flashnest-backend/studyHelper";
+import * as FileSystem from "expo-file-system";
 
 const AiContext = createContext();
 
@@ -22,10 +23,15 @@ const AiProvider = ({ children }) => {
         text,
       };
 
-      // If there's a file, add it to the options
+      // If there's a file, read its content
       if (file) {
-        options.fileBuffer = file;
-        options.fileType = file.type;
+        try {
+          const fileContent = await FileSystem.readAsStringAsync(file.uri);
+          options.fileContent = fileContent;
+          options.fileType = file.mimeType;
+        } catch (err) {
+          throw new Error("Failed to read file content");
+        }
       }
 
       const flashcards = await FlashcardService.generateFlashcards(options);
@@ -72,7 +78,6 @@ const AiProvider = ({ children }) => {
     <AiContext.Provider
       value={{
         aiFlashcards,
-        setAiFlashcards,
         isLoading,
         error,
         setError,
@@ -84,5 +89,12 @@ const AiProvider = ({ children }) => {
   );
 };
 
-export { AiProvider };
-export const useAI = () => useContext(AiContext);
+export const useAI = () => {
+  const context = useContext(AiContext);
+  if (!context) {
+    throw new Error("useAI must be used within an AiProvider");
+  }
+  return context;
+};
+
+export default AiProvider;

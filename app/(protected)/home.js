@@ -20,7 +20,6 @@ export default function Home() {
       const loadDecks = async () => {
         try {
           setIsLoading(true);
-          await fetchDecks();
         } catch (error) {
           console.error("Error fetching decks:", error);
         } finally {

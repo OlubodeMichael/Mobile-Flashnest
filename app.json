@@ -11,7 +11,10 @@
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-document-picker",
+      "expo-file-system",
+      "expo-web-browser"
     ],
     "extra": {
       "router": {},
@@ -19,6 +22,16 @@
         "projectId": "c84b2378-c145-4983-bc76-1ee11c3a7415"
       }
     },
-    "owner": "michaelolu"
+    "owner": "michaelolu",
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/c84b2378-c145-4983-bc76-1ee11c3a7415"
+    },
+    "android": {
+      "package": "com.michaelolu.flashnest"
+    },
+    "ios": {
+      "bundleIdentifier": "com.michaelolu.flashnest"
+    }
   }
 }
