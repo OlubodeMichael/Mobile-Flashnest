@@ -6,6 +6,7 @@ import { useStudy } from "../../../contexts/StudyProvider";
 import Flashcard from "../../../components/flashcard";
 import * as Haptics from "expo-haptics";
 import PagerView from "react-native-pager-view";
+import Loading from "../../../components/Loading";
 
 export default function StudyDetail() {
   const { id } = useLocalSearchParams();
@@ -14,7 +15,7 @@ export default function StudyDetail() {
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading: isLoadingDeck } = useStudy();
 
   const currentDeck = deck;
 
@@ -66,12 +67,8 @@ export default function StudyDetail() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center">
-        <Text className="text-lg text-gray-600">Loading deck...</Text>
-      </SafeAreaView>
-    );
+  if (isLoadingDeck) {
+    return <Loading />;
   }
 
   if (!currentCard) {
@@ -110,43 +107,6 @@ export default function StudyDetail() {
           </View>
         ))}
       </PagerView>
-
-      {/* Optional: Add page indicator or buttons below 
-      <View className="flex-row justify-between w-full mt-4 px-4 pb-4">
-        <TouchableOpacity
-          onPress={handlePrevious}
-          disabled={currentCardIndex === 0}
-          className={`px-6 py-3 rounded-full ${
-            currentCardIndex === 0 ? "bg-gray-200" : "bg-yellow-500"
-          }`}>
-          <Text
-            className={`font-medium ${
-              currentCardIndex === 0 ? "text-gray-500" : "text-yellow-900"
-            }`}>
-            Previous
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleNext}
-          disabled={currentCardIndex === currentDeck.flashcards.length - 1}
-          className={`px-6 py-3 rounded-full ${
-            currentCardIndex === currentDeck.flashcards.length - 1
-              ? "bg-gray-200"
-              : "bg-yellow-500"
-          }`}>
-          <Text
-            className={`font-medium ${
-              currentCardIndex === currentDeck.flashcards.length - 1
-                ? "text-gray-500"
-                : "text-yellow-900"
-            }`}>
-            Next
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      */}
     </SafeAreaView>
   );
 }

@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useStudy } from "../../../contexts/StudyProvider";
+import Loading from "../../../components/Loading";
 import { Ionicons } from "@expo/vector-icons";
 import { useLayoutEffect, useState, useEffect } from "react";
 import DeckForm from "../../../components/Form/deckForm";
@@ -146,13 +147,7 @@ export default function DeckDetail() {
   };
 
   if (isLoadingDeck) {
-    return (
-      <SafeAreaView className="flex-1 bg-gray-50">
-        <View className="flex-1 items-center justify-center p-6">
-          <Text className="text-gray-600">Loading deck...</Text>
-        </View>
-      </SafeAreaView>
-    );
+    return <Loading />;
   }
 
   if (!deck) {
