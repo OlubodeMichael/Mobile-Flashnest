@@ -76,7 +76,7 @@ export const useDeleteFlashcard = () => {
     mutationFn: async ({ deckId, flashcardId }) => {
       const user = await getCurrentUser();
       if (!user) throw new Error("User not found");
-      return await deleteFlashcard(user.id, deckId, flashcardId);
+      return await deleteFlashcard(deckId, flashcardId);
     },
     onSuccess: (_, { deckId }) => {
       queryClient.invalidateQueries({ queryKey: ["flashcards", deckId] });

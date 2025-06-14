@@ -209,63 +209,64 @@ export default function DeckDetail() {
                   <Text className="text-gray-900 font-medium flex-1 mr-4">
                     {card.question}
                   </Text>
-                  <View className="flex-row">
-                    <TouchableOpacity
-                      onPress={() => {
-                        setSelectedFlashcard(card);
-                        setIsEditFlashcardModalVisible(true);
-                      }}
-                      className="p-2 mr-2">
-                      <Ionicons
-                        name="pencil-outline"
-                        size={20}
-                        color="#6B7280"
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        Alert.alert(
-                          "Delete Flashcard",
-                          "Are you sure you want to delete this flashcard?",
-                          [
-                            {
-                              text: "Cancel",
-                              style: "cancel",
-                            },
-                            {
-                              text: "Delete",
-                              style: "destructive",
-                              onPress: async () => {
-                                try {
-                                  await deleteFlashcard(card.id, id);
-                                  setDeck((prev) => ({
-                                    ...prev,
-                                    flashcards_count:
-                                      (prev?.flashcards_count || 1) - 1,
-                                  }));
-                                } catch (error) {
-                                  console.error(
-                                    "Error deleting flashcard:",
-                                    error
-                                  );
-                                  Alert.alert(
-                                    "Error",
-                                    "Failed to delete flashcard. Please try again."
-                                  );
-                                }
-                              },
-                            },
-                          ]
-                        );
-                      }}
-                      className="p-2">
-                      <Ionicons
-                        name="trash-outline"
-                        size={20}
-                        color="#EF4444"
-                      />
-                    </TouchableOpacity>
-                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      Alert.alert("Flashcard Options", "Choose an action", [
+                        {
+                          text: "Edit",
+                          onPress: () => {
+                            setSelectedFlashcard(card);
+                            setIsEditFlashcardModalVisible(true);
+                          },
+                        },
+                        {
+                          text: "Delete",
+                          style: "destructive",
+                          onPress: () => {
+                            Alert.alert(
+                              "Delete Flashcard",
+                              "Are you sure you want to delete this flashcard?",
+                              [
+                                {
+                                  text: "Cancel",
+                                  style: "cancel",
+                                },
+                                {
+                                  text: "Delete",
+                                  style: "destructive",
+                                  onPress: async () => {
+                                    try {
+                                      await deleteFlashcard(id, card.id);
+                                      await fetchFlashcards(id);
+                                    } catch (error) {
+                                      console.error(
+                                        "Error deleting flashcard:",
+                                        error
+                                      );
+                                      Alert.alert(
+                                        "Error",
+                                        "Failed to delete flashcard. Please try again."
+                                      );
+                                    }
+                                  },
+                                },
+                              ]
+                            );
+                          },
+                        },
+                        {
+                          text: "Cancel",
+                          style: "cancel",
+                        },
+                      ]);
+                    }}
+                    className="p-2">
+                    <Ionicons
+                      name="ellipsis-vertical"
+                      size={20}
+                      color="#6B7280"
+                    />
+                  </TouchableOpacity>
                 </View>
                 <Text className="text-gray-600">{card.answer}</Text>
               </View>

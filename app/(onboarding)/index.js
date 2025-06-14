@@ -8,7 +8,7 @@ export default function FirstOnboarding() {
   const router = useRouter();
 
   const handleSkip = async () => {
-    // await AsyncStorage.setItem("isOnboarded", "true");
+    await AsyncStorage.setItem("onboarding", "true");
     router.replace("/(protected)/home");
   };
 
