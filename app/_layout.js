@@ -18,7 +18,13 @@ function RootLayoutContent() {
     const getOnboarding = async () => {
       try {
         const onboardingValue = await AsyncStorage.getItem("onboarding");
-        if (onboardingValue) {
+        const token = await AsyncStorage.getItem("token");
+        console.log("onboardingValue", onboardingValue);
+        console.log("token", token);
+
+        if (!token) {
+          router.replace("/(onboarding)");
+        } else if (onboardingValue === "true") {
           router.replace("/(auth)");
         } else {
           router.replace("/(onboarding)");

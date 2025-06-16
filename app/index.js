@@ -19,11 +19,11 @@ export default function Index() {
           router.replace("/(auth)");
         }
       } else {
-        router.replace("/(onboarding)");
+        router.replace("/(onboarding)/index");
       }
     };
     checkOnboarding();
   }, []);
 
-  return null; // This screen will redirect immediately
+  return null;
 }

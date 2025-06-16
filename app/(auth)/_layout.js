@@ -12,7 +12,7 @@ export default function AuthLayout() {
     }
   }, [tokenChecked, user]);
 
-  // Don’t render until token check is done to avoid flicker
+  // Don't render until token check is done to avoid flicker
   if (!tokenChecked) return null;
 
   return (

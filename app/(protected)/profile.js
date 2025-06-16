@@ -1,16 +1,36 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+  TextInput,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthProvider";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
 
 export default function Profile() {
   const { logout, userProfile, user } = useAuth();
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editedFirstName, setEditedFirstName] = useState(
+    userProfile?.first_name || ""
+  );
+  const [editedLastName, setEditedLastName] = useState(
+    userProfile?.last_name || ""
+  );
+  const [editedEmail, setEditedEmail] = useState(user?.email || "");
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("token");
-    await AsyncStorage.removeItem("isOnboarded");
     await logout();
+  };
+
+  const handleSaveProfile = async () => {
+    // TODO: Implement API call to update user profile
+    setIsEditModalVisible(false);
   };
 
   return (
@@ -44,6 +64,18 @@ export default function Profile() {
             SETTINGS
           </Text>
           <View className="bg-gray-50 rounded-2xl">
+            <TouchableOpacity
+              onPress={() => setIsEditModalVisible(true)}
+              className="flex-row items-center p-4 border-b border-gray-200">
+              <View className="w-8 h-8 items-center justify-center mr-3">
+                <Ionicons name="person-outline" size={22} color="#4B5563" />
+              </View>
+              <Text className="text-gray-900 font-medium flex-1">
+                Edit Profile
+              </Text>
+              <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+
             <TouchableOpacity className="flex-row items-center p-4 border-b border-gray-200">
               <View className="w-8 h-8 items-center justify-center mr-3">
                 <Ionicons
@@ -54,16 +86,6 @@ export default function Profile() {
               </View>
               <Text className="text-gray-900 font-medium flex-1">
                 Notifications
-              </Text>
-              <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-            </TouchableOpacity>
-
-            <TouchableOpacity className="flex-row items-center p-4 border-b border-gray-200">
-              <View className="w-8 h-8 items-center justify-center mr-3">
-                <Ionicons name="settings-outline" size={22} color="#4B5563" />
-              </View>
-              <Text className="text-gray-900 font-medium flex-1">
-                Preferences
               </Text>
               <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
             </TouchableOpacity>
@@ -87,6 +109,74 @@ export default function Profile() {
         {/* Add padding at the bottom to account for the fixed logout button */}
         <View className="h-24" />
       </ScrollView>
+
+      {/* Edit Profile Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isEditModalVisible}
+        onRequestClose={() => setIsEditModalVisible(false)}>
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-3xl p-6">
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-xl font-bold text-gray-900">
+                Edit Profile
+              </Text>
+              <TouchableOpacity onPress={() => setIsEditModalVisible(false)}>
+                <Ionicons name="close" size={24} color="#4B5563" />
+              </TouchableOpacity>
+            </View>
+
+            <View className="space-y-4">
+              <View>
+                <Text className="text-sm font-medium text-gray-700 mb-1">
+                  First Name
+                </Text>
+                <TextInput
+                  className="bg-gray-50 p-4 rounded-xl text-gray-900"
+                  value={editedFirstName}
+                  onChangeText={setEditedFirstName}
+                  placeholder="Enter first name"
+                />
+              </View>
+
+              <View>
+                <Text className="text-sm font-medium text-gray-700 mb-1">
+                  Last Name
+                </Text>
+                <TextInput
+                  className="bg-gray-50 p-4 rounded-xl text-gray-900"
+                  value={editedLastName}
+                  onChangeText={setEditedLastName}
+                  placeholder="Enter last name"
+                />
+              </View>
+
+              <View>
+                <Text className="text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </Text>
+                <TextInput
+                  className="bg-gray-50 p-4 rounded-xl text-gray-900"
+                  value={editedEmail}
+                  onChangeText={setEditedEmail}
+                  placeholder="Enter email"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <TouchableOpacity
+                onPress={handleSaveProfile}
+                className="bg-indigo-500 p-4 rounded-xl mt-4">
+                <Text className="text-white font-medium text-center">
+                  Save Changes
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Fixed Logout Button at bottom */}
       <View className="absolute bottom-0 left-0 right-0 bg-white border-gray-200 px-6 py-4">

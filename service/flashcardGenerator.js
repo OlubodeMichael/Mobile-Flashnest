@@ -112,4 +112,4 @@ class FlashcardService {
   }
 }
 
-module.exports = FlashcardService;
+export default FlashcardService;

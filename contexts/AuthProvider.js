@@ -9,6 +9,7 @@ import {
   signOut,
   getCurrentUser,
   signInWithOAuth,
+  updateUser,
 } from "flashnest-backend/authHelper";
 import { initSupabase, getSupabase } from "flashnest-backend/supabaseClient";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
@@ -106,7 +107,6 @@ export const AuthProvider = ({ children }) => {
 
       await AsyncStorage.setItem("token", session.access_token);
       setUser(profile);
-      router.replace("/(protected)/home");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -129,7 +129,6 @@ export const AuthProvider = ({ children }) => {
         const supabase = getSupabase();
         const { data } = await supabase.auth.getUser();
         setUser(data.user);
-        router.replace("/(protected)/home");
       } else {
         console.log("OAuth flow cancelled or failed:", result);
       }
@@ -145,9 +144,7 @@ export const AuthProvider = ({ children }) => {
       if (!session) throw new Error("No session returned");
 
       await AsyncStorage.setItem("token", session.access_token);
-      await AsyncStorage.setItem("onboarding", "true");
       setUser(profile);
-      router.replace("/(protected)/home");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -164,10 +161,19 @@ export const AuthProvider = ({ children }) => {
       console.error(err);
     } finally {
       setUser(null);
-      router.replace("/(auth)/login");
+      router.replace("/(onboarding)");
     }
   };
 
+  const updateUserProfile = async (firstName, lastName) => {
+    try {
+      const { data, error } = await updateUser({ firstName, lastName });
+      if (error) throw error;
+      setUserProfile(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <AuthContext.Provider
       value={{
@@ -180,6 +186,7 @@ export const AuthProvider = ({ children }) => {
         error,
         tokenChecked, // 👈 Now exposed
         handleGoogleSignIn,
+        updateUserProfile,
       }}>
       {children}
     </AuthContext.Provider>
