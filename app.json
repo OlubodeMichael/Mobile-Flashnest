@@ -31,7 +31,10 @@
       "package": "com.michaelolu.flashnest"
     },
     "ios": {
-      "bundleIdentifier": "com.michaelolu.flashnest"
+      "bundleIdentifier": "com.michaelolu.flashnest",
+      "icon": {
+        "light": "./assets/icon.png"
+      }
     }
   }
 }
