@@ -145,6 +145,10 @@ export const AuthProvider = ({ children }) => {
 
       await AsyncStorage.setItem("token", session.access_token);
       setUser(profile);
+
+      // Fetch and set the user profile immediately after login
+      const userProfile = await getCurrentUser();
+      setUserProfile(userProfile);
     } catch (err) {
       setError(err.message);
     } finally {

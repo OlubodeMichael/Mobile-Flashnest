@@ -82,7 +82,7 @@ export default function Flashcard({
       <View className="w-full h-full relative">
         {/* Front of Card */}
         <Animated.View
-          className="absolute w-full h-full rounded-2xl shadow-lg overflow-hidden bg-yellow-400 p-4"
+          className="absolute w-full h-full rounded-2xl shadow-lg overflow-hidden bg-yellow-400 p-4 border-2 border-yellow-500"
           style={[frontAnimatedStyle, { elevation: 5 }]}>
           <View className="flex-row justify-between items-center mb-4">
             <View className="bg-yellow-200/60 px-3 py-1.5 rounded-full">
@@ -121,7 +121,7 @@ export default function Flashcard({
 
         {/* Back of Card */}
         <Animated.View
-          className="absolute w-full h-full rounded-2xl shadow-lg overflow-hidden bg-white p-4"
+          className="absolute w-full h-full rounded-2xl shadow-lg overflow-hidden bg-white p-4 border-2 border-yellow-500"
           style={[backAnimatedStyle, { elevation: 5 }]}>
           <View className="flex-row justify-between items-center mb-4">
             <View className="bg-yellow-200/60 px-3 py-1.5 rounded-full">

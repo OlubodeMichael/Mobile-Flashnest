@@ -9,6 +9,7 @@ import {
   Platform,
   Alert,
   Modal,
+  Keyboard,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useStudy } from "../../../../contexts/StudyProvider";
@@ -65,6 +66,7 @@ export default function GenerateWithAI() {
     try {
       if (!inputText && !file)
         throw new Error("Please provide a topic, text, or file");
+      Keyboard.dismiss();
       await previewFlashcards({
         topic: inputText,
         text: inputText,
@@ -81,6 +83,7 @@ export default function GenerateWithAI() {
     try {
       setIsRegenerating(true);
       setError("");
+      Keyboard.dismiss();
       await previewFlashcards({
         topic: inputText,
         text: inputText,
@@ -234,10 +237,10 @@ export default function GenerateWithAI() {
                 )}
               </TouchableOpacity>
               <View className="flex-1 bg-gray-100 rounded-2xl px-4 py-2">
-                <Text className="font-semibold text-gray-800 mb-1">
+                <Text className="font-semibold text-gray-800 mb-1 text-lg">
                   Q: {item.question || "No question provided"}
                 </Text>
-                <Text className="text-gray-700">
+                <Text className="text-gray-700 text-lg">
                   A: {item.answer || "No answer provided"}
                 </Text>
               </View>
@@ -272,6 +275,7 @@ export default function GenerateWithAI() {
                 value={inputText}
                 onChangeText={setInputText}
                 placeholder="Type a topic or paste text"
+                placeholderTextColor="#9CA3AF"
                 className="text-gray-800"
                 multiline
                 style={{ maxHeight: 100 }}

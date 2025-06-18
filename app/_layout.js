@@ -20,7 +20,6 @@ function RootLayoutContent() {
         const onboardingValue = await AsyncStorage.getItem("onboarding");
         const token = await AsyncStorage.getItem("token");
         console.log("onboardingValue", onboardingValue);
-        console.log("token", token);
 
         if (!token) {
           router.replace("/(onboarding)");
@@ -40,13 +39,26 @@ function RootLayoutContent() {
   return (
     <View style={{ flex: 1 }}>
       <Slot />
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      <StatusBar style="dark" />
     </View>
   );
 }
 
 export default function RootLayout() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        cacheTime: 1000 * 60 * 30, // 30 minutes
+        retry: 2,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+      },
+      mutations: {
+        retry: 1,
+      },
+    },
+  });
 
   return (
     <SafeAreaProvider>

@@ -12,6 +12,7 @@ import {
   Linking,
   Image,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthProvider";
@@ -55,74 +56,119 @@ export default function Login() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
           className="flex-1">
-          <View className="flex-1 items-center justify-center px-6">
-            <LogoText />
+          <View className="flex-1 items-center justify-center px-6 bg-white">
+            {/* Brand Logo */}
+            <Image
+              source={require("../../assets/icons/icon-light.png")}
+              style={{ width: 48, height: 48, marginBottom: 8 }}
+            />
+            <Text className="font-bold text-2xl text-blue-900 mb-2">
+              FlashNest
+            </Text>
 
-            <View className="w-full space-y-4 mt-8">
-              <View className="space-y-2 py-4">
-                <Text className="text-gray-700 font-medium text-lg">Email</Text>
-                <TextInput
-                  className="w-full px-4 py-3 h-12 border text-gray-700 border-gray-300 rounded-lg"
-                  placeholder="Enter your email"
-                  value={form.email}
-                  placeholderTextColor="#9CA3AF"
-                  onChangeText={(text) => setForm({ ...form, email: text })}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
+            {/* Heading and Subheading */}
+            <Text className="text-3xl font-bold text-gray-900 mt-4">
+              Sign in to your Account
+            </Text>
+            <Text className="text-base text-gray-500 mt-2 mb-6">
+              Enter your email and password to log in
+            </Text>
+
+            {/* Input Fields */}
+            <View className="w-full space-y-4">
+              {/* Email Input */}
+              <View className="mb-2">
+                <Text className="text-gray-700 font-medium text-lg mb-1">
+                  Email
+                </Text>
+                <View className="flex-row items-center bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 shadow-sm focus-within:border-blue-500">
+                  <Feather
+                    name="mail"
+                    size={20}
+                    color="#9CA3AF"
+                    style={{ marginRight: 8 }}
+                  />
+                  <TextInput
+                    className="flex-1 text-gray-700 text-lg"
+                    placeholder="Enter your email"
+                    value={form.email}
+                    placeholderTextColor="#9CA3AF"
+                    onChangeText={(text) => setForm({ ...form, email: text })}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    style={{ paddingVertical: 8 }}
+                  />
+                </View>
               </View>
 
-              <View className="space-y-2">
-                <Text className="text-gray-700 font-medium text-lg">
+              {/* Password Input */}
+              <View>
+                <Text className="text-gray-700 font-medium text-lg mb-1">
                   Password
                 </Text>
-                <TextInput
-                  className="w-full px-4 py-3 h-12 border text-gray-700 border-gray-300 rounded-lg"
-                  placeholder="Enter your password"
-                  placeholderTextColor="#9CA3AF"
-                  value={form.password}
-                  onChangeText={(text) => setForm({ ...form, password: text })}
-                  secureTextEntry
-                />
+                <View className="flex-row items-center bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 shadow-sm focus-within:border-blue-500">
+                  <Feather
+                    name="lock"
+                    size={20}
+                    color="#9CA3AF"
+                    style={{ marginRight: 8 }}
+                  />
+                  <TextInput
+                    className="flex-1 text-gray-700 text-lg"
+                    placeholder="Enter your password"
+                    placeholderTextColor="#9CA3AF"
+                    value={form.password}
+                    onChangeText={(text) =>
+                      setForm({ ...form, password: text })
+                    }
+                    secureTextEntry
+                    style={{ paddingVertical: 8 }}
+                  />
+                  <TouchableOpacity
+                    onPress={handleForgotPassword}
+                    style={{ marginLeft: 8 }}>
+                    <Text className="text-blue-600 text-sm">Forgot?</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-
-              <TouchableOpacity
-                onPress={handleLogin}
-                className="w-full bg-blue-600 py-3 text-gray-700 rounded-lg mt-6">
-                <Text className="text-white text-center font-semibold text-lg">
-                  {isLoading ? "Logging in..." : "Login"}
-                </Text>
-              </TouchableOpacity>
-
-              <View className="flex-row items-center my-4">
-                <View className="flex-1 h-[1px] bg-gray-300" />
-                <Text className="mx-4 text-gray-500">or</Text>
-                <View className="flex-1 h-[1px] bg-gray-300" />
-              </View>
-
-              <TouchableOpacity
-                onPress={handleGoogleSignIn}
-                className="w-full flex-row items-center justify-center bg-white py-3 border border-gray-300 rounded-lg">
-                <Image
-                  source={require("../../assets/google-icon.png")}
-                  className="w-6 h-6 mr-2"
-                />
-                <Text className="text-gray-700 font-semibold text-lg">
-                  Sign in with Google
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handleForgotPassword} className="mt-4">
-                <Text className="text-blue-600 text-center">
-                  Forgot Password?
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleSignUp} className="mt-4">
-                <Text className="text-blue-600 text-center">
-                  Don't have an account? Sign up
-                </Text>
-              </TouchableOpacity>
             </View>
+
+            {/* Log In Button */}
+            <TouchableOpacity
+              onPress={handleLogin}
+              className="w-full bg-blue-600 py-3 rounded-lg mt-6">
+              <Text className="text-white text-center font-semibold text-lg">
+                {isLoading ? "Logging in..." : "Log In"}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Or Separator */}
+            <View className="flex-row items-center my-4 w-full">
+              <View className="flex-1 h-[1px] bg-gray-300" />
+              <Text className="mx-4 text-gray-500">Or</Text>
+              <View className="flex-1 h-[1px] bg-gray-300" />
+            </View>
+
+            {/* Social Logins */}
+            <TouchableOpacity
+              onPress={handleGoogleSignIn}
+              className="w-full flex-row items-center justify-center bg-white py-3 border border-gray-300 rounded-lg mb-2">
+              <Image
+                source={require("../../assets/google-icon.png")}
+                className="w-6 h-6 mr-2"
+              />
+              <Text className="text-gray-700 font-semibold text-lg">
+                Continue with Google
+              </Text>
+            </TouchableOpacity>
+
+            {/* Sign Up Link */}
+            <TouchableOpacity onPress={handleSignUp} className="mt-8">
+              <Text className="text-gray-500 text-center">
+                Don't have an account?{" "}
+                <Text className="text-blue-600">Sign Up</Text>
+              </Text>
+            </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
