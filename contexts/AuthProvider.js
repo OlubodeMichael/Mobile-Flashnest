@@ -96,7 +96,8 @@ export const AuthProvider = ({ children }) => {
   ) => {
     try {
       setIsLoading(true);
-      const { session, profile } = await supaSignUp({
+      setError(null); // Clear any previous errors
+      const { session, user } = await supaSignUp({
         firstName,
         lastName,
         email,
@@ -106,9 +107,14 @@ export const AuthProvider = ({ children }) => {
       if (!session) throw new Error("No session returned");
 
       await AsyncStorage.setItem("token", session.access_token);
-      setUser(profile);
+      setUser(user);
+
+      // Fetch and set the user profile immediately after signup
+      const userProfile = await getCurrentUser();
+      setUserProfile(userProfile);
     } catch (err) {
       setError(err.message);
+      throw err; // Re-throw the error so the component can catch it
     } finally {
       setIsLoading(false);
     }
@@ -140,17 +146,19 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setIsLoading(true);
-      const { session, profile } = await signIn({ email, password });
+      setError(null); // Clear any previous errors
+      const { session, user } = await signIn({ email, password });
       if (!session) throw new Error("No session returned");
 
       await AsyncStorage.setItem("token", session.access_token);
-      setUser(profile);
+      setUser(user);
 
       // Fetch and set the user profile immediately after login
       const userProfile = await getCurrentUser();
       setUserProfile(userProfile);
     } catch (err) {
       setError(err.message);
+      throw err; // Re-throw the error so the component can catch it
     } finally {
       setIsLoading(false);
     }
@@ -178,6 +186,11 @@ export const AuthProvider = ({ children }) => {
       console.error(err);
     }
   };
+
+  const clearError = () => {
+    setError(null);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -191,6 +204,7 @@ export const AuthProvider = ({ children }) => {
         tokenChecked, // 👈 Now exposed
         handleGoogleSignIn,
         updateUserProfile,
+        clearError, // 👈 New function
       }}>
       {children}
     </AuthContext.Provider>

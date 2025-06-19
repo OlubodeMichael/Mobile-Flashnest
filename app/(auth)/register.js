@@ -18,7 +18,8 @@ import { router } from "expo-router";
 import { useAuth } from "../../contexts/AuthProvider";
 
 export default function Register() {
-  const { signUp, isLoading, error, handleGoogleSignIn } = useAuth();
+  const { signUp, isLoading, error, handleGoogleSignIn, clearError } =
+    useAuth();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -28,10 +29,24 @@ export default function Register() {
   });
   const [formErrors, setFormErrors] = useState({});
 
+  // Clear error when component mounts
+  useEffect(() => {
+    // Clear any existing errors when the component mounts
+    clearError();
+  }, []);
+
   // Show API errors in an alert
   useEffect(() => {
     if (error) {
-      Alert.alert("Registration Failed", error);
+      Alert.alert("Registration Failed", error, [
+        {
+          text: "OK",
+          onPress: () => {
+            // Clear the error after user acknowledges it
+            clearError();
+          },
+        },
+      ]);
     }
   }, [error]);
 
@@ -75,14 +90,16 @@ export default function Register() {
     }
 
     try {
-      const response = await signUp({
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        password: form.password,
-        passwordConfirm: form.confirmPassword,
-      });
-      console.log("Registration successful", response);
+      await signUp(
+        form.firstName,
+        form.lastName,
+        form.email,
+        form.password,
+        form.confirmPassword
+      );
+      console.log("Registration successful");
+      // Redirect to home page after successful registration
+      router.replace("/(protected)/home");
     } catch (error) {
       // Error is now handled by the useEffect hook
       console.error("Registration error:", error);
@@ -123,6 +140,8 @@ export default function Register() {
                           if (formErrors.firstName) {
                             setFormErrors({ ...formErrors, firstName: "" });
                           }
+                          // Clear API error when user starts typing
+                          if (error) clearError();
                         }}
                       />
                       {formErrors.firstName && (
@@ -151,6 +170,8 @@ export default function Register() {
                           if (formErrors.lastName) {
                             setFormErrors({ ...formErrors, lastName: "" });
                           }
+                          // Clear API error when user starts typing
+                          if (error) clearError();
                         }}
                       />
                       {formErrors.lastName && (
@@ -180,6 +201,8 @@ export default function Register() {
                         if (formErrors.email) {
                           setFormErrors({ ...formErrors, email: "" });
                         }
+                        // Clear API error when user starts typing
+                        if (error) clearError();
                       }}
                     />
                     {formErrors.email && (
@@ -207,6 +230,8 @@ export default function Register() {
                         if (formErrors.password) {
                           setFormErrors({ ...formErrors, password: "" });
                         }
+                        // Clear API error when user starts typing
+                        if (error) clearError();
                       }}
                     />
                     {formErrors.password && (
@@ -234,6 +259,8 @@ export default function Register() {
                         if (formErrors.confirmPassword) {
                           setFormErrors({ ...formErrors, confirmPassword: "" });
                         }
+                        // Clear API error when user starts typing
+                        if (error) clearError();
                       }}
                     />
                     {formErrors.confirmPassword && (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -21,11 +21,32 @@ import LogoText from "../../components/LogoText";
 import { router } from "expo-router";
 
 export default function Login() {
-  const { login, isLoading, error, handleGoogleSignIn } = useAuth();
+  const { login, isLoading, error, handleGoogleSignIn, clearError } = useAuth();
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
+  // Clear error when component mounts
+  useEffect(() => {
+    // Clear any existing errors when the component mounts
+    clearError();
+  }, []);
+
+  // Show API errors in an alert
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Login Failed", error, [
+        {
+          text: "OK",
+          onPress: () => {
+            // Clear the error after user acknowledges it
+            clearError();
+          },
+        },
+      ]);
+    }
+  }, [error]);
 
   const handleForgotPassword = () => {
     Linking.openURL("https://www.flashnest.app/forgot-password");
@@ -40,12 +61,14 @@ export default function Login() {
       Alert.alert("Missing Fields", "Please enter both email and password.");
       return;
     }
+
     try {
       await login(form.email, form.password);
       router.replace("/(protected)/home");
       console.log("Login successful");
     } catch (error) {
-      Alert.alert("Login Failed", error.message);
+      // Error is already handled by the AuthProvider and shown in the error state
+      console.log("Login failed:", error.message);
     }
   };
 
@@ -93,7 +116,11 @@ export default function Login() {
                     placeholder="Enter your email"
                     value={form.email}
                     placeholderTextColor="#9CA3AF"
-                    onChangeText={(text) => setForm({ ...form, email: text })}
+                    onChangeText={(text) => {
+                      setForm({ ...form, email: text });
+                      // Clear error when user starts typing
+                      if (error) clearError();
+                    }}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     style={{ paddingVertical: 8 }}
@@ -118,9 +145,11 @@ export default function Login() {
                     placeholder="Enter your password"
                     placeholderTextColor="#9CA3AF"
                     value={form.password}
-                    onChangeText={(text) =>
-                      setForm({ ...form, password: text })
-                    }
+                    onChangeText={(text) => {
+                      setForm({ ...form, password: text });
+                      // Clear error when user starts typing
+                      if (error) clearError();
+                    }}
                     secureTextEntry
                     style={{ paddingVertical: 8 }}
                   />
