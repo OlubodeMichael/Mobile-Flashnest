@@ -21,6 +21,9 @@
       "router": {},
       "eas": {
         "projectId": "c84b2378-c145-4983-bc76-1ee11c3a7415"
+      },
+      "googleSignIn": {
+        "iosUrlScheme": "com.googleusercontent.apps.540724227611-5bs6prjsppk0568re9qhboh55ldm46fq"
       }
     },
     "owner": "michaelolu",

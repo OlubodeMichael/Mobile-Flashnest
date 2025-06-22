@@ -25,21 +25,15 @@ class FlashcardService {
       throw new Error("Count must be between 1 and 50");
     }
 
-    // Handle input: topic, text, or file
+    // Handle input: topic, text, or file (prioritize file content over text input)
     let content = "";
     if (topic) {
       content = `Generate ${validatedCount} flashcards on "${topic}".`;
+    } else if (fileContent) {
+      // Handle any file that contains text content (prioritize over text input)
+      content = `Generate ${validatedCount} flashcards from this document:\n\n${fileContent}`;
     } else if (text) {
       content = `Generate ${validatedCount} flashcards from the following:\n\n${text}`;
-    } else if (fileContent) {
-      if (
-        fileType === "application/pdf" ||
-        fileType.includes("wordprocessingml.document")
-      ) {
-        content = `Generate ${validatedCount} flashcards from this document:\n\n${fileContent}`;
-      } else {
-        throw new Error("Unsupported file type");
-      }
     } else {
       throw new Error("Provide a topic, text, or file");
     }
@@ -87,6 +81,7 @@ class FlashcardService {
       try {
         flashcards = JSON.parse(message);
       } catch (err) {
+        console.error("JSON parsing error:", err);
         // Try to extract the JSON array if full message parsing fails
         const match = message.match(/\[([\s\S]*?)\]/);
         if (match) {
@@ -104,6 +99,7 @@ class FlashcardService {
 
       return flashcards;
     } catch (error) {
+      console.error("FlashcardService error:", error);
       if (error.response) {
         throw new Error(`OpenRouter error: ${error.response.statusText}`);
       }

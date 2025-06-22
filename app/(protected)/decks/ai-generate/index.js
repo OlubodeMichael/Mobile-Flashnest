@@ -49,14 +49,29 @@ export default function GenerateWithAI() {
   }, [aiFlashcards]);
 
   const handleFilePick = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: [
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ],
-    });
-    if (result.type === "success") {
-      setFile(result);
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "*/*",
+      });
+
+      console.log("File picker result:", result);
+
+      if (result.type === "success") {
+        console.log("Selected file:", {
+          name: result.name,
+          size: result.size,
+          mimeType: result.mimeType,
+          uri: result.uri,
+        });
+        setFile(result);
+      } else if (result.type === "cancel") {
+        console.log("File picker cancelled");
+      } else {
+        console.log("File picker error:", result);
+      }
+    } catch (error) {
+      console.error("File picker error:", error);
+      Alert.alert("Error", "Failed to pick file. Please try again.");
     }
   };
 
@@ -171,6 +186,34 @@ export default function GenerateWithAI() {
           <Text className="text-red-700">{error}</Text>
         </View>
       ) : null}
+
+      {/* File Preview Section - Show when file is attached */}
+      {file && (
+        <View className="bg-blue-50 border-b border-blue-200 px-4 py-3">
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center flex-1">
+              <Ionicons name="document-text" size={24} color="#3b82f6" />
+              <View className="ml-3 flex-1">
+                <Text
+                  className="text-blue-900 font-medium text-lg"
+                  numberOfLines={1}>
+                  {file.name || file.uri.split("/").pop()}
+                </Text>
+                <Text className="text-blue-600 text-sm">
+                  {file.size
+                    ? `${(file.size / 1024).toFixed(1)} KB`
+                    : "File attached"}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => setFile(null)}
+              className="bg-red-100 p-2 rounded-full">
+              <Ionicons name="close" size={20} color="#ef4444" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       {/* Selection Controls */}
       {aiFlashcards.length > 0 && (
@@ -316,22 +359,7 @@ export default function GenerateWithAI() {
             </TouchableOpacity>
           </View>
 
-          {/* File Preview */}
-          {file && (
-            <View className="mt-3 flex-row items-center bg-indigo-50 rounded-xl px-3 py-2 self-start">
-              <Ionicons name="document-text" size={18} color="#6366f1" />
-              <Text
-                className="ml-2 text-sm text-indigo-700 flex-1"
-                numberOfLines={1}>
-                {file.name || file.uri.split("/").pop()}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setFile(null)}
-                className="ml-2 p-1">
-                <Ionicons name="close" size={18} color="#6366f1" />
-              </TouchableOpacity>
-            </View>
-          )}
+          {/* File Preview - Removed since we have a prominent one at the top */}
         </View>
       </KeyboardAvoidingView>
 
