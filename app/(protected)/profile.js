@@ -78,6 +78,21 @@ export default function Profile() {
 
             <TouchableOpacity className="flex-row items-center p-4 border-b border-gray-200">
               <View className="w-8 h-8 items-center justify-center mr-3">
+                <Ionicons name="diamond-outline" size={22} color="#FFD700" />
+              </View>
+              <Text className="text-gray-900 font-medium flex-1">
+                Upgrade to Pro
+              </Text>
+              <View className="flex-row items-center">
+                <View className="bg-gradient-to-r from-yellow-400 to-orange-500 px-2 py-1 rounded-full mr-2">
+                  <Text className="text-white text-xs font-bold">PRO</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="flex-row items-center p-4 border-b border-gray-200">
+              <View className="w-8 h-8 items-center justify-center mr-3">
                 <Ionicons
                   name="notifications-outline"
                   size={22}

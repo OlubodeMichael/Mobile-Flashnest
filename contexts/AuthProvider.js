@@ -122,24 +122,38 @@ export const AuthProvider = ({ children }) => {
 
   const handleGoogleSignIn = async () => {
     try {
+      // Use Supabase's default callback
       const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
-
-      const { url } = await signInWithOAuth({
+      console.log("Redirect URI:", redirectUri);
+      const { url, error } = await signInWithOAuth({
         provider: "google",
         redirectTo: redirectUri,
       });
-      console.log("Redirect URI:", redirectUri);
+
+      if (error) {
+        console.error("OAuth URL generation failed:", error.message);
+        return;
+      }
+
       const result = await WebBrowser.openAuthSessionAsync(url, redirectUri);
 
-      if (result.type === "success") {
+      if (result.type === "success" && result.url) {
         const supabase = getSupabase();
-        const { data } = await supabase.auth.getUser();
-        setUser(data.user);
+        const { data: userData, error: userError } =
+          await supabase.auth.getUser();
+
+        if (userError) throw userError;
+
+        setUser(userData.user);
+
+        // Optionally get and set profile
+        const profile = await getCurrentUser();
+        setUserProfile(profile);
       } else {
-        console.log("OAuth flow cancelled or failed:", result);
+        console.warn("OAuth flow cancelled or failed:", result);
       }
-    } catch (error) {
-      console.error("Google sign-in failed:", error);
+    } catch (err) {
+      console.error("Google sign-in failed:", err.message);
     }
   };
 
