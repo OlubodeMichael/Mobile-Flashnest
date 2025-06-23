@@ -11,6 +11,7 @@ import { useAuth } from "../../contexts/AuthProvider";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
+import RevenueCatUI from "react-native-purchases-ui";
 
 export default function Profile() {
   const { logout, userProfile, user } = useAuth();
@@ -31,6 +32,9 @@ export default function Profile() {
   const handleSaveProfile = async () => {
     // TODO: Implement API call to update user profile
     setIsEditModalVisible(false);
+  };
+  const proAction = () => {
+    RevenueCatUI.presentPaywall();
   };
 
   return (
@@ -76,7 +80,9 @@ export default function Profile() {
               <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex-row items-center p-4 border-b border-gray-200">
+            <TouchableOpacity
+              onPress={proAction}
+              className="flex-row items-center p-4 border-b border-gray-200">
               <View className="w-8 h-8 items-center justify-center mr-3">
                 <Ionicons name="diamond-outline" size={22} color="#FFD700" />
               </View>

@@ -1,4 +1,8 @@
+// Import accessibility polyfill first to prevent crashes
+import "../utils/accessibilityPolyfill";
+
 import { Slot } from "expo-router";
+import "expo-dev-client";
 import { StatusBar } from "expo-status-bar";
 import { AuthProvider } from "../contexts/AuthProvider";
 import { StudyProvider } from "../contexts/StudyProvider";

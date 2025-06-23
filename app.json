@@ -5,7 +5,7 @@
     "slug": "flashnest",
     "version": "1.0.0",
     "scheme": "flashnest-mobile",
-    "jsEngine": "jsc",
+    "jsEngine": "hermes",
     "web": {
       "bundler": "metro"
     },
@@ -32,11 +32,11 @@
       "url": "https://u.expo.dev/c84b2378-c145-4983-bc76-1ee11c3a7415"
     },
     "android": {
-      "package": "com.michaelolu.flashnest",
-      "jsEngine": "jsc"
+      "package": "com.michaelolu.flashnest"
     },
     "ios": {
       "bundleIdentifier": "com.michaelolu.flashnest",
+      "buildNumber": "2",
       "icon": {
         "light": "./assets/icons/icon-light.png",
         "dark": "./assets/icons/icon-dark.png",
