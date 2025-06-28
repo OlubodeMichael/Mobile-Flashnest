@@ -37,25 +37,29 @@ export default function DecksLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
-        headerBackTitle: "Back",
-        headerBackVisible: true,
-        headerStyle: {
-          backgroundColor: "#F9FAFB",
-        },
-        headerShadowVisible: false,
+        headerShown: false,
+        animation: "slide_from_right",
       }}>
       <Stack.Screen
         name="index"
         options={{
-          headerShown: false,
+          title: "Decks",
         }}
       />
       <Stack.Screen
         name="[id]"
         options={{
-          headerTitle: "",
-          presentation: "card",
+          title: "Deck Detail",
+          headerShown: true,
+          headerBackVisible: true,
+        }}
+      />
+      <Stack.Screen
+        name="ai-generate"
+        options={{
+          title: "AI Generate",
+          headerShown: true,
+          headerBackVisible: true,
         }}
       />
     </Stack>

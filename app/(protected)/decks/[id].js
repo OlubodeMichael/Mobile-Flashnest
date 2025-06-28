@@ -53,8 +53,6 @@ export default function DeckDetail() {
   useLayoutEffect(() => {
     if (deck) {
       navigation.setOptions({
-        headerShown: true,
-        headerBackVisible: true,
         headerRight: ({ color }) => (
           <TouchableOpacity onPress={showOptions}>
             <Ionicons name="ellipsis-vertical" size={24} color={color} />

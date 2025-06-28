@@ -15,7 +15,8 @@
       "expo-router",
       "expo-document-picker",
       "expo-file-system",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-dev-client"
     ],
     "extra": {
       "router": {},

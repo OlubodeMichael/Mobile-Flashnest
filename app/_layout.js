@@ -14,7 +14,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import "../global.css";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Purchases, { LOG_LEVEL } from "react-native-purchases";
 
 function RootLayoutContent() {
   const colorScheme = useColorScheme() || "light";
@@ -39,19 +38,6 @@ function RootLayoutContent() {
     };
 
     getOnboarding();
-  }, []);
-
-  useEffect(() => {
-    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
-    if (Platform.OS === "ios") {
-      Purchases.configure({
-        apiKey: process.env.EXPO_PUBLIC_RC_IOS,
-      });
-    } else if (Platform.OS === "android") {
-      Purchases.configure({
-        apiKey: process.env.EXPO_PUBLIC_RC_ANDROID,
-      });
-    }
   }, []);
 
   return (
@@ -79,7 +65,7 @@ export default function RootLayout() {
   });
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider className="bg-white">
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <StudyProvider>

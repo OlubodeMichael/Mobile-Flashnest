@@ -63,7 +63,6 @@ export default function ProtectedTabsLayout() {
         name="decks"
         options={{
           title: "Decks",
-          popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="albums" size={size} color={color} />
           ),

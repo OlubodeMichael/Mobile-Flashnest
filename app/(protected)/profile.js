@@ -5,13 +5,14 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthProvider";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
-import RevenueCatUI from "react-native-purchases-ui";
+import HelpAndSupport from "../../components/HelpAndSupport";
 
 export default function Profile() {
   const { logout, userProfile, user } = useAuth();
@@ -32,9 +33,6 @@ export default function Profile() {
   const handleSaveProfile = async () => {
     // TODO: Implement API call to update user profile
     setIsEditModalVisible(false);
-  };
-  const proAction = () => {
-    RevenueCatUI.presentPaywall();
   };
 
   return (
@@ -81,23 +79,13 @@ export default function Profile() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={proAction}
-              className="flex-row items-center p-4 border-b border-gray-200">
-              <View className="w-8 h-8 items-center justify-center mr-3">
-                <Ionicons name="diamond-outline" size={22} color="#FFD700" />
-              </View>
-              <Text className="text-gray-900 font-medium flex-1">
-                Upgrade to Pro
-              </Text>
-              <View className="flex-row items-center">
-                <View className="bg-gradient-to-r from-yellow-400 to-orange-500 px-2 py-1 rounded-full mr-2">
-                  <Text className="text-white text-xs font-bold">PRO</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="flex-row items-center p-4 border-b border-gray-200">
+              className="flex-row items-center p-4 border-b border-gray-200"
+              onPress={() => {
+                Alert.alert(
+                  "Notifications",
+                  "Notifications will be available in a future update."
+                );
+              }}>
               <View className="w-8 h-8 items-center justify-center mr-3">
                 <Ionicons
                   name="notifications-outline"
@@ -111,19 +99,7 @@ export default function Profile() {
               <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex-row items-center p-4">
-              <View className="w-8 h-8 items-center justify-center mr-3">
-                <Ionicons
-                  name="help-circle-outline"
-                  size={22}
-                  color="#4B5563"
-                />
-              </View>
-              <Text className="text-gray-900 font-medium flex-1">
-                Help & Support
-              </Text>
-              <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-            </TouchableOpacity>
+            <HelpAndSupport />
           </View>
         </View>
 

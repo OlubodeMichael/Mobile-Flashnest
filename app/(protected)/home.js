@@ -1,15 +1,26 @@
-import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useStudy } from "../../contexts/StudyProvider";
 import { useAuth } from "../../contexts/AuthProvider";
-import { useRouter, useFocusEffect } from "expo-router";
+import { useRouter, useFocusEffect, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+
+const { width, height } = Dimensions.get("window");
+const isTablet = width >= 768;
 
 export default function Home() {
   const { decks, fetchDecks } = useStudy();
   const { userProfile } = useAuth();
   const router = useRouter();
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
 
   // Fetch decks when the screen comes into focus
@@ -41,156 +52,186 @@ export default function Home() {
   const totalCards =
     decks?.reduce((acc, deck) => acc + (deck?.flashcards_count || 0), 0) || 0;
 
-  const recentDecks = decks?.slice(0, 3) || [];
-
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Welcome Section with Gradient Background */}
-        <View className="bg-gradient-to-b from-yellow-400 to-yellow-500 px-6 pt-6 pb-12 rounded-b-3xl">
-          <Text className="text-3xl font-bold text-black mb-2">
-            Welcome Back, {userProfile?.first_name}!
-          </Text>
-          <Text className="text-black text-lg">
-            Ready to boost your learning?
-          </Text>
-        </View>
-
-        {/* Stats Cards */}
-        <View className="px-6 -mt-8">
-          <View className="flex-row justify-between">
-            <TouchableOpacity className="bg-white p-5 rounded-2xl flex-1 mr-3 shadow-sm">
-              <View className="bg-yellow-100 w-12 h-12 rounded-full items-center justify-center mb-3">
-                <Ionicons name="book-outline" size={24} color="#F59E0B" />
-              </View>
-              <Text className="text-2xl font-bold text-gray-900">
-                {decks?.length || 0}
+    <View className="flex-1 white mt-16">
+      <ScrollView className="flex-1 px-4 pt-2">
+        {/* Header Section */}
+        <View className="mb-6">
+          <View className="flex-row items-center justify-between">
+            <View>
+              <Text className="text-2xl font-bold text-black">
+                Good morning, {userProfile?.first_name}!
               </Text>
-              <Text className="text-gray-600">Total Decks</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-white p-5 rounded-2xl flex-1 shadow-sm">
-              <View className="bg-blue-100 w-12 h-12 rounded-full items-center justify-center mb-3">
-                <Ionicons name="school-outline" size={24} color="#3B82F6" />
-              </View>
-              <Text className="text-2xl font-bold text-gray-900">
-                {totalCards}
+              <Text className="text-gray-400 mt-1">
+                Let's make today productive
               </Text>
-              <Text className="text-gray-600">Total Cards</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Quick Actions */}
-        <View className="px-6 mt-6">
-          <Text className="text-xl font-bold text-gray-900 mb-4">
-            Quick Actions
-          </Text>
-          <View className="flex-row ">
+            </View>
             <TouchableOpacity
-              onPress={() => {
-                router.push("/decks");
-                setTimeout(() => {
-                  router.setParams({ create: "true" });
-                }, 100);
-              }}
-              className="flex-1 bg-white p-5 rounded-2xl mr-3 shadow-sm">
-              <View className="bg-yellow-100 w-12 h-12 rounded-full items-center justify-center mb-3">
-                <Ionicons name="add-circle-outline" size={24} color="#F59E0B" />
-              </View>
-              <Text className="font-semibold text-gray-900">Create Deck</Text>
-              <Text className="text-gray-500 text-sm mt-1">
-                Start a new study set
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => router.replace("/study")}
-              className="flex-1 bg-white p-5 rounded-2xl  shadow-sm">
-              <View className="bg-blue-100 w-12 h-12 rounded-full items-center justify-center mb-3">
-                <Ionicons name="flash-outline" size={24} color="#3B82F6" />
-              </View>
-              <Text className="font-semibold text-gray-900">Quick Study</Text>
-              <Text className="text-gray-500 text-sm mt-1">
-                Review your cards
+              className="w-12 h-12 bg-yellow-500 rounded-full items-center justify-center"
+              onPress={() => router.push("/profile")}>
+              <Text className="text-black font-bold text-sm">
+                {userProfile?.first_name?.charAt(0)?.toUpperCase()}
+                {userProfile?.last_name?.charAt(0)?.toUpperCase()}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Recent Decks */}
-        <View className="px-6 mt-6 mb-6">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-xl font-bold text-gray-900">
-              Recent Decks
+        {/* Stats Overview */}
+        <View className="mb-6">
+          <View className="bg-gray-900 rounded-3xl p-6">
+            <Text className="text-lg font-semibold text-white mb-4">
+              Your Progress
             </Text>
-            {recentDecks.length > 0 && (
-              <TouchableOpacity
-                onPress={() => router.replace("/decks")}
-                className="bg-yellow-100 px-4 py-2 rounded-full">
-                <Text className="text-yellow-900 font-medium">See All</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {recentDecks.length > 0 ? (
-            recentDecks.map((deck) => (
-              <TouchableOpacity
-                key={deck?.id || `deck-${Math.random()}`}
-                onPress={() => {
-                  router.push({
-                    pathname: "/decks/[id]",
-                    params: { id: deck?.id },
-                  });
-                }}
-                className="bg-white p-5 rounded-2xl mb-3 shadow-sm">
-                <View className="flex-row items-center">
-                  <View className="bg-yellow-100 w-12 h-12 rounded-full items-center justify-center mr-4">
-                    <Ionicons name="document-text" size={24} color="#F59E0B" />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="font-semibold text-gray-900 text-lg mb-1">
-                      {deck?.title}
-                    </Text>
-                    <Text className="text-gray-600 text-sm" numberOfLines={1}>
-                      {deck?.description}
-                    </Text>
-                    <View className="flex-row items-center mt-2">
-                      <Ionicons
-                        name="document-text-outline"
-                        size={16}
-                        color="#6B7280"
-                      />
-                      <Text className="text-gray-500 text-sm ml-1">
-                        {deck?.flashcards_count || 0} cards
-                      </Text>
-                    </View>
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            <View className="flex-row justify-between">
+              <View className="items-center flex-1">
+                <View className="w-16 h-16 bg-yellow-500 rounded-2xl items-center justify-center mb-2">
+                  <Ionicons name="library" size={28} color="black" />
                 </View>
-              </TouchableOpacity>
-            ))
-          ) : (
-            <TouchableOpacity
-              onPress={() => router.replace("/decks")}
-              className="bg-white p-6 rounded-2xl shadow-sm">
-              <View className="items-center">
-                <View className="bg-yellow-100 w-16 h-16 rounded-full items-center justify-center mb-3">
-                  <Ionicons
-                    name="add-circle-outline"
-                    size={32}
-                    color="#F59E0B"
+                <Text className="text-2xl font-bold text-white">
+                  {decks?.length || 0}
+                </Text>
+                <Text className="text-gray-400 text-sm">Decks</Text>
+              </View>
+              <View className="items-center flex-1">
+                <View className="w-16 h-16 bg-blue-500 rounded-2xl items-center justify-center mb-2">
+                  <Ionicons name="card" size={28} color="white" />
+                </View>
+                <Text className="text-2xl font-bold text-white">
+                  {totalCards}
+                </Text>
+                <Text className="text-gray-400 text-sm">Cards</Text>
+              </View>
+              <View className="items-center flex-1">
+                <View className="w-16 h-16 bg-yellow-500 rounded-2xl items-center justify-center mb-2">
+                  <Ionicons name="time" size={28} color="black" />
+                </View>
+                <Text className="text-2xl font-bold text-white">0</Text>
+                <Text className="text-gray-400 text-sm">Hours</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Action Cards */}
+        <View className="mb-6">
+          <Text className="text-lg font-semibold text-black mb-4">
+            What would you like to do?
+          </Text>
+
+          {/* Create New Deck */}
+          <TouchableOpacity
+            onPress={() => {
+              router.push("/decks");
+              setTimeout(() => {
+                router.setParams({ create: "true" });
+              }, 100);
+            }}
+            className="mb-4 rounded-3xl overflow-hidden">
+            <LinearGradient
+              colors={["#fbbf24", "#f59e0b"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className="rounded-3xl"
+              style={{ padding: 20 }}>
+              <View className="flex-row items-center">
+                <View className="w-12 h-12 bg-black/20 rounded-2xl items-center justify-center mr-4">
+                  <Ionicons name="add-circle" size={28} color="black" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-black text-lg font-semibold mb-1">
+                    Create New Deck
+                  </Text>
+                  <Text className="text-black/70 text-sm">
+                    Build a new study collection
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="black" />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          {/* Start Studying */}
+          <TouchableOpacity
+            onPress={() => router.replace("/study")}
+            className="mb-4 rounded-3xl overflow-hidden">
+            <LinearGradient
+              colors={["#3b82f6", "#1d4ed8"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className="rounded-3xl"
+              style={{ padding: 20 }}>
+              <View className="flex-row items-center">
+                <View className="w-12 h-12 bg-white/20 rounded-2xl items-center justify-center mr-4">
+                  <Ionicons name="play-circle" size={28} color="white" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-white text-lg font-semibold mb-1">
+                    Start Studying
+                  </Text>
+                  <Text className="text-white/80 text-sm">
+                    Review your flashcards
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="white" />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          {/* Browse Decks */}
+          <TouchableOpacity
+            onPress={() => router.push("/decks")}
+            className="mb-4 rounded-3xl overflow-hidden">
+            <LinearGradient
+              colors={["#fbbf24", "#f59e0b"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className="rounded-3xl"
+              style={{ padding: 20 }}>
+              <View className="flex-row items-center">
+                <View className="w-12 h-12 bg-black/20 rounded-2xl items-center justify-center mr-4">
+                  <Ionicons name="folder-open" size={28} color="black" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-black text-lg font-semibold mb-1">
+                    Browse Decks
+                  </Text>
+                  <Text className="text-black/70 text-sm">
+                    View and manage your collections
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="black" />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
+        {/* Quick Stats */}
+        <View className="mb-4">
+          <View className="bg-gray-900 rounded-3xl p-6">
+            <Text className="text-lg font-semibold text-white mb-4">
+              Today's Goal
+            </Text>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1">
+                <Text className="text-gray-400 text-sm mb-1">
+                  Study Progress
+                </Text>
+                <View className="w-full bg-gray-700 rounded-full h-2">
+                  <View
+                    className="bg-yellow-500 h-2 rounded-full"
+                    style={{ width: "25%" }}
                   />
                 </View>
-                <Text className="text-gray-900 text-center font-semibold text-lg">
-                  Create Your First Deck
-                </Text>
-                <Text className="text-gray-500 text-center text-sm mt-1">
-                  Start learning with flashcards today!
-                </Text>
               </View>
-            </TouchableOpacity>
-          )}
+              <Text className="text-white font-semibold ml-4">25%</Text>
+            </View>
+            <Text className="text-gray-400 text-sm mt-2">
+              Complete 20 cards today to reach your goal
+            </Text>
+          </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
