@@ -81,129 +81,130 @@ export default function Login() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
           className="flex-1">
-          <View className="flex-1 items-center justify-center px-6 bg-white">
-            {/* Brand Logo */}
-            <Image
-              source={require("../../assets/icons/icon-light.png")}
-              style={{ width: 48, height: 48, marginBottom: 8 }}
-            />
-            <Text className="font-bold text-2xl text-blue-900 mb-2">
-              FlashNest
-            </Text>
+          <View className="flex-1 px-6 pt-8">
+            {/* Header Section */}
+            <View className="items-center mb-12">
+              <LogoText />
+              <Text className="text-gray-500 mt-4 text-center text-lg leading-6 max-w-sm">
+                Welcome back! Sign in to continue your learning journey
+              </Text>
+            </View>
 
-            {/* Heading and Subheading */}
-            <Text className="text-3xl font-bold text-gray-900 mt-4">
-              Sign in to your Account
-            </Text>
-            <Text className="text-base text-gray-500 mt-2 mb-6">
-              Enter your email and password to log in
-            </Text>
-
-            {/* Input Fields */}
-            <View className="w-full space-y-4">
+            {/* Login Form */}
+            <View className="w-full space-y-6">
               {/* Email Input */}
-              <View className="mb-2">
-                <Text className="text-gray-700 font-medium text-lg mb-1">
-                  Email
+              <View>
+                <Text className="text-gray-700 font-semibold text-base mb-3">
+                  Email Address
                 </Text>
-                <View className="flex-row items-center bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 shadow-sm focus-within:border-blue-500">
+                <View className="flex-row items-center overflow-visible bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-4 text-center align-middle">
                   <Feather
                     name="mail"
                     size={20}
-                    color="#9CA3AF"
-                    style={{ marginRight: 8 }}
+                    color="#6B7280"
+                    style={{ marginRight: 12 }}
                   />
                   <TextInput
-                    className="flex-1 text-gray-700 text-lg"
+                    className="flex-1 text-gray-900 text-lg"
                     placeholder="Enter your email"
-                    value={form.email}
                     placeholderTextColor="#9CA3AF"
+                    value={form.email}
                     onChangeText={(text) => {
                       setForm({ ...form, email: text });
-                      // Clear error when user starts typing
                       if (error) clearError();
                     }}
                     keyboardType="email-address"
                     autoCapitalize="none"
-                    style={{ paddingVertical: 8 }}
                   />
                 </View>
               </View>
 
               {/* Password Input */}
               <View>
-                <Text className="text-gray-700 font-medium text-lg mb-1">
+                <Text className="text-gray-700 font-semibold text-base mb-3">
                   Password
                 </Text>
-                <View className="flex-row items-center bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 shadow-sm focus-within:border-blue-500">
+                <View className="flex-row items-center bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-4 align-middle">
                   <Feather
                     name="lock"
                     size={20}
-                    color="#9CA3AF"
-                    style={{ marginRight: 8 }}
+                    color="#6B7280"
+                    style={{ marginRight: 12 }}
                   />
                   <TextInput
-                    className="flex-1 text-gray-700 text-lg"
+                    className="flex-1 text-gray-900 text-lg"
                     placeholder="Enter your password"
                     placeholderTextColor="#9CA3AF"
                     value={form.password}
                     onChangeText={(text) => {
                       setForm({ ...form, password: text });
-                      // Clear error when user starts typing
                       if (error) clearError();
                     }}
                     secureTextEntry
-                    style={{ paddingVertical: 8 }}
                   />
-                  <TouchableOpacity
-                    onPress={handleForgotPassword}
-                    style={{ marginLeft: 8 }}>
-                    <Text className="text-blue-600 text-sm">Forgot?</Text>
-                  </TouchableOpacity>
                 </View>
               </View>
+
+              {/* Forgot Password Link */}
+              <View className="items-end">
+                <TouchableOpacity
+                  onPress={handleForgotPassword}
+                  className="py-2">
+                  <Text className="text-yellow-500 font-semibold text-base">
+                    Forgot your password?
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Login Button */}
+              <TouchableOpacity
+                onPress={handleLogin}
+                disabled={isLoading}
+                className="bg-yellow-400 rounded-2xl py-4 mt-6 shadow-lg"
+                style={{ elevation: 4 }}
+                activeOpacity={0.8}>
+                <Text className="text-black text-center font-bold text-lg">
+                  {isLoading ? "Signing In..." : "Sign In"}
+                </Text>
+              </TouchableOpacity>
             </View>
 
-            {/* Log In Button */}
-            <TouchableOpacity
-              onPress={handleLogin}
-              className="w-full bg-blue-600 py-3 rounded-lg mt-6">
-              <Text className="text-white text-center font-semibold text-lg">
-                {isLoading ? "Logging in..." : "Log In"}
+            {/* Divider */}
+            <View className="flex-row items-center my-8">
+              <View className="flex-1 h-[1px] bg-gray-200" />
+              <Text className="mx-4 text-gray-400 font-medium text-base">
+                or
               </Text>
-            </TouchableOpacity>
-
-            {/* Or Separator */}
-            <View className="flex-row items-center my-4 w-full">
-              <View className="flex-1 h-[1px] bg-gray-300" />
-              <Text className="mx-4 text-gray-500">Or</Text>
-              <View className="flex-1 h-[1px] bg-gray-300" />
+              <View className="flex-1 h-[1px] bg-gray-200" />
             </View>
 
-            {/* Social Logins */}
+            {/* Social Login Buttons */}
             {Platform.OS === "ios" ? (
               <AppleAuth />
             ) : (
               <TouchableOpacity
                 onPress={handleGoogleSignIn}
-                className="w-full flex-row items-center justify-center bg-white py-3 border border-gray-300 rounded-lg mb-2">
+                className="w-full flex-row items-center justify-center bg-white py-4 border-2 border-gray-200 rounded-2xl mb-6 shadow-sm"
+                activeOpacity={0.8}>
                 <Image
                   source={require("../../assets/google-icon.png")}
-                  className="w-6 h-6 mr-2"
+                  className="w-6 h-6 mr-3"
                 />
-                <Text className="text-gray-700 font-semibold text-lg">
+                <Text className="text-gray-700 font-semibold text-base">
                   Continue with Google
                 </Text>
               </TouchableOpacity>
             )}
 
             {/* Sign Up Link */}
-            <TouchableOpacity onPress={handleSignUp} className="mt-8">
-              <Text className="text-gray-500 text-center">
-                Don't have an account?{" "}
-                <Text className="text-blue-600">Sign Up</Text>
-              </Text>
-            </TouchableOpacity>
+            <View className="items-center mt-8">
+              <TouchableOpacity onPress={handleSignUp}>
+                <Text className="text-gray-500 text-base">
+                  Don't have an account?{" "}
+                  <Text className="text-yellow-500 font-bold">Sign Up</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

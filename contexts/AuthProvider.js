@@ -14,6 +14,7 @@ import {
 import { initSupabase, getSupabase } from "flashnest-backend/supabaseClient";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 import { useQueryClient } from "@tanstack/react-query";
+import * as AppleAuthentication from "expo-apple-authentication";
 
 const AuthContext = createContext();
 
@@ -243,6 +244,37 @@ export const AuthProvider = ({ children }) => {
       console.error(err);
     }
   };
+  const handleSignInWithApple = async () => {
+    try {
+      const supabase = getSupabase();
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      if (credential.identityToken) {
+        const {
+          error,
+          data: { user },
+        } = await supabase.auth.signInWithIdToken({
+          provider: "apple",
+          token: credential.identityToken,
+        });
+        console.log(JSON.stringify({ error, user }, null, 2));
+        if (!error) {
+          // User is signed in.
+        }
+        setUser(user);
+        setUserProfile(user);
+        invalidateUserData();
+      } else {
+        throw new Error("No identityToken.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const clearError = () => {
     setError(null);
@@ -262,7 +294,8 @@ export const AuthProvider = ({ children }) => {
         handleGoogleSignIn,
         updateUserProfile,
         clearError,
-        invalidateUserData, // Expose for manual invalidation if needed
+        invalidateUserData,
+        handleSignInWithApple, // Expose for manual invalidation if needed
       }}>
       {children}
     </AuthContext.Provider>
