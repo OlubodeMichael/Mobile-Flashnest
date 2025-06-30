@@ -13,6 +13,7 @@ import {
 } from "flashnest-backend/authHelper";
 import { initSupabase, getSupabase } from "flashnest-backend/supabaseClient";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AuthContext = createContext();
 
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
 
   // Initialize Supabase
   initSupabase({
@@ -37,6 +39,22 @@ export const AuthProvider = ({ children }) => {
     },
   });
 
+  // Helper function to invalidate all user data
+  const invalidateUserData = () => {
+    queryClient.invalidateQueries({ queryKey: ["decks"] });
+    queryClient.invalidateQueries({ queryKey: ["flashcards"] });
+    queryClient.invalidateQueries({ queryKey: ["deck"] });
+    queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+  };
+
+  // Helper function to clear all user data
+  const clearUserData = () => {
+    queryClient.removeQueries({ queryKey: ["decks"] });
+    queryClient.removeQueries({ queryKey: ["flashcards"] });
+    queryClient.removeQueries({ queryKey: ["deck"] });
+    queryClient.removeQueries({ queryKey: ["userProfile"] });
+  };
+
   // 👇 Check session on app load
   useEffect(() => {
     const checkSession = async () => {
@@ -46,11 +64,13 @@ export const AuthProvider = ({ children }) => {
       if (error) {
         console.warn("Session check failed", error.message);
         setUser(null);
+        clearUserData();
       } else if (data?.session?.user) {
         const { user } = data.session;
-        setUser(user); // optionally fetch profile here
+        setUser(user);
       } else {
         setUser(null);
+        clearUserData();
       }
 
       setTokenChecked(true);
@@ -66,6 +86,11 @@ export const AuthProvider = ({ children }) => {
       try {
         const profile = await getCurrentUser();
         setUserProfile(profile);
+
+        // Invalidate queries to ensure fresh data is loaded
+        if (profile) {
+          invalidateUserData();
+        }
       } catch (err) {
         console.warn("Failed to fetch profile:", err.message);
         setUserProfile(null);
@@ -76,8 +101,15 @@ export const AuthProvider = ({ children }) => {
 
     const { auth } = getSupabase();
     const { data: listener } = auth.onAuthStateChange((event, session) => {
-      if (!session) {
+      if (event === "SIGNED_IN" && session?.user) {
+        setUser(session.user);
+        console.log("✅ User signed in, invalidating data...");
+        invalidateUserData();
+      } else if (event === "SIGNED_OUT" || !session) {
         setUser(null);
+        setUserProfile(null);
+        console.log("❌ User signed out, clearing data...");
+        clearUserData();
         router.replace("/(auth)/login");
       }
     });
@@ -96,7 +128,7 @@ export const AuthProvider = ({ children }) => {
   ) => {
     try {
       setIsLoading(true);
-      setError(null); // Clear any previous errors
+      setError(null);
       const { session, user } = await supaSignUp({
         firstName,
         lastName,
@@ -112,9 +144,10 @@ export const AuthProvider = ({ children }) => {
       // Fetch and set the user profile immediately after signup
       const userProfile = await getCurrentUser();
       setUserProfile(userProfile);
+      invalidateUserData();
     } catch (err) {
       setError(err.message);
-      throw err; // Re-throw the error so the component can catch it
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +155,6 @@ export const AuthProvider = ({ children }) => {
 
   const handleGoogleSignIn = async () => {
     try {
-      // Use Supabase's default callback
       const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
       console.log("Redirect URI:", redirectUri);
       const { url, error } = await signInWithOAuth({
@@ -149,6 +181,8 @@ export const AuthProvider = ({ children }) => {
         // Optionally get and set profile
         const profile = await getCurrentUser();
         setUserProfile(profile);
+
+        invalidateUserData();
       } else {
         console.warn("OAuth flow cancelled or failed:", result);
       }
@@ -160,7 +194,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setIsLoading(true);
-      setError(null); // Clear any previous errors
+      setError(null);
       const { session, user } = await signIn({ email, password });
       if (!session) throw new Error("No session returned");
 
@@ -170,9 +204,11 @@ export const AuthProvider = ({ children }) => {
       // Fetch and set the user profile immediately after login
       const userProfile = await getCurrentUser();
       setUserProfile(userProfile);
+
+      invalidateUserData();
     } catch (err) {
       setError(err.message);
-      throw err; // Re-throw the error so the component can catch it
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -183,10 +219,14 @@ export const AuthProvider = ({ children }) => {
       await signOut();
       await AsyncStorage.removeItem("onboarding");
       await AsyncStorage.removeItem("token");
+
+      // Clear all user data from cache
+      clearUserData();
     } catch (err) {
       console.error(err);
     } finally {
       setUser(null);
+      setUserProfile(null);
       router.replace("/(onboarding)");
     }
   };
@@ -196,6 +236,9 @@ export const AuthProvider = ({ children }) => {
       const { data, error } = await updateUser({ firstName, lastName });
       if (error) throw error;
       setUserProfile(data);
+
+      // Invalidate user profile query
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
     } catch (err) {
       console.error(err);
     }
@@ -215,10 +258,11 @@ export const AuthProvider = ({ children }) => {
         logout,
         isLoading,
         error,
-        tokenChecked, // 👈 Now exposed
+        tokenChecked,
         handleGoogleSignIn,
         updateUserProfile,
-        clearError, // 👈 New function
+        clearError,
+        invalidateUserData, // Expose for manual invalidation if needed
       }}>
       {children}
     </AuthContext.Provider>

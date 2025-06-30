@@ -136,7 +136,7 @@ export default function FlashcardForm({
             disabled={isLoading || isSubmitting}
             className="w-full bg-blue-500 active:bg-blue-600"
             size="lg">
-            <Text className="font-semibold text-white">Cancel</Text>
+            <Text className="font-semibold text-black">Cancel</Text>
           </Button>
         )}
       </View>

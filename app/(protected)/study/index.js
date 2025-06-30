@@ -13,7 +13,7 @@ export default function Study() {
   const studyDecks = decks?.filter((deck) => deck?.flashcards_count > 0) || [];
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={["left", "right", "top"]}>
       <View className="flex-1">
         {/* Header */}
         <View className=" px-6 pt-6 pb-4">

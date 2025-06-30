@@ -54,8 +54,8 @@ export default function DeckForm({ deck, onSuccess, onCancel }) {
   return (
     <View className="space-y-8">
       {/* Title Input */}
-      <View className="space-y-3">
-        <Text className="text-base font-semibold text-gray-800">Title</Text>
+      <View className="space-y-3 mb-4">
+        <Text className="text-base font-semibold text-white">Title</Text>
         <TextInput
           className="bg-white border-2 border-gray-200 rounded-xl px-4 py-3.5 text-gray-900 text-base"
           placeholder="What's your deck about?"
@@ -71,9 +71,7 @@ export default function DeckForm({ deck, onSuccess, onCancel }) {
 
       {/* Description Input */}
       <View className="space-y-3">
-        <Text className="text-base font-semibold text-gray-800">
-          Description
-        </Text>
+        <Text className="text-base font-semibold text-white">Description</Text>
         <TextInput
           className="bg-white border-2 border-gray-200 rounded-xl px-4 py-3.5 text-gray-900 text-base min-h-[120px]"
           placeholder="Add some details about your deck..."
@@ -98,13 +96,13 @@ export default function DeckForm({ deck, onSuccess, onCancel }) {
       ) : null}
 
       {/* Action Buttons */}
-      <View className="flex-row space-x-4 pt-2">
+      <View className="flex-row space-x-4 pt-2 mt-4">
         {onCancel && (
           <Button
             variant="secondary"
             onPress={onCancel}
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 mr-2"
             size="lg">
             Cancel
           </Button>

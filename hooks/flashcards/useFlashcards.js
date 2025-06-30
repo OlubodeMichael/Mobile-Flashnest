@@ -12,13 +12,24 @@ export const useFlashcards = (deckId) => {
   return useQuery({
     queryKey: ["flashcards", deckId],
     queryFn: async () => {
-      return await getFlashcards(deckId);
+      if (!deckId) {
+        throw new Error("deckId is required");
+      }
+      const flashcards = await getFlashcards(deckId);
+      return flashcards;
     },
     enabled: !!deckId,
     staleTime: 1000 * 60 * 2, // 2 minutes for flashcards
     gcTime: 1000 * 60 * 15,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
+    retry: (failureCount, error) => {
+      // Don't retry if deckId is missing
+      if (error.message === "deckId is required") {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 
@@ -68,6 +79,16 @@ export const useCreateFlashcard = () => {
 
       return { previousFlashcards };
     },
+    onSuccess: (data, variables) => {
+      // Update cache with real server data
+      queryClient.setQueryData(["flashcards", variables.deckId], (old) => {
+        if (!old) return old;
+        // Replace the temporary flashcard with the real one
+        return old.map((flashcard) =>
+          flashcard.id.startsWith("temp-") ? data : flashcard
+        );
+      });
+    },
     onError: (err, variables, context) => {
       // Rollback on error
       if (context?.previousFlashcards) {
@@ -76,13 +97,6 @@ export const useCreateFlashcard = () => {
           context.previousFlashcards
         );
       }
-    },
-    onSettled: (data, error, variables) => {
-      // Refetch to ensure consistency
-      queryClient.invalidateQueries({
-        queryKey: ["flashcards", variables.deckId],
-      });
-      queryClient.invalidateQueries({ queryKey: ["deck", variables.deckId] });
     },
   });
 };
@@ -133,6 +147,24 @@ export const useAddBulkFlashcards = () => {
 
       return { previousFlashcards };
     },
+    onSuccess: (data, variables) => {
+      // Update cache with real server data
+      queryClient.setQueryData(["flashcards", variables.deckId], (old) => {
+        if (!old) return old;
+        // Replace temporary flashcards with real ones
+        return old.map((flashcard) => {
+          if (flashcard.id.startsWith("temp-bulk-")) {
+            const realFlashcard = data.find(
+              (f) =>
+                f.question === flashcard.question &&
+                f.answer === flashcard.answer
+            );
+            return realFlashcard || flashcard;
+          }
+          return flashcard;
+        });
+      });
+    },
     onError: (err, variables, context) => {
       // Rollback on error
       if (context?.previousFlashcards) {
@@ -141,13 +173,6 @@ export const useAddBulkFlashcards = () => {
           context.previousFlashcards
         );
       }
-    },
-    onSettled: (data, error, variables) => {
-      // Refetch to ensure consistency
-      queryClient.invalidateQueries({
-        queryKey: ["flashcards", variables.deckId],
-      });
-      queryClient.invalidateQueries({ queryKey: ["deck", variables.deckId] });
     },
   });
 };
@@ -194,6 +219,15 @@ export const useUpdateFlashcard = () => {
 
       return { previousFlashcards };
     },
+    onSuccess: (data, variables) => {
+      // Update cache with real server data
+      queryClient.setQueryData(["flashcards", variables.deckId], (old) => {
+        if (!old) return old;
+        return old.map((flashcard) =>
+          flashcard.id === variables.flashcardId ? data : flashcard
+        );
+      });
+    },
     onError: (err, variables, context) => {
       // Rollback on error
       if (context?.previousFlashcards) {
@@ -202,12 +236,6 @@ export const useUpdateFlashcard = () => {
           context.previousFlashcards
         );
       }
-    },
-    onSettled: (data, error, variables) => {
-      // Refetch to ensure consistency
-      queryClient.invalidateQueries({
-        queryKey: ["flashcards", variables.deckId],
-      });
     },
   });
 };
@@ -256,13 +284,6 @@ export const useDeleteFlashcard = () => {
           context.previousFlashcards
         );
       }
-    },
-    onSettled: (data, error, variables) => {
-      // Refetch to ensure consistency
-      queryClient.invalidateQueries({
-        queryKey: ["flashcards", variables.deckId],
-      });
-      queryClient.invalidateQueries({ queryKey: ["deck", variables.deckId] });
     },
   });
 };

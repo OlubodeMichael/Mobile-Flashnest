@@ -31,7 +31,7 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={["left", "right", "top"]}>
       <View className="flex-1 px-4 pt-2">
         {/* Header */}
         <View className="mb-6">

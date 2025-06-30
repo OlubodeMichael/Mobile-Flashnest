@@ -20,6 +20,8 @@ import { useAuth } from "../../contexts/AuthProvider";
 import LogoText from "../../components/LogoText";
 import { router } from "expo-router";
 
+import AppleAuth from "../../components/Auth/apple";
+
 export default function Login() {
   const { login, isLoading, error, handleGoogleSignIn, clearError } = useAuth();
   const [form, setForm] = useState({
@@ -179,17 +181,21 @@ export default function Login() {
             </View>
 
             {/* Social Logins */}
-            <TouchableOpacity
-              onPress={handleGoogleSignIn}
-              className="w-full flex-row items-center justify-center bg-white py-3 border border-gray-300 rounded-lg mb-2">
-              <Image
-                source={require("../../assets/google-icon.png")}
-                className="w-6 h-6 mr-2"
-              />
-              <Text className="text-gray-700 font-semibold text-lg">
-                Continue with Google
-              </Text>
-            </TouchableOpacity>
+            {Platform.OS === "ios" ? (
+              <AppleAuth />
+            ) : (
+              <TouchableOpacity
+                onPress={handleGoogleSignIn}
+                className="w-full flex-row items-center justify-center bg-white py-3 border border-gray-300 rounded-lg mb-2">
+                <Image
+                  source={require("../../assets/google-icon.png")}
+                  className="w-6 h-6 mr-2"
+                />
+                <Text className="text-gray-700 font-semibold text-lg">
+                  Continue with Google
+                </Text>
+              </TouchableOpacity>
+            )}
 
             {/* Sign Up Link */}
             <TouchableOpacity onPress={handleSignUp} className="mt-8">

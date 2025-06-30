@@ -38,7 +38,7 @@ export default function Home() {
   };
 
   return (
-    <View className="flex-1 white mt-20">
+    <SafeAreaView className="flex-1 white" edges={["left", "right", "top"]}>
       <ScrollView className="flex-1 px-4 pt-2">
         {/* Header Section */}
         <View className="mb-6">
@@ -217,6 +217,6 @@ export default function Home() {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

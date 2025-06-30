@@ -165,32 +165,34 @@ export default function DeckDetail() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Gradient Header */}
         <LinearGradient
-          colors={["#3b82f6", "#1d4ed8"]}
+          colors={["#111827", "#1f2937"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          className={`rounded-b-3xl pb-8 ${getResponsivePadding()}`}>
-          <Text className="text-4xl font-extrabold text-white mt-8 mb-2">
-            {deck.title}
-          </Text>
-          {deck.description && (
-            <Text className="text-blue-100 text-lg mb-2">
-              {deck.description}
+          className={`rounded-b-3xl pb-8 px-6 ${getResponsivePadding()}`}>
+          <View className="px-4">
+            <Text className="text-4xl font-extrabold text-white mt-8 mb-2">
+              {deck.title}
             </Text>
-          )}
-          {/* Stats Row */}
-          <View className="flex-row items-center mt-4 mb-2 space-x-4">
-            <View className="bg-yellow-400 w-12 h-12 rounded-2xl items-center justify-center">
-              <Ionicons name="document-text" size={28} color="black" />
+            {deck.description && (
+              <Text className="text-gray-300 text-lg mb-2">
+                {deck.description}
+              </Text>
+            )}
+            {/* Stats Row */}
+            <View className="flex-row items-center mt-4 mb-2 space-x-4">
+              <View className="bg-yellow-400 w-8 h-8 rounded-xl items-center justify-center">
+                <Ionicons name="document-text" size={20} color="black" />
+              </View>
+              <Text className="text-white text-lg font-semibold">
+                {deck.flashcards_count || 0} Cards
+              </Text>
+              <TouchableOpacity
+                onPress={() => router.push(`/study/${deck?.id}`)}
+                className="ml-auto bg-yellow-400 px-5 py-2 rounded-full flex-row items-center shadow-lg">
+                <Ionicons name="play" size={18} color="black" />
+                <Text className="text-black font-bold ml-2">Study</Text>
+              </TouchableOpacity>
             </View>
-            <Text className="text-white text-lg font-semibold">
-              {deck.flashcards_count || 0} Cards
-            </Text>
-            <TouchableOpacity
-              onPress={() => router.push(`/study/${deck?.id}`)}
-              className="ml-auto bg-yellow-400 px-5 py-2 rounded-full flex-row items-center shadow-lg">
-              <Ionicons name="play" size={18} color="black" />
-              <Text className="text-black font-bold ml-2">Study</Text>
-            </TouchableOpacity>
           </View>
         </LinearGradient>
 
@@ -199,12 +201,9 @@ export default function DeckDetail() {
           className={`mt-8 mb-32 ${getResponsivePadding()} ${getContainerMaxWidth()} mx-auto`}>
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-2xl font-bold text-gray-900">Flashcards</Text>
-            <TouchableOpacity
-              onPress={openAddFlashcardModal}
-              className="bg-blue-100 px-4 py-2 rounded-full flex-row items-center">
-              <Ionicons name="add" size={18} color="#2563eb" />
-              <Text className="text-blue-700 font-semibold ml-1">Add</Text>
-            </TouchableOpacity>
+            <Text className="text-gray-500">
+              {deck.flashcards_count || 0} Cards
+            </Text>
           </View>
 
           {flashcards && flashcards.length > 0 ? (

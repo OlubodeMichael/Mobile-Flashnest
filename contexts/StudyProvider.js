@@ -20,17 +20,21 @@ import {
   useDeleteFlashcard,
 } from "../hooks/flashcards/useFlashcards";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "./AuthProvider";
 
 const StudyContext = createContext();
 
 export const StudyProvider = ({ children }) => {
   const queryClient = useQueryClient();
+  const { user, userProfile, tokenChecked } = useAuth();
+
   const createDeckMutation = useCreateDeck();
   const updateDeckMutation = useUpdateDeck();
   const deleteDeckMutation = useDeleteDeck();
   const createFlashcardMutation = useCreateFlashcard();
   const updateFlashcardMutation = useUpdateFlashcard();
   const deleteFlashcardMutation = useDeleteFlashcard();
+
   const {
     data: decks,
     isLoading: isLoadingDecks,
@@ -110,7 +114,7 @@ export const StudyProvider = ({ children }) => {
         decks,
         deck,
         flashcards,
-        deckId, // Expose deckId for debugging
+        deckId,
         isLoading: isLoadingDecks || isLoadingDeck || isLoadingFlashcards,
         error: errorDecks || errorDeck || errorFlashcards,
         fetchDeck,
@@ -121,6 +125,9 @@ export const StudyProvider = ({ children }) => {
         createFlashcard,
         updateFlashcard,
         deleteFlashcard,
+        // Expose authentication state for debugging
+        isAuthenticated: !!user,
+        userProfile,
       }}>
       {children}
     </StudyContext.Provider>

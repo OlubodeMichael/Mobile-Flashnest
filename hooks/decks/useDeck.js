@@ -14,7 +14,7 @@ export const useDecks = () => {
     queryFn: async () => {
       const user = await getCurrentUser();
       if (!user) {
-        throw new Error("User not found");
+        throw new Error("User not authenticated");
       }
       const decks = await getDecks(user.id);
       return decks;
@@ -25,6 +25,13 @@ export const useDecks = () => {
     refetchOnReconnect: true,
     refetchInterval: 1000 * 60 * 2,
     refetchIntervalInBackground: true,
+    retry: (failureCount, error) => {
+      // Don't retry if user is not authenticated
+      if (error.message === "User not authenticated") {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 
@@ -51,7 +58,7 @@ export const useCreateDeck = () => {
     mutationFn: async ({ title, description }) => {
       const user = await getCurrentUser();
       if (!user) {
-        throw new Error("User not found");
+        throw new Error("User not authenticated");
       }
       const deck = await createDeck(user.id, title, description);
       return deck;
@@ -80,6 +87,7 @@ export const useCreateDeck = () => {
       return { previousDecks };
     },
     onError: (err, variables, context) => {
+      console.error("❌ Failed to create deck:", err.message);
       if (context?.previousDecks) {
         queryClient.setQueryData(["decks"], context.previousDecks);
       }

@@ -27,14 +27,19 @@ export default function HelpAndSupport() {
   };
 
   return (
-    <TouchableOpacity
-      onPress={handleHelp}
-      className="flex-row items-center p-4 border-b border-gray-200">
-      <View className="w-8 h-8 items-center justify-center mr-3">
-        <Ionicons name="help-circle-outline" size={22} color="#4B5563" />
+    <TouchableOpacity onPress={handleHelp} className="flex-row items-center">
+      <View className="w-12 h-12 bg-black/20 rounded-2xl items-center justify-center mr-4">
+        <Ionicons name="help-circle" size={28} color="black" />
       </View>
-      <Text className="text-gray-900 font-medium flex-1">Help & Support</Text>
-      <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+      <View className="flex-1">
+        <Text className="text-black text-lg font-semibold mb-1">
+          Help & Support
+        </Text>
+        <Text className="text-black/70 text-sm">
+          Get help and contact support
+        </Text>
+      </View>
+      <Ionicons name="chevron-forward" size={20} color="black" />
     </TouchableOpacity>
   );
 }

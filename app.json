@@ -6,6 +6,7 @@
     "version": "1.0.0",
     "scheme": "flashnest-mobile",
     "jsEngine": "hermes",
+    
     "web": {
       "bundler": "metro"
     },
@@ -16,7 +17,8 @@
       "expo-document-picker",
       "expo-file-system",
       "expo-web-browser",
-      "expo-dev-client"
+      "expo-dev-client",
+      "expo-apple-authentication"
     ],
     "extra": {
       "router": {},
@@ -42,7 +44,8 @@
         "light": "./assets/icons/icon-light.png",
         "dark": "./assets/icons/icon-dark.png",
         "tinted": "./assets/icons/icon-tinted.png"
-      }
+      },
+      "usesAppleSignIn": true
     }
   }
 }

@@ -78,7 +78,9 @@ export default function StudyDetail() {
 
   if (!flashcards || flashcards.length === 0) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center">
+      <SafeAreaView
+        className="flex-1 items-center bg-white justify-center"
+        edges={["left", "right", "top"]}>
         <Text className="text-lg text-gray-600">No cards in this deck</Text>
       </SafeAreaView>
     );
@@ -86,14 +88,16 @@ export default function StudyDetail() {
 
   if (!currentCard) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center">
+      <SafeAreaView
+        className="flex-1 items-center bg-white justify-center"
+        edges={["left", "right", "top"]}>
         <Text className="text-lg text-gray-600">Loading card...</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={["left", "right", "top"]}>
       <PagerView
         style={{ flex: 1 }}
         initialPage={0}
