@@ -15,7 +15,6 @@ import { useState, useEffect } from "react";
 import { useStudy } from "../../../../contexts/StudyProvider";
 import { useAI } from "../../../../contexts/AiProvider";
 import { Ionicons } from "@expo/vector-icons";
-import * as DocumentPicker from "expo-document-picker";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
 export default function GenerateWithAI() {
@@ -34,7 +33,6 @@ export default function GenerateWithAI() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [inputText, setInputText] = useState("");
-  const [file, setFile] = useState(null);
   const [count, setCount] = useState(10);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [selectedFlashcards, setSelectedFlashcards] = useState(new Set());
@@ -48,44 +46,15 @@ export default function GenerateWithAI() {
     }
   }, [aiFlashcards]);
 
-  const handleFilePick = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "*/*",
-      });
-
-      console.log("File picker result:", result);
-
-      if (result.type === "success") {
-        console.log("Selected file:", {
-          name: result.name,
-          size: result.size,
-          mimeType: result.mimeType,
-          uri: result.uri,
-        });
-        setFile(result);
-      } else if (result.type === "cancel") {
-        console.log("File picker cancelled");
-      } else {
-        console.log("File picker error:", result);
-      }
-    } catch (error) {
-      console.error("File picker error:", error);
-      Alert.alert("Error", "Failed to pick file. Please try again.");
-    }
-  };
-
   const handleGenerate = async () => {
     setError("");
     setAiError(null);
     try {
-      if (!inputText && !file)
-        throw new Error("Please provide a topic, text, or file");
+      if (!inputText) throw new Error("Please provide a topic or text");
       Keyboard.dismiss();
       await previewFlashcards({
         topic: inputText,
         text: inputText,
-        file: file,
         count: count,
       });
       if (aiError) throw new Error(aiError);
@@ -102,7 +71,6 @@ export default function GenerateWithAI() {
       await previewFlashcards({
         topic: inputText,
         text: inputText,
-        file: file,
         count: count,
       });
       if (aiError) throw new Error(aiError);
@@ -186,34 +154,6 @@ export default function GenerateWithAI() {
           <Text className="text-red-700">{error}</Text>
         </View>
       ) : null}
-
-      {/* File Preview Section - Show when file is attached */}
-      {file && (
-        <View className="bg-blue-50 border-b border-blue-200 px-4 py-3">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center flex-1">
-              <Ionicons name="document-text" size={24} color="#3b82f6" />
-              <View className="ml-3 flex-1">
-                <Text
-                  className="text-blue-900 font-medium text-lg"
-                  numberOfLines={1}>
-                  {file.name || file.uri.split("/").pop()}
-                </Text>
-                <Text className="text-blue-600 text-sm">
-                  {file.size
-                    ? `${(file.size / 1024).toFixed(1)} KB`
-                    : "File attached"}
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity
-              onPress={() => setFile(null)}
-              className="bg-red-100 p-2 rounded-full">
-              <Ionicons name="close" size={20} color="#ef4444" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
 
       {/* Selection Controls */}
       {aiFlashcards.length > 0 && (
@@ -324,15 +264,8 @@ export default function GenerateWithAI() {
                 style={{ maxHeight: 100 }}
               />
 
-              {/* Bottom Row with File and Count */}
-              <View className="flex-row items-center justify-between mt-2">
-                <TouchableOpacity
-                  onPress={handleFilePick}
-                  className="flex-row items-center">
-                  <Ionicons name="attach" size={20} color="#9ca3af" />
-                  <Text className="ml-1 text-sm text-gray-500">Attach</Text>
-                </TouchableOpacity>
-
+              {/* Bottom Row with Count */}
+              <View className="flex-row items-center justify-end mt-2">
                 <View className="flex-row items-center">
                   <Text className="text-sm text-gray-500 mr-2">Count:</Text>
                   <TextInput
@@ -358,8 +291,6 @@ export default function GenerateWithAI() {
               )}
             </TouchableOpacity>
           </View>
-
-          {/* File Preview - Removed since we have a prominent one at the top */}
         </View>
       </KeyboardAvoidingView>
 
