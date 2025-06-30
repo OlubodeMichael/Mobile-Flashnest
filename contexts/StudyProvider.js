@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { getCurrentUser } from "flashnest-backend/authHelper";
 import {
   createFlashcard as createFlashcardHelper,
@@ -52,14 +52,27 @@ export const StudyProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchDecks = async () => {
-    console.log("fetchDecks");
-    await queryClient.invalidateQueries({ queryKey: ["decks"] });
+  // Clear error when deckId changes
+  useEffect(() => {
+    setError(null);
+  }, [deckId]);
+
+  const fetchDeck = async (newDeckId) => {
+    if (newDeckId !== deckId) {
+      setDeckId(newDeckId);
+    }
   };
 
-  const fetchDeck = async (deckId) => {
-    setDeckId(deckId);
-    await queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
+  const fetchFlashcards = async (newDeckId) => {
+    console.log(
+      "🔄 StudyProvider: Setting deckId for flashcards from",
+      deckId,
+      "to",
+      newDeckId
+    );
+    if (newDeckId !== deckId) {
+      setDeckId(newDeckId);
+    }
   };
 
   const createDeck = async (title, description) => {
@@ -72,11 +85,6 @@ export const StudyProvider = ({ children }) => {
 
   const deleteDeck = async (deckId) => {
     return deleteDeckMutation.mutateAsync({ deckId });
-  };
-
-  const fetchFlashcards = async (deckId) => {
-    setDeckId(deckId);
-    await queryClient.invalidateQueries({ queryKey: ["flashcards", deckId] });
   };
 
   const createFlashcard = async (deckId, question, answer) => {
@@ -102,9 +110,9 @@ export const StudyProvider = ({ children }) => {
         decks,
         deck,
         flashcards,
+        deckId, // Expose deckId for debugging
         isLoading: isLoadingDecks || isLoadingDeck || isLoadingFlashcards,
         error: errorDecks || errorDeck || errorFlashcards,
-        fetchDecks,
         fetchDeck,
         createDeck,
         updateDeck,

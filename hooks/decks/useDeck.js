@@ -19,8 +19,12 @@ export const useDecks = () => {
       const decks = await getDecks(user.id);
       return decks;
     },
-    staleTime: 1000 * 60 * 30,
-    cacheTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchInterval: 1000 * 60 * 2,
+    refetchIntervalInBackground: true,
   });
 };
 
@@ -32,7 +36,11 @@ export const useDeck = (deckId) => {
       const deck = await getDeck(deckId);
       return deck;
     },
-    enabled: !!deckId, // only run if deckId is valid
+    enabled: !!deckId,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 15,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 };
 
@@ -48,7 +56,35 @@ export const useCreateDeck = () => {
       const deck = await createDeck(user.id, title, description);
       return deck;
     },
-    onSuccess: () => {
+    onMutate: async ({ title, description }) => {
+      await queryClient.cancelQueries({ queryKey: ["decks"] });
+
+      const previousDecks = queryClient.getQueryData(["decks"]);
+
+      queryClient.setQueryData(["decks"], (old) => {
+        if (!old) return old;
+
+        const optimisticDeck = {
+          id: `temp-${Date.now()}`,
+          title,
+          description,
+          flashcards_count: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          user_id: "temp-user",
+        };
+
+        return [...old, optimisticDeck];
+      });
+
+      return { previousDecks };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousDecks) {
+        queryClient.setQueryData(["decks"], context.previousDecks);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["decks"] });
     },
   });
@@ -65,8 +101,53 @@ export const useUpdateDeck = () => {
       }
       return await updateDeck(deckId, title, description);
     },
-    onSuccess: () => {
+    onMutate: async ({ deckId, title, description }) => {
+      await queryClient.cancelQueries({ queryKey: ["decks"] });
+      await queryClient.cancelQueries({ queryKey: ["deck", deckId] });
+
+      const previousDecks = queryClient.getQueryData(["decks"]);
+      const previousDeck = queryClient.getQueryData(["deck", deckId]);
+
+      queryClient.setQueryData(["decks"], (old) => {
+        if (!old) return old;
+        return old.map((deck) =>
+          deck.id === deckId
+            ? {
+                ...deck,
+                title,
+                description,
+                updated_at: new Date().toISOString(),
+              }
+            : deck
+        );
+      });
+
+      queryClient.setQueryData(["deck", deckId], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          title,
+          description,
+          updated_at: new Date().toISOString(),
+        };
+      });
+
+      return { previousDecks, previousDeck };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousDecks) {
+        queryClient.setQueryData(["decks"], context.previousDecks);
+      }
+      if (context?.previousDeck) {
+        queryClient.setQueryData(
+          ["deck", variables.deckId],
+          context.previousDeck
+        );
+      }
+    },
+    onSettled: (data, error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["decks"] });
+      queryClient.invalidateQueries({ queryKey: ["deck", variables.deckId] });
     },
   });
 };
@@ -78,7 +159,27 @@ export const useDeleteDeck = () => {
     mutationFn: async ({ deckId }) => {
       return await deleteDeck(deckId);
     },
-    onSuccess: () => {
+    onMutate: async ({ deckId }) => {
+      await queryClient.cancelQueries({ queryKey: ["decks"] });
+      await queryClient.cancelQueries({ queryKey: ["deck", deckId] });
+
+      const previousDecks = queryClient.getQueryData(["decks"]);
+
+      queryClient.setQueryData(["decks"], (old) => {
+        if (!old) return old;
+        return old.filter((deck) => deck.id !== deckId);
+      });
+
+      queryClient.removeQueries({ queryKey: ["deck", deckId] });
+
+      return { previousDecks };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousDecks) {
+        queryClient.setQueryData(["decks"], context.previousDecks);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["decks"] });
     },
   });

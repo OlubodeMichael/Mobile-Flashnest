@@ -9,7 +9,7 @@ import DeckForm from "../../../components/Form/deckForm";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function Index() {
-  const { decks = [], fetchDecks, fetchDeck } = useStudy();
+  const { decks = [] } = useStudy();
   const router = useRouter();
   const params = useLocalSearchParams();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -26,8 +26,7 @@ export default function Index() {
     setIsModalVisible(!isModalVisible);
   };
 
-  const handleSuccess = async () => {
-    await fetchDecks();
+  const handleSuccess = () => {
     handleModalVisibility();
   };
 
@@ -75,7 +74,6 @@ export default function Index() {
                   key={deck?.id || `deck-${Math.random()}`}
                   onPress={() => {
                     if (deck?.id) {
-                      fetchDeck(deck.id);
                       router.push(`/decks/${deck.id}`);
                     }
                   }}

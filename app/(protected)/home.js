@@ -17,50 +17,35 @@ const { width, height } = Dimensions.get("window");
 const isTablet = width >= 768;
 
 export default function Home() {
-  const { decks, fetchDecks } = useStudy();
+  const { decks } = useStudy();
   const { userProfile } = useAuth();
   const router = useRouter();
   const navigation = useNavigation();
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Fetch decks when the screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
-
-      const loadDecks = async () => {
-        try {
-          setIsLoading(true);
-        } catch (error) {
-          console.error("Error fetching decks:", error);
-        } finally {
-          if (isActive) {
-            setIsLoading(false);
-          }
-        }
-      };
-
-      loadDecks();
-
-      // Cleanup function
-      return () => {
-        isActive = false;
-      };
-    }, [fetchDecks])
-  );
 
   const totalCards =
     decks?.reduce((acc, deck) => acc + (deck?.flashcards_count || 0), 0) || 0;
 
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      return "Good morning";
+    } else if (hour >= 12 && hour < 17) {
+      return "Good afternoon";
+    } else {
+      return "Good evening";
+    }
+  };
+
   return (
-    <View className="flex-1 white mt-16">
+    <View className="flex-1 white mt-20">
       <ScrollView className="flex-1 px-4 pt-2">
         {/* Header Section */}
         <View className="mb-6">
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="text-2xl font-bold text-black">
-                Good morning, {userProfile?.first_name}!
+              <Text className="text-3xl font-bold text-black">
+                {getGreeting()}, {userProfile?.first_name}!
               </Text>
               <Text className="text-gray-400 mt-1">
                 Let's make today productive

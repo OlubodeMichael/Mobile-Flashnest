@@ -114,21 +114,11 @@ export default function FlashcardForm({
       ) : null}
 
       {/* Action Buttons */}
-      <View className="flex-row space-x-4 pt-2">
-        {onCancel && (
-          <Button
-            variant="secondary"
-            onPress={onCancel}
-            disabled={isLoading || isSubmitting}
-            className="flex-1"
-            size="lg">
-            Cancel
-          </Button>
-        )}
+      <View className="space-y-3 pt-4 ">
         <Button
           onPress={handleSubmit}
           disabled={isLoading || isSubmitting}
-          className={onCancel ? "flex-1" : "w-full"}
+          className="w-full mb-2"
           size="lg">
           {isLoading
             ? flashcard
@@ -138,6 +128,17 @@ export default function FlashcardForm({
             ? "Update Flashcard"
             : "Create Flashcard"}
         </Button>
+
+        {onCancel && (
+          <Button
+            variant="secondary"
+            onPress={onCancel}
+            disabled={isLoading || isSubmitting}
+            className="w-full bg-blue-500 active:bg-blue-600"
+            size="lg">
+            <Text className="font-semibold text-white">Cancel</Text>
+          </Button>
+        )}
       </View>
     </View>
   );

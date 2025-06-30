@@ -11,10 +11,17 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useStudy } from "../../../contexts/StudyProvider";
 import Loading from "../../../components/Loading";
 import { Ionicons } from "@expo/vector-icons";
-import { useLayoutEffect, useState, useEffect } from "react";
+import { useLayoutEffect, useState, useEffect, useCallback } from "react";
 import DeckForm from "../../../components/Form/deckForm";
 import Button from "../../../components/Button";
 import FlashcardForm from "../../../components/Form/flashcardForm";
+import { LinearGradient } from "expo-linear-gradient";
+import {
+  isTablet,
+  getContainerMaxWidth,
+  getResponsivePadding,
+  getResponsiveTextSize,
+} from "../../../utils/responsive";
 
 export default function DeckDetail() {
   const { id } = useLocalSearchParams();
@@ -26,9 +33,9 @@ export default function DeckDetail() {
     updateDeck,
     createFlashcard,
     flashcards,
-    fetchFlashcards,
     deleteFlashcard,
     updateFlashcard,
+    fetchDeck,
   } = useStudy();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isAddFlashcardModalVisible, setIsAddFlashcardModalVisible] =
@@ -38,21 +45,46 @@ export default function DeckDetail() {
   const [selectedFlashcard, setSelectedFlashcard] = useState(null);
   const { isLoading: isLoadingDeck } = useStudy();
 
+  // Set the deckId when the component loads
   useEffect(() => {
-    const loadDeck = async () => {
-      try {
-        await fetchFlashcards(id);
-      } catch (error) {
-        console.error("Error loading deck:", error);
-      }
-    };
+    if (id) {
+      fetchDeck(id);
+    }
+  }, [id, fetchDeck]);
 
-    loadDeck();
-  }, [id]);
+  const showOptions = useCallback(() => {
+    Alert.alert(
+      "Options",
+      "What would you like to do?",
+      [
+        { text: "Edit", onPress: () => setIsEditModalVisible(true) },
+        {
+          text: "Generate with AI",
+          onPress: () =>
+            router.push({
+              pathname: "/decks/ai-generate",
+              params: { deckId: id },
+            }),
+        },
+        {
+          text: "Delete",
+          onPress: handleDelete,
+          style: "destructive",
+        },
+        { text: "Cancel", style: "cancel" },
+      ],
+      { cancelable: true }
+    );
+  }, [id, router, handleDelete]);
 
   useLayoutEffect(() => {
     if (deck) {
       navigation.setOptions({
+        headerTitle: deck.title || "Deck",
+        headerTitleStyle: {
+          fontSize: 20,
+          fontWeight: "600",
+        },
         headerRight: ({ color }) => (
           <TouchableOpacity onPress={showOptions}>
             <Ionicons name="ellipsis-vertical" size={24} color={color} />
@@ -60,9 +92,9 @@ export default function DeckDetail() {
         ),
       });
     }
-  }, [navigation, deck]);
+  }, [navigation, deck, showOptions]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     try {
       await deleteDeck(id);
       router.replace("/decks");
@@ -70,7 +102,7 @@ export default function DeckDetail() {
       console.error("Error deleting deck:", error);
       Alert.alert("Error", "Failed to delete deck. Please try again.");
     }
-  };
+  }, [id, deleteDeck, router]);
 
   const handleUpdate = async (updatedDeck) => {
     try {
@@ -88,14 +120,7 @@ export default function DeckDetail() {
 
   const handleAddFlashcard = async (newFlashcard) => {
     try {
-      const createdFlashcard = await createFlashcard(
-        id,
-        newFlashcard.question,
-        newFlashcard.answer
-      );
-      if (createdFlashcard) {
-        await fetchFlashcards(id);
-      }
+      await createFlashcard(id, newFlashcard.question, newFlashcard.answer);
       setIsAddFlashcardModalVisible(false);
     } catch (error) {
       console.error("Error adding flashcard:", error);
@@ -119,31 +144,6 @@ export default function DeckDetail() {
     }
   };
 
-  const showOptions = () => {
-    Alert.alert(
-      "Options",
-      "What would you like to do?",
-      [
-        { text: "Edit", onPress: () => setIsEditModalVisible(true) },
-        {
-          text: "Generate with AI",
-          onPress: () =>
-            router.push({
-              pathname: "/decks/ai-generate",
-              params: { deckId: id },
-            }),
-        },
-        {
-          text: "Delete",
-          onPress: handleDelete,
-          style: "destructive",
-        },
-        { text: "Cancel", style: "cancel" },
-      ],
-      { cancelable: true }
-    );
-  };
-
   if (isLoadingDeck) {
     return <Loading />;
   }
@@ -159,52 +159,61 @@ export default function DeckDetail() {
   }
 
   return (
-    <SafeAreaView className="flex-1" edges={["right", "left", "bottom"]}>
+    <SafeAreaView
+      className="flex-1 bg-gray-50"
+      edges={["right", "left", "bottom"]}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View className="px-6 pt-6 pb-8">
-          <Text className="text-3xl font-bold text-gray-900 mb-2">
+        {/* Gradient Header */}
+        <LinearGradient
+          colors={["#3b82f6", "#1d4ed8"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className={`rounded-b-3xl pb-8 ${getResponsivePadding()}`}>
+          <Text className="text-4xl font-extrabold text-white mt-8 mb-2">
             {deck.title}
           </Text>
           {deck.description && (
-            <Text className="text-gray-600 text-lg">{deck.description}</Text>
+            <Text className="text-blue-100 text-lg mb-2">
+              {deck.description}
+            </Text>
           )}
-        </View>
-
-        {/* Stats */}
-        <View className="px-6 -mt-4">
-          <View className="bg-white p-5 rounded-2xl shadow-sm">
-            <View className="flex-row items-center justify-between mb-4">
-              <View className="flex-row items-center">
-                <View className="bg-yellow-100 w-10 h-10 rounded-full items-center justify-center mr-3">
-                  <Ionicons name="document-text" size={20} color="#F59E0B" />
-                </View>
-                <Text className="text-gray-900 font-medium">
-                  {deck.flashcards_count || 0} Cards
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => router.push(`/study/${deck?.id}`)}
-                className="bg-yellow-400 px-4 py-2 rounded-full">
-                <Text className="font-medium">Start Study</Text>
-              </TouchableOpacity>
+          {/* Stats Row */}
+          <View className="flex-row items-center mt-4 mb-2 space-x-4">
+            <View className="bg-yellow-400 w-12 h-12 rounded-2xl items-center justify-center">
+              <Ionicons name="document-text" size={28} color="black" />
             </View>
+            <Text className="text-white text-lg font-semibold">
+              {deck.flashcards_count || 0} Cards
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push(`/study/${deck?.id}`)}
+              className="ml-auto bg-yellow-400 px-5 py-2 rounded-full flex-row items-center shadow-lg">
+              <Ionicons name="play" size={18} color="black" />
+              <Text className="text-black font-bold ml-2">Study</Text>
+            </TouchableOpacity>
           </View>
-        </View>
+        </LinearGradient>
 
         {/* Flashcards List */}
-        <View className="px-6 mt-6 mb-24">
+        <View
+          className={`mt-8 mb-32 ${getResponsivePadding()} ${getContainerMaxWidth()} mx-auto`}>
           <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-xl font-bold text-gray-900">Flashcards</Text>
+            <Text className="text-2xl font-bold text-gray-900">Flashcards</Text>
+            <TouchableOpacity
+              onPress={openAddFlashcardModal}
+              className="bg-blue-100 px-4 py-2 rounded-full flex-row items-center">
+              <Ionicons name="add" size={18} color="#2563eb" />
+              <Text className="text-blue-700 font-semibold ml-1">Add</Text>
+            </TouchableOpacity>
           </View>
 
           {flashcards && flashcards.length > 0 ? (
             flashcards.map((card, index) => (
               <View
                 key={card?.id ? `flashcard-${card.id}` : `flashcard-${index}`}
-                className="bg-white p-5 rounded-2xl mb-3 shadow-sm">
+                className="bg-white p-5 rounded-2xl mb-4 shadow-lg border border-gray-100">
                 <View className="flex-row justify-between items-start mb-2">
-                  <Text className="text-gray-900 font-medium flex-1 mr-4">
+                  <Text className="text-gray-900 font-semibold flex-1 mr-4 text-lg">
                     {card.question}
                   </Text>
                   <TouchableOpacity
@@ -225,17 +234,13 @@ export default function DeckDetail() {
                               "Delete Flashcard",
                               "Are you sure you want to delete this flashcard?",
                               [
-                                {
-                                  text: "Cancel",
-                                  style: "cancel",
-                                },
+                                { text: "Cancel", style: "cancel" },
                                 {
                                   text: "Delete",
                                   style: "destructive",
                                   onPress: async () => {
                                     try {
                                       await deleteFlashcard(id, card.id);
-                                      await fetchFlashcards(id);
                                     } catch (error) {
                                       console.error(
                                         "Error deleting flashcard:",
@@ -252,10 +257,7 @@ export default function DeckDetail() {
                             );
                           },
                         },
-                        {
-                          text: "Cancel",
-                          style: "cancel",
-                        },
+                        { text: "Cancel", style: "cancel" },
                       ]);
                     }}
                     className="p-2">
@@ -266,37 +268,38 @@ export default function DeckDetail() {
                     />
                   </TouchableOpacity>
                 </View>
-                <Text className="text-gray-600">{card.answer}</Text>
+                <Text className="text-gray-600 text-base mt-1">
+                  {card.answer}
+                </Text>
               </View>
             ))
           ) : (
-            <View className="bg-white p-6 rounded-2xl shadow-sm">
-              <View className="items-center">
-                <View className="bg-gray-100 w-16 h-16 rounded-full items-center justify-center mb-3">
-                  <Ionicons
-                    name="document-text-outline"
-                    size={32}
-                    color="#9CA3AF"
-                  />
-                </View>
-                <Text className="text-gray-600 text-center font-medium">
-                  No flashcards yet
-                </Text>
-                <Text className="text-gray-500 text-center text-sm mt-1">
-                  Add your first flashcard to get started!
-                </Text>
-              </View>
+            <View className="bg-gray-50 p-8 rounded-2xl shadow-inner items-center">
+              <Ionicons
+                name="document-text-outline"
+                size={40}
+                color="#9CA3AF"
+                className="mb-3"
+              />
+              <Text className="text-gray-600 text-center font-semibold mt-2">
+                No flashcards yet
+              </Text>
+              <Text className="text-gray-500 text-center text-sm mt-1">
+                Add your first flashcard to get started!
+              </Text>
             </View>
           )}
         </View>
       </ScrollView>
 
-      {/* Fixed Add Flashcard Button */}
-      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
-        <Button onPress={openAddFlashcardModal} size="lg">
-          Add Flashcard
-        </Button>
-      </View>
+      {/* Floating Add Flashcard Button */}
+      <TouchableOpacity
+        onPress={openAddFlashcardModal}
+        className="absolute bottom-8 right-8 bg-yellow-400 w-16 h-16 rounded-full items-center justify-center shadow-xl z-50"
+        style={{ elevation: 8 }}
+        activeOpacity={0.85}>
+        <Ionicons name="add" size={32} color="black" />
+      </TouchableOpacity>
 
       {/* Edit Deck Modal */}
       <Modal

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import Animated, {
   useAnimatedStyle,
   withTiming,
@@ -9,10 +9,14 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import {
+  isTablet,
+  isLargeTablet,
+  getCardDimensions,
+  getResponsiveTextSize,
+} from "../utils/responsive";
 
-const { width } = Dimensions.get("window");
-const CARD_WIDTH = width * 0.9;
-const CARD_HEIGHT = CARD_WIDTH * 0.7;
+const { width: CARD_WIDTH, height: CARD_HEIGHT } = getCardDimensions();
 
 export default function Flashcard({
   front,
@@ -86,24 +90,40 @@ export default function Flashcard({
           style={[frontAnimatedStyle, { elevation: 5 }]}>
           <View className="flex-row justify-between items-center mb-4">
             <View className="bg-yellow-200/60 px-3 py-1.5 rounded-full">
-              <Text className="text-xs font-medium text-yellow-900">
+              <Text
+                className={`font-medium text-yellow-900 ${getResponsiveTextSize(
+                  "text-xs",
+                  "text-sm"
+                )}`}>
                 {deckName}
               </Text>
             </View>
             <View className="bg-white/70 px-3 py-1.5 rounded-full">
-              <Text className="text-xs font-medium text-yellow-900">
+              <Text
+                className={`font-medium text-yellow-900 ${getResponsiveTextSize(
+                  "text-xs",
+                  "text-sm"
+                )}`}>
                 {cardNumber}
               </Text>
             </View>
           </View>
 
           <View className="flex-1 justify-center items-center">
-            <Text className="text-2xl font-bold text-gray-900 text-center mb-4">
+            <Text
+              className={`font-bold text-gray-900 text-center mb-4 ${getResponsiveTextSize(
+                "text-2xl",
+                "text-3xl"
+              )}`}>
               {front}
             </Text>
             {hint && (
               <View className="bg-yellow-300/20 p-3 rounded-lg">
-                <Text className="text-sm font-medium text-yellow-900/90">
+                <Text
+                  className={`font-medium text-yellow-900/90 ${getResponsiveTextSize(
+                    "text-sm",
+                    "text-base"
+                  )}`}>
                   Hint: {hint}
                 </Text>
               </View>
@@ -112,7 +132,11 @@ export default function Flashcard({
 
           <View className="items-center mt-4">
             <View className="bg-yellow-300/20 px-3 py-1.5 rounded-full">
-              <Text className="text-xs font-medium text-yellow-900/70">
+              <Text
+                className={`font-medium text-yellow-900/70 ${getResponsiveTextSize(
+                  "text-xs",
+                  "text-sm"
+                )}`}>
                 Tap to reveal answer
               </Text>
             </View>
@@ -125,19 +149,31 @@ export default function Flashcard({
           style={[backAnimatedStyle, { elevation: 5 }]}>
           <View className="flex-row justify-between items-center mb-4">
             <View className="bg-yellow-200/60 px-3 py-1.5 rounded-full">
-              <Text className="text-xs font-medium text-yellow-900">
+              <Text
+                className={`font-medium text-yellow-900 ${getResponsiveTextSize(
+                  "text-xs",
+                  "text-sm"
+                )}`}>
                 {deckName}
               </Text>
             </View>
             <View className="bg-yellow-400/70 px-3 py-1.5 rounded-full">
-              <Text className="text-xs font-medium text-yellow-900">
+              <Text
+                className={`font-medium text-yellow-900 ${getResponsiveTextSize(
+                  "text-xs",
+                  "text-sm"
+                )}`}>
                 {cardNumber}
               </Text>
             </View>
           </View>
 
           <View className="flex-1 justify-center items-center">
-            <Text className="text-lg font-medium text-gray-700 text-center mb-4">
+            <Text
+              className={`font-medium text-gray-700 text-center mb-4 ${getResponsiveTextSize(
+                "text-lg",
+                "text-2xl"
+              )}`}>
               {back}
             </Text>
             {tags.length > 0 && (
@@ -146,7 +182,11 @@ export default function Flashcard({
                   <View
                     key={index}
                     className="bg-gray-100 px-2.5 py-1 rounded-full">
-                    <Text className="text-xs font-medium text-gray-600">
+                    <Text
+                      className={`font-medium text-gray-600 ${getResponsiveTextSize(
+                        "text-xs",
+                        "text-sm"
+                      )}`}>
                       #{tag}
                     </Text>
                   </View>
@@ -157,7 +197,11 @@ export default function Flashcard({
 
           <View className="items-center mt-4">
             <View className="bg-gray-50 px-3 py-1.5 rounded-full">
-              <Text className="text-xs font-medium text-gray-500">
+              <Text
+                className={`font-medium text-gray-500 ${getResponsiveTextSize(
+                  "text-xs",
+                  "text-sm"
+                )}`}>
                 Tap to return to question
               </Text>
             </View>
