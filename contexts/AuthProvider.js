@@ -15,6 +15,7 @@ import { initSupabase, getSupabase } from "flashnest-backend/supabaseClient";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 import { useQueryClient } from "@tanstack/react-query";
 import * as AppleAuthentication from "expo-apple-authentication";
+import { Alert } from "react-native";
 
 const AuthContext = createContext();
 
@@ -244,35 +245,95 @@ export const AuthProvider = ({ children }) => {
       console.error(err);
     }
   };
+
   const handleSignInWithApple = async () => {
     try {
+      setIsLoading(true);
+      setError(null);
+
       const supabase = getSupabase();
+
+      // Step 1: Apple sign-in
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-      if (credential.identityToken) {
-        const {
-          error,
-          data: { user },
-        } = await supabase.auth.signInWithIdToken({
-          provider: "apple",
-          token: credential.identityToken,
-        });
-        console.log(JSON.stringify({ error, user }, null, 2));
-        if (!error) {
-          // User is signed in.
-        }
-        setUser(user);
-        setUserProfile(user);
-        invalidateUserData();
-      } else {
-        throw new Error("No identityToken.");
+
+      if (!credential.identityToken) {
+        throw new Error("No identity token received from Apple");
       }
+
+      // Step 2: Supabase sign-in with Apple identity token
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.signInWithIdToken({
+        provider: "apple",
+        token: credential.identityToken,
+      });
+
+      if (error) {
+        console.error("Apple sign-in error:", error);
+        setError(error.message);
+        throw error;
+      }
+
+      if (!user) {
+        throw new Error("No user returned from Apple authentication");
+      }
+      console.log("credential:", credential);
+
+      setUser(user);
+
+      // Step 3: Check if user profile exists
+      const { data: existingProfile } = await supabase
+        .from("Users")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      // Step 4: Prepare full name from Apple credential or user metadata
+      let fullName = "";
+
+      if (credential.fullName?.givenName || credential.fullName?.familyName) {
+        fullName = `${credential.fullName.givenName || ""} ${
+          credential.fullName.familyName || ""
+        }`.trim();
+      } else if (user.user_metadata?.full_name) {
+        fullName = user.user_metadata.full_name;
+      }
+
+      const [firstName, ...lastParts] = fullName.split(" ");
+      const lastName = lastParts.join(" ");
+
+      // Step 5: Create user profile if not existing
+      if (!existingProfile) {
+        await supabase.from("Users").insert({
+          id: user.id,
+          email: user.email,
+          first_name: firstName || "",
+          last_name: lastName || "",
+          active: true,
+        });
+        console.log("✅ New Apple user profile created");
+      }
+
+      // Step 6: Load and store profile
+      const userProfile = await getCurrentUser();
+      //console.log("🔍 User profile:", userProfile);
+      setUserProfile(userProfile);
+      invalidateUserData();
+
+      console.log("✅ Apple authentication complete");
     } catch (error) {
-      console.log(error);
+      console.error("Apple authentication failed:", error);
+      if (error.code === "ERR_CANCELED") return;
+      setError(error.message || "Apple authentication failed");
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 

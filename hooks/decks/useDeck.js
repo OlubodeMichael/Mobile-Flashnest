@@ -19,11 +19,12 @@ export const useDecks = () => {
       const decks = await getDecks(user.id);
       return decks;
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 10,
+    cacheTime: 1000 * 60 * 60,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    refetchInterval: 1000 * 60 * 2,
+    refetchInterval: 1000 * 60 * 30,
     refetchIntervalInBackground: true,
     retry: (failureCount, error) => {
       // Don't retry if user is not authenticated

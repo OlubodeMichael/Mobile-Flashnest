@@ -192,30 +192,32 @@ export default function Home() {
         </View>
 
         {/* Quick Stats */}
-        <View className="mb-4">
-          <View className="bg-gray-900 rounded-3xl p-6">
-            <Text className="text-lg font-semibold text-white mb-4">
-              Today's Goal
-            </Text>
-            <View className="flex-row items-center justify-between">
-              <View className="flex-1">
-                <Text className="text-gray-400 text-sm mb-1">
-                  Study Progress
-                </Text>
-                <View className="w-full bg-gray-700 rounded-full h-2">
-                  <View
-                    className="bg-yellow-500 h-2 rounded-full"
-                    style={{ width: "25%" }}
-                  />
+        {decks?.flashcards_count < 0 && (
+          <View className="mb-4">
+            <View className="bg-gray-900 rounded-3xl p-6">
+              <Text className="text-lg font-semibold text-white mb-4">
+                Today's Goal
+              </Text>
+              <View className="flex-row items-center justify-between">
+                <View className="flex-1">
+                  <Text className="text-gray-400 text-sm mb-1">
+                    Study Progress
+                  </Text>
+                  <View className="w-full bg-gray-700 rounded-full h-2">
+                    <View
+                      className="bg-yellow-500 h-2 rounded-full"
+                      style={{ width: "25%" }}
+                    />
+                  </View>
                 </View>
+                <Text className="text-white font-semibold ml-4">25%</Text>
               </View>
-              <Text className="text-white font-semibold ml-4">25%</Text>
+              <Text className="text-gray-400 text-sm mt-2">
+                Complete 20 cards today to reach your goal
+              </Text>
             </View>
-            <Text className="text-gray-400 text-sm mt-2">
-              Complete 20 cards today to reach your goal
-            </Text>
           </View>
-        </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

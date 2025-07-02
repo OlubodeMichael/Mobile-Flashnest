@@ -4,6 +4,7 @@ import { useStudy } from "../../../contexts/StudyProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import StudyDeck from "../../../components/studyDeck";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Study() {
   const { decks } = useStudy();
@@ -59,8 +60,17 @@ export default function Study() {
               </Text>
               <TouchableOpacity
                 onPress={() => router.push("/decks")}
-                className="mt-6 bg-yellow-400 px-6 py-3 rounded-full">
-                <Text className="font-medium">Go to Decks</Text>
+                className="mt-6 rounded-full overflow-hidden">
+                <LinearGradient
+                  colors={["#fbbf24", "#f59e0b"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  className="rounded-full"
+                  style={{ padding: 14 }}>
+                  <Text className="text-black font-semibold text-center">
+                    Go to Decks
+                  </Text>
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           )}

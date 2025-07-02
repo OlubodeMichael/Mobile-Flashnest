@@ -20,7 +20,7 @@ export default function HelpAndSupport() {
         },
         {
           text: "Cancel",
-          style: "cancel",
+          style: "destructive",
         },
       ]
     );

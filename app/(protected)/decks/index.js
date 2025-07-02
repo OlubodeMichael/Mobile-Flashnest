@@ -116,45 +116,42 @@ export default function Index() {
               ))}
             </View>
           ) : (
-            <View className="flex-1 items-center justify-center py-12">
-              <View className="bg-gray-900 w-20 h-20 rounded-full items-center justify-center mb-6">
-                <Ionicons name="library" size={40} color="#9CA3AF" />
+            <View className="flex-1 items-center justify-center py-16 px-6">
+              <View className="bg-gray-100 w-24 h-24 rounded-full items-center justify-center mb-8 shadow-sm">
+                <Ionicons name="library" size={48} color="#6B7280" />
               </View>
-              <Text className="text-white text-xl font-semibold mb-2">
+              <Text className="text-gray-900 text-2xl font-bold mb-3 text-center">
                 No decks yet
               </Text>
-              <Text className="text-gray-400 text-center mb-8">
+              <Text className="text-gray-500 text-center mb-12 text-base leading-6 max-w-sm">
                 Create your first deck to get started with your learning
                 journey!
               </Text>
 
-              <View className="space-y-4 w-full">
+              <View className="w-full max-w-sm rounded-3xl">
                 <TouchableOpacity
                   onPress={handleModalVisibility}
-                  className="w-full">
+                  className="w-fit rounded-3xl overflow-hidden"
+                  activeOpacity={0.9}>
                   <LinearGradient
                     colors={["#fbbf24", "#f59e0b"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    className="rounded-3xl p-4 items-center">
-                    <Text className="text-black font-semibold text-lg">
-                      Create Your First Deck
-                    </Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/decks/ai-generate")}
-                  className="w-full">
-                  <LinearGradient
-                    colors={["#3b82f6", "#1d4ed8"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    className="rounded-3xl p-4 items-center flex-row justify-center">
-                    <Ionicons name="sparkles" size={20} color="white" />
-                    <Text className="text-white font-semibold text-lg ml-2">
-                      Generate with AI
-                    </Text>
+                    className="rounded-3xl"
+                    style={{ padding: 14 }}>
+                    <View className="flex-row items-center">
+                      <View className="w-14 h-14 bg-black/20 rounded-2xl items-center justify-center mr-5">
+                        <Ionicons name="add-circle" size={32} color="black" />
+                      </View>
+                      <View className="flex-1">
+                        <Text className="text-black font-bold text-xl mb-2">
+                          Create Your First Deck
+                        </Text>
+                        <Text className="text-black/70 text-base leading-5">
+                          Start building your study collection
+                        </Text>
+                      </View>
+                    </View>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>

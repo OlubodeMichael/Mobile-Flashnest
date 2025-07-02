@@ -12,6 +12,8 @@ import {
   ActivityIndicator,
   Image,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LogoText from "../../components/LogoText";
 import { router } from "expo-router";
@@ -114,204 +116,264 @@ export default function Register() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
           className="flex-1">
-          <View className="flex-1 items-center justify-center px-6">
-            <LogoText />
+          <View className="flex-1 px-6 pt-4">
+            {/* Header Section */}
+            <View className="items-center mb-8">
+              <LogoText />
+              <Text className="text-gray-500 mt-3 text-center text-lg leading-6 max-w-sm">
+                Create your account to start your learning journey
+              </Text>
+            </View>
 
-            <View className="w-full space-y-4 mt-8">
-              <View className="space-y-2 py-4">
-                <View className="space-y-4">
-                  {/* Name Fields Row */}
-                  <View className="flex-row gap-4 space-x-4">
-                    {/* First Name */}
-                    <View className="flex-1">
-                      <Text className="text-gray-700 font-medium text-lg">
-                        First name
-                      </Text>
-                      <TextInput
-                        className={`w-full px-4 py-3 h-12 border text-gray-700 rounded-lg ${
-                          formErrors.firstName
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                        placeholder="Enter your first name"
-                        placeholderTextColor="#9CA3AF"
-                        value={form.firstName}
-                        onChangeText={(text) => {
-                          setForm({ ...form, firstName: text });
-                          if (formErrors.firstName) {
-                            setFormErrors({ ...formErrors, firstName: "" });
-                          }
-                          // Clear API error when user starts typing
-                          if (error) clearError();
-                        }}
-                      />
-                      {formErrors.firstName && (
-                        <Text className="text-red-500 text-sm mt-1">
-                          {formErrors.firstName}
-                        </Text>
-                      )}
-                    </View>
-
-                    {/* Last Name */}
-                    <View className="flex-1">
-                      <Text className="text-gray-700 font-medium text-lg">
-                        Last name
-                      </Text>
-                      <TextInput
-                        className={`w-full px-4 py-3 h-12 border text-gray-700 rounded-lg ${
-                          formErrors.lastName
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                        placeholder="Enter your last name"
-                        placeholderTextColor="#9CA3AF"
-                        value={form.lastName}
-                        onChangeText={(text) => {
-                          setForm({ ...form, lastName: text });
-                          if (formErrors.lastName) {
-                            setFormErrors({ ...formErrors, lastName: "" });
-                          }
-                          // Clear API error when user starts typing
-                          if (error) clearError();
-                        }}
-                      />
-                      {formErrors.lastName && (
-                        <Text className="text-red-500 text-sm mt-1">
-                          {formErrors.lastName}
-                        </Text>
-                      )}
-                    </View>
+            {/* Register Form */}
+            <View className="w-full space-y-6 flex-1">
+              {/* Name Fields Row */}
+              <View className="flex-row space-x-4">
+                {/* First Name */}
+                <View className="flex-1">
+                  <Text className="text-gray-700 font-semibold text-base mb-3">
+                    First Name
+                  </Text>
+                  <View
+                    className={`flex-row items-center bg-gray-50 border-2 rounded-2xl px-4 py-4 ${
+                      formErrors.firstName
+                        ? "border-red-300"
+                        : "border-gray-100"
+                    }`}>
+                    <Feather
+                      name="user"
+                      size={20}
+                      color="#6B7280"
+                      style={{ marginRight: 12 }}
+                    />
+                    <TextInput
+                      className="flex-1 text-gray-900 text-base"
+                      placeholder="Enter first name"
+                      placeholderTextColor="#9CA3AF"
+                      value={form.firstName}
+                      onChangeText={(text) => {
+                        setForm({ ...form, firstName: text });
+                        if (formErrors.firstName) {
+                          setFormErrors({ ...formErrors, firstName: "" });
+                        }
+                        if (error) clearError();
+                      }}
+                    />
                   </View>
+                  {formErrors.firstName && (
+                    <Text className="text-red-500 text-sm mt-2">
+                      {formErrors.firstName}
+                    </Text>
+                  )}
                 </View>
-                <View className="space-y-2 py-4">
-                  <View className="pb-4">
-                    <Text className="text-gray-700 font-medium text-lg">
-                      Email
-                    </Text>
+
+                {/* Last Name */}
+                <View className="flex-1">
+                  <Text className="text-gray-700 font-semibold text-base mb-3">
+                    Last Name
+                  </Text>
+                  <View
+                    className={`flex-row items-center bg-gray-50 border-2 rounded-2xl px-4 py-4 ${
+                      formErrors.lastName ? "border-red-300" : "border-gray-100"
+                    }`}>
+                    <Feather
+                      name="user"
+                      size={20}
+                      color="#6B7280"
+                      style={{ marginRight: 12 }}
+                    />
                     <TextInput
-                      className={`w-full px-4 py-3 h-12 border text-gray-700 rounded-lg ${
-                        formErrors.email ? "border-red-500" : "border-gray-300"
-                      }`}
-                      placeholder="Enter your email"
+                      className="flex-1 text-gray-900 text-base"
+                      placeholder="Enter last name"
                       placeholderTextColor="#9CA3AF"
-                      value={form.email}
-                      keyboardType="email-address"
-                      autoCapitalize="none"
+                      value={form.lastName}
                       onChangeText={(text) => {
-                        setForm({ ...form, email: text });
-                        if (formErrors.email) {
-                          setFormErrors({ ...formErrors, email: "" });
+                        setForm({ ...form, lastName: text });
+                        if (formErrors.lastName) {
+                          setFormErrors({ ...formErrors, lastName: "" });
                         }
-                        // Clear API error when user starts typing
                         if (error) clearError();
                       }}
                     />
-                    {formErrors.email && (
-                      <Text className="text-red-500 text-sm mt-1">
-                        {formErrors.email}
-                      </Text>
-                    )}
                   </View>
-                  <View className="pb-4">
-                    <Text className="text-gray-700 font-medium text-lg">
-                      Password
+                  {formErrors.lastName && (
+                    <Text className="text-red-500 text-sm mt-2">
+                      {formErrors.lastName}
                     </Text>
-                    <TextInput
-                      className={`w-full px-4 py-3 h-12 border text-gray-700 rounded-lg ${
-                        formErrors.password
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                      placeholder="Enter your password"
-                      placeholderTextColor="#9CA3AF"
-                      secureTextEntry
-                      value={form.password}
-                      onChangeText={(text) => {
-                        setForm({ ...form, password: text });
-                        if (formErrors.password) {
-                          setFormErrors({ ...formErrors, password: "" });
-                        }
-                        // Clear API error when user starts typing
-                        if (error) clearError();
-                      }}
-                    />
-                    {formErrors.password && (
-                      <Text className="text-red-500 text-sm mt-1">
-                        {formErrors.password}
-                      </Text>
-                    )}
-                  </View>
-                  <View>
-                    <Text className="text-gray-700 font-medium text-lg">
-                      Confirm Password
-                    </Text>
-                    <TextInput
-                      className={`w-full px-4 py-3 h-12 border text-gray-700 rounded-lg ${
-                        formErrors.confirmPassword
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                      placeholder="Confirm your password"
-                      placeholderTextColor="#9CA3AF"
-                      secureTextEntry
-                      value={form.confirmPassword}
-                      onChangeText={(text) => {
-                        setForm({ ...form, confirmPassword: text });
-                        if (formErrors.confirmPassword) {
-                          setFormErrors({ ...formErrors, confirmPassword: "" });
-                        }
-                        // Clear API error when user starts typing
-                        if (error) clearError();
-                      }}
-                    />
-                    {formErrors.confirmPassword && (
-                      <Text className="text-red-500 text-sm mt-1">
-                        {formErrors.confirmPassword}
-                      </Text>
-                    )}
-                  </View>
+                  )}
                 </View>
               </View>
+
+              {/* Email Input */}
+              <View>
+                <Text className="text-gray-700 font-semibold text-base mb-3">
+                  Email Address
+                </Text>
+                <View
+                  className={`flex-row items-center bg-gray-50 border-2 rounded-2xl px-4 py-4 ${
+                    formErrors.email ? "border-red-300" : "border-gray-100"
+                  }`}>
+                  <Feather
+                    name="mail"
+                    size={20}
+                    color="#6B7280"
+                    style={{ marginRight: 12 }}
+                  />
+                  <TextInput
+                    className="flex-1 text-gray-900 text-base"
+                    placeholder="Enter your email"
+                    placeholderTextColor="#9CA3AF"
+                    value={form.email}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    onChangeText={(text) => {
+                      setForm({ ...form, email: text });
+                      if (formErrors.email) {
+                        setFormErrors({ ...formErrors, email: "" });
+                      }
+                      if (error) clearError();
+                    }}
+                  />
+                </View>
+                {formErrors.email && (
+                  <Text className="text-red-500 text-sm mt-2">
+                    {formErrors.email}
+                  </Text>
+                )}
+              </View>
+
+              {/* Password Input */}
+              <View>
+                <Text className="text-gray-700 font-semibold text-base mb-3">
+                  Password
+                </Text>
+                <View
+                  className={`flex-row items-center bg-gray-50 border-2 rounded-2xl px-4 py-4 ${
+                    formErrors.password ? "border-red-300" : "border-gray-100"
+                  }`}>
+                  <Feather
+                    name="lock"
+                    size={20}
+                    color="#6B7280"
+                    style={{ marginRight: 12 }}
+                  />
+                  <TextInput
+                    className="flex-1 text-gray-900 text-lg"
+                    placeholder="Enter your password"
+                    placeholderTextColor="#9CA3AF"
+                    secureTextEntry
+                    value={form.password}
+                    onChangeText={(text) => {
+                      setForm({ ...form, password: text });
+                      if (formErrors.password) {
+                        setFormErrors({ ...formErrors, password: "" });
+                      }
+                      if (error) clearError();
+                    }}
+                  />
+                </View>
+                {formErrors.password && (
+                  <Text className="text-red-500 text-sm mt-2">
+                    {formErrors.password}
+                  </Text>
+                )}
+              </View>
+
+              {/* Confirm Password Input */}
+              <View>
+                <Text className="text-gray-700 font-semibold text-base mb-3">
+                  Confirm Password
+                </Text>
+                <View
+                  className={`flex-row items-center bg-gray-50 border-2 rounded-2xl px-4 py-4 ${
+                    formErrors.confirmPassword
+                      ? "border-red-300"
+                      : "border-gray-100"
+                  }`}>
+                  <Feather
+                    name="lock"
+                    size={20}
+                    color="#6B7280"
+                    style={{ marginRight: 12 }}
+                  />
+                  <TextInput
+                    className="flex-1 text-gray-900 text-lg"
+                    placeholder="Confirm your password"
+                    placeholderTextColor="#9CA3AF"
+                    secureTextEntry
+                    value={form.confirmPassword}
+                    onChangeText={(text) => {
+                      setForm({ ...form, confirmPassword: text });
+                      if (formErrors.confirmPassword) {
+                        setFormErrors({ ...formErrors, confirmPassword: "" });
+                      }
+                      if (error) clearError();
+                    }}
+                  />
+                </View>
+                {formErrors.confirmPassword && (
+                  <Text className="text-red-500 text-sm mt-2">
+                    {formErrors.confirmPassword}
+                  </Text>
+                )}
+              </View>
+
+              {/* Register Button */}
               <TouchableOpacity
                 onPress={handleRegister}
                 disabled={isLoading}
-                className={`w-full bg-gray-900 py-3 white rounded-lg mt-6 ${
-                  isLoading ? "opacity-70" : ""
-                }`}>
-                {isLoading ? (
-                  <ActivityIndicator color="white" />
-                ) : (
-                  <Text className="text-white text-center font-semibold text-lg">
-                    Register
-                  </Text>
-                )}
+                className="rounded-2xl overflow-hidden mt-6"
+                activeOpacity={0.8}>
+                <LinearGradient
+                  colors={["#fbbf24", "#f59e0b"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  className="rounded-2xl"
+                  style={{ padding: 16 }}>
+                  {isLoading ? (
+                    <ActivityIndicator color="black" size="small" />
+                  ) : (
+                    <Text className="text-black text-center font-bold text-xl">
+                      Create Account
+                    </Text>
+                  )}
+                </LinearGradient>
               </TouchableOpacity>
+            </View>
 
-              <View className="flex-row items-center my-4">
-                <View className="flex-1 h-[1px] bg-gray-300" />
-                <Text className="mx-4 text-gray-500">or</Text>
-                <View className="flex-1 h-[1px] bg-gray-300" />
-              </View>
+            {/* Divider */}
+            <View className="flex-row items-center my-6">
+              <View className="flex-1 h-[1px] bg-gray-200" />
+              <Text className="mx-4 text-gray-400 font-medium text-base">
+                or
+              </Text>
+              <View className="flex-1 h-[1px] bg-gray-200" />
+            </View>
 
-              {Platform.OS === "ios" ? (
-                <AppleAuth />
-              ) : (
-                <TouchableOpacity
-                  onPress={handleGoogleSignIn}
-                  className="w-full flex-row items-center justify-center bg-white py-3 border border-gray-300 rounded-lg">
-                  <Image
-                    source={require("../../assets/google-icon.png")}
-                    className="w-6 h-6 mr-2"
-                  />
-                  <Text className="text-gray-700 font-semibold text-lg">
-                    Sign up with Google
-                  </Text>
-                </TouchableOpacity>
-              )}
+            {/* Social Login Buttons */}
+            {Platform.OS === "ios" ? (
+              <AppleAuth />
+            ) : (
+              <TouchableOpacity
+                onPress={handleGoogleSignIn}
+                className="w-full flex-row items-center justify-center bg-white py-4 border-2 border-gray-200 rounded-2xl mb-4 shadow-sm"
+                activeOpacity={0.8}>
+                <Image
+                  source={require("../../assets/google-icon.png")}
+                  className="w-6 h-6 mr-3"
+                />
+                <Text className="text-gray-700 font-semibold text-base">
+                  Continue with Google
+                </Text>
+              </TouchableOpacity>
+            )}
 
-              <TouchableOpacity onPress={handleLogin} className="mt-4">
-                <Text className="text-blue-600 text-center">
-                  Already have an account? Login
+            {/* Sign In Link */}
+            <View className="items-center mt-6">
+              <TouchableOpacity onPress={handleLogin}>
+                <Text className="text-gray-500 text-base">
+                  Already have an account?{" "}
+                  <Text className="text-yellow-500 font-bold">Sign In</Text>
                 </Text>
               </TouchableOpacity>
             </View>

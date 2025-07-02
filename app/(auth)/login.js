@@ -13,6 +13,7 @@ import {
   Image,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthProvider";
@@ -160,12 +161,18 @@ export default function Login() {
               <TouchableOpacity
                 onPress={handleLogin}
                 disabled={isLoading}
-                className="bg-yellow-400 rounded-2xl py-4 mt-6 shadow-lg"
-                style={{ elevation: 4 }}
+                className="rounded-2xl overflow-hidden mt-6"
                 activeOpacity={0.8}>
-                <Text className="text-black text-center font-bold text-lg">
-                  {isLoading ? "Signing In..." : "Sign In"}
-                </Text>
+                <LinearGradient
+                  colors={["#fbbf24", "#f59e0b"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  className="rounded-2xl"
+                  style={{ padding: 16 }}>
+                  <Text className="text-black text-center font-bold text-xl">
+                    {isLoading ? "Signing In..." : "Sign In"}
+                  </Text>
+                </LinearGradient>
               </TouchableOpacity>
             </View>
 

@@ -9,10 +9,10 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		A0DD60B457FCD87C991BF00F /* libPods-flashnestmobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 681779B5D4833D8890505BC1 /* libPods-flashnestmobile.a */; };
-		B29DE16F73C7DEE81F73D774 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD24972D1F941871E75D5B3B /* ExpoModulesProvider.swift */; };
+		83F5BEECB7A146D62027933A /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6443D40D082BAE94BDD215 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		BBF41442A1E9F52F0332E95E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 54E867F5E7C011DCEA969BD8 /* PrivacyInfo.xcprivacy */; };
+		CC3E4C8904BB01828CC3F10B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 9EF7F66274E65A08B99AE929 /* PrivacyInfo.xcprivacy */; };
+		EA7CA68AA55888D81FD5A1DC /* libPods-flashnestmobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AFE16AF619EA2E6B4F445EB /* libPods-flashnestmobile.a */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -20,13 +20,13 @@
 		13B07F961A680F5B00A75B9A /* flashnestmobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = flashnestmobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = flashnestmobile/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = flashnestmobile/Info.plist; sourceTree = "<group>"; };
-		54E867F5E7C011DCEA969BD8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = flashnestmobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		681779B5D4833D8890505BC1 /* libPods-flashnestmobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-flashnestmobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		878011EAE987619ECEF4C6FE /* Pods-flashnestmobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-flashnestmobile.debug.xcconfig"; path = "Target Support Files/Pods-flashnestmobile/Pods-flashnestmobile.debug.xcconfig"; sourceTree = "<group>"; };
+		4AFE16AF619EA2E6B4F445EB /* libPods-flashnestmobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-flashnestmobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9EF7F66274E65A08B99AE929 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = flashnestmobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = flashnestmobile/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		DD1FC7114DB9A93D444B3C5F /* Pods-flashnestmobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-flashnestmobile.release.xcconfig"; path = "Target Support Files/Pods-flashnestmobile/Pods-flashnestmobile.release.xcconfig"; sourceTree = "<group>"; };
-		DD24972D1F941871E75D5B3B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-flashnestmobile/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		C1A3DBB7879B94A15185D116 /* Pods-flashnestmobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-flashnestmobile.debug.xcconfig"; path = "Target Support Files/Pods-flashnestmobile/Pods-flashnestmobile.debug.xcconfig"; sourceTree = "<group>"; };
+		E867A0C0FB0287345C5D0B96 /* Pods-flashnestmobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-flashnestmobile.release.xcconfig"; path = "Target Support Files/Pods-flashnestmobile/Pods-flashnestmobile.release.xcconfig"; sourceTree = "<group>"; };
+		EA6443D40D082BAE94BDD215 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-flashnestmobile/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = flashnestmobile/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* flashnestmobile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "flashnestmobile-Bridging-Header.h"; path = "flashnestmobile/flashnestmobile-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -37,23 +37,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A0DD60B457FCD87C991BF00F /* libPods-flashnestmobile.a in Frameworks */,
+				EA7CA68AA55888D81FD5A1DC /* libPods-flashnestmobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		092C0931C24029074CA381EA /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				878011EAE987619ECEF4C6FE /* Pods-flashnestmobile.debug.xcconfig */,
-				DD1FC7114DB9A93D444B3C5F /* Pods-flashnestmobile.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		13B07FAE1A68108700A75B9A /* flashnestmobile */ = {
 			isa = PBXGroup;
 			children = (
@@ -63,7 +53,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				54E867F5E7C011DCEA969BD8 /* PrivacyInfo.xcprivacy */,
+				9EF7F66274E65A08B99AE929 /* PrivacyInfo.xcprivacy */,
 			);
 			name = flashnestmobile;
 			sourceTree = "<group>";
@@ -72,17 +62,26 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				681779B5D4833D8890505BC1 /* libPods-flashnestmobile.a */,
+				4AFE16AF619EA2E6B4F445EB /* libPods-flashnestmobile.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		62CA9774B28B419B7310A2E1 /* ExpoModulesProviders */ = {
+		3288F42AB2229320BCE674C1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				946F1FF4C52FA3D50BD6256E /* flashnestmobile */,
+				C1A3DBB7879B94A15185D116 /* Pods-flashnestmobile.debug.xcconfig */,
+				E867A0C0FB0287345C5D0B96 /* Pods-flashnestmobile.release.xcconfig */,
 			);
-			name = ExpoModulesProviders;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		390829A2260BCEA9A91716C2 /* flashnestmobile */ = {
+			isa = PBXGroup;
+			children = (
+				EA6443D40D082BAE94BDD215 /* ExpoModulesProvider.swift */,
+			);
+			name = flashnestmobile;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -99,8 +98,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				092C0931C24029074CA381EA /* Pods */,
-				62CA9774B28B419B7310A2E1 /* ExpoModulesProviders */,
+				3288F42AB2229320BCE674C1 /* Pods */,
+				86A5E87F9C5445D57DB888FE /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -115,12 +114,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		946F1FF4C52FA3D50BD6256E /* flashnestmobile */ = {
+		86A5E87F9C5445D57DB888FE /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				DD24972D1F941871E75D5B3B /* ExpoModulesProvider.swift */,
+				390829A2260BCEA9A91716C2 /* flashnestmobile */,
 			);
-			name = flashnestmobile;
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -140,13 +139,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "flashnestmobile" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				5BD692FDFCA443D984BD3FF4 /* [Expo] Configure project */,
+				0F2E6C009263CFAE9A84E538 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				EE1ADA3087DDC3A900356931 /* [CP] Embed Pods Frameworks */,
+				4887658659683BD8879E5990 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,7 +195,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				BBF41442A1E9F52F0332E95E /* PrivacyInfo.xcprivacy in Resources */,
+				CC3E4C8904BB01828CC3F10B /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,7 +239,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		5BD692FDFCA443D984BD3FF4 /* [Expo] Configure project */ = {
+		0F2E6C009263CFAE9A84E538 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -258,6 +257,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-flashnestmobile/expo-configure-project.sh\"\n";
+		};
+		4887658659683BD8879E5990 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-flashnestmobile/Pods-flashnestmobile-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-flashnestmobile/Pods-flashnestmobile-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -319,24 +336,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-flashnestmobile/Pods-flashnestmobile-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		EE1ADA3087DDC3A900356931 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-flashnestmobile/Pods-flashnestmobile-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-flashnestmobile/Pods-flashnestmobile-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -345,7 +344,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				B29DE16F73C7DEE81F73D774 /* ExpoModulesProvider.swift in Sources */,
+				83F5BEECB7A146D62027933A /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,12 +353,13 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 878011EAE987619ECEF4C6FE /* Pods-flashnestmobile.debug.xcconfig */;
+			baseConfigurationReference = C1A3DBB7879B94A15185D116 /* Pods-flashnestmobile.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = flashnestmobile/flashnestmobile.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = J8U3MHK9ML;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -390,12 +390,13 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DD1FC7114DB9A93D444B3C5F /* Pods-flashnestmobile.release.xcconfig */;
+			baseConfigurationReference = E867A0C0FB0287345C5D0B96 /* Pods-flashnestmobile.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = flashnestmobile/flashnestmobile.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = J8U3MHK9ML;
 				INFOPLIST_FILE = flashnestmobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -473,10 +474,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -531,10 +529,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
