@@ -51,7 +51,12 @@ export default function FlashcardForm({
       };
 
       if (flashcard) {
-        await updateFlashcard(deckId, flashcard.id, flashcardData);
+        await updateFlashcard(
+          deckId,
+          flashcard.id,
+          flashcardData.question,
+          flashcardData.answer
+        );
       } else {
         await createFlashcard(
           deckId,
@@ -59,7 +64,7 @@ export default function FlashcardForm({
           flashcardData.answer
         );
       }
-      onSuccess?.(flashcardData);
+      onSuccess?.();
     } catch (err) {
       setError(err.message || "Something went wrong");
     } finally {

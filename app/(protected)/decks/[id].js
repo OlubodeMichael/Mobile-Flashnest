@@ -120,7 +120,7 @@ export default function DeckDetail() {
 
   const handleAddFlashcard = async (newFlashcard) => {
     try {
-      await createFlashcard(id, newFlashcard.question, newFlashcard.answer);
+      // The FlashcardForm already calls createFlashcard, so we just need to close the modal
       setIsAddFlashcardModalVisible(false);
     } catch (error) {
       console.error("Error adding flashcard:", error);
