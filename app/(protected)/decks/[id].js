@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
@@ -306,32 +308,36 @@ export default function DeckDetail() {
         animationType="slide"
         transparent={true}
         onRequestClose={() => setIsEditModalVisible(false)}>
-        <View className="flex-1 bg-black/50 justify-center items-center">
-          <View className="bg-white w-[90%] max-w-[500px] rounded-xl">
-            {/* Modal Header */}
-            <View className="border-b border-gray-100 px-6 py-4">
-              <Text className="text-xl font-semibold text-gray-900">
-                Edit Deck
-              </Text>
-            </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className="flex-1 bg-black/50 justify-center items-center">
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View className="bg-white w-[90%] max-w-[500px] rounded-xl">
+                {/* Modal Header */}
+                <View className="border-b border-gray-100 px-6 py-4">
+                  <Text className="text-xl font-semibold text-gray-900">
+                    Edit Deck
+                  </Text>
+                </View>
 
-            {/* Close button */}
-            <TouchableOpacity
-              onPress={() => setIsEditModalVisible(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
-              <Ionicons name="close" size={24} color="#9CA3AF" />
-            </TouchableOpacity>
+                {/* Close button */}
+                <TouchableOpacity
+                  onPress={() => setIsEditModalVisible(false)}
+                  className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
+                  <Ionicons name="close" size={24} color="#9CA3AF" />
+                </TouchableOpacity>
 
-            {/* Modal Content */}
-            <View className="p-6">
-              <DeckForm
-                deck={deck}
-                onSuccess={handleUpdate}
-                onCancel={() => setIsEditModalVisible(false)}
-              />
-            </View>
+                {/* Modal Content */}
+                <View className="p-6">
+                  <DeckForm
+                    deck={deck}
+                    onSuccess={handleUpdate}
+                    onCancel={() => setIsEditModalVisible(false)}
+                  />
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       {/* Add Flashcard Modal */}
@@ -340,31 +346,35 @@ export default function DeckDetail() {
         animationType="slide"
         transparent={true}
         onRequestClose={() => setIsAddFlashcardModalVisible(false)}>
-        <View className="flex-1 bg-black/50 justify-center items-center">
-          <View className="bg-white w-[90%] max-w-[500px] rounded-xl">
-            <View className="border-b border-gray-100 px-6 py-4">
-              <Text className="text-xl font-semibold text-gray-900">
-                Add Flashcard
-              </Text>
-            </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className="flex-1 bg-black/50 justify-center items-center">
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View className="bg-white w-[90%] max-w-[500px] rounded-xl">
+                <View className="border-b border-gray-100 px-6 py-4">
+                  <Text className="text-xl font-semibold text-gray-900">
+                    Add Flashcard
+                  </Text>
+                </View>
 
-            {/* Close button */}
-            <TouchableOpacity
-              onPress={() => setIsAddFlashcardModalVisible(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
-              <Ionicons name="close" size={24} color="#9CA3AF" />
-            </TouchableOpacity>
+                {/* Close button */}
+                <TouchableOpacity
+                  onPress={() => setIsAddFlashcardModalVisible(false)}
+                  className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
+                  <Ionicons name="close" size={24} color="#9CA3AF" />
+                </TouchableOpacity>
 
-            {/* Modal Content */}
-            <View className="p-6">
-              <FlashcardForm
-                deckId={id}
-                onSuccess={handleAddFlashcard}
-                onCancel={() => setIsAddFlashcardModalVisible(false)}
-              />
-            </View>
+                {/* Modal Content */}
+                <View className="p-6">
+                  <FlashcardForm
+                    deckId={id}
+                    onSuccess={handleAddFlashcard}
+                    onCancel={() => setIsAddFlashcardModalVisible(false)}
+                  />
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       {/* Edit Flashcard Modal */}
@@ -376,38 +386,42 @@ export default function DeckDetail() {
           setIsEditFlashcardModalVisible(false);
           setSelectedFlashcard(null);
         }}>
-        <View className="flex-1 bg-black/50 justify-center items-center">
-          <View className="bg-white w-[90%] max-w-[500px] rounded-xl">
-            <View className="border-b border-gray-100 px-6 py-4">
-              <Text className="text-xl font-semibold text-gray-900">
-                Edit Flashcard
-              </Text>
-            </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className="flex-1 bg-black/50 justify-center items-center">
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View className="bg-white w-[90%] max-w-[500px] rounded-xl">
+                <View className="border-b border-gray-100 px-6 py-4">
+                  <Text className="text-xl font-semibold text-gray-900">
+                    Edit Flashcard
+                  </Text>
+                </View>
 
-            {/* Close button */}
-            <TouchableOpacity
-              onPress={() => {
-                setIsEditFlashcardModalVisible(false);
-                setSelectedFlashcard(null);
-              }}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
-              <Ionicons name="close" size={24} color="#9CA3AF" />
-            </TouchableOpacity>
+                {/* Close button */}
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsEditFlashcardModalVisible(false);
+                    setSelectedFlashcard(null);
+                  }}
+                  className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center">
+                  <Ionicons name="close" size={24} color="#9CA3AF" />
+                </TouchableOpacity>
 
-            {/* Modal Content */}
-            <View className="p-6">
-              <FlashcardForm
-                flashcard={selectedFlashcard}
-                deckId={id}
-                onSuccess={handleEditFlashcard}
-                onCancel={() => {
-                  setIsEditFlashcardModalVisible(false);
-                  setSelectedFlashcard(null);
-                }}
-              />
-            </View>
+                {/* Modal Content */}
+                <View className="p-6">
+                  <FlashcardForm
+                    flashcard={selectedFlashcard}
+                    deckId={id}
+                    onSuccess={handleEditFlashcard}
+                    onCancel={() => {
+                      setIsEditFlashcardModalVisible(false);
+                      setSelectedFlashcard(null);
+                    }}
+                  />
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </SafeAreaView>
   );

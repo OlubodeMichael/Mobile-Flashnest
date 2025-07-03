@@ -1,4 +1,12 @@
-import { View, Text, ScrollView, TouchableOpacity, Modal } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useStudy } from "../../../contexts/StudyProvider";
 import Deck from "../../../components/deck";
@@ -165,31 +173,35 @@ export default function Index() {
           animationType="slide"
           transparent={true}
           onRequestClose={handleModalVisibility}>
-          <View className="flex-1 bg-black/70 justify-center items-center">
-            <View className="bg-gray-900 w-[90%] max-w-[500px] rounded-3xl">
-              {/* Modal Header */}
-              <View className="border-b border-gray-800 px-6 py-4">
-                <Text className="text-xl font-semibold text-white">
-                  Create New Deck
-                </Text>
-              </View>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View className="flex-1 bg-black/70 justify-center items-center">
+              <TouchableWithoutFeedback onPress={() => {}}>
+                <View className="bg-gray-900 w-[90%] max-w-[500px] rounded-3xl">
+                  {/* Modal Header */}
+                  <View className="border-b border-gray-800 px-6 py-4">
+                    <Text className="text-xl font-semibold text-white">
+                      Create New Deck
+                    </Text>
+                  </View>
 
-              {/* Close button */}
-              <TouchableOpacity
-                onPress={handleModalVisibility}
-                className="absolute top-4 right-4 w-8 h-8 bg-gray-800 rounded-full items-center justify-center">
-                <Ionicons name="close" size={20} color="#9CA3AF" />
-              </TouchableOpacity>
+                  {/* Close button */}
+                  <TouchableOpacity
+                    onPress={handleModalVisibility}
+                    className="absolute top-4 right-4 w-8 h-8 bg-gray-800 rounded-full items-center justify-center">
+                    <Ionicons name="close" size={20} color="#9CA3AF" />
+                  </TouchableOpacity>
 
-              {/* Modal Content */}
-              <View className="p-6">
-                <DeckForm
-                  onSuccess={handleSuccess}
-                  onCancel={handleModalVisibility}
-                />
-              </View>
+                  {/* Modal Content */}
+                  <View className="p-6">
+                    <DeckForm
+                      onSuccess={handleSuccess}
+                      onCancel={handleModalVisibility}
+                    />
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         </Modal>
       </View>
     </SafeAreaView>

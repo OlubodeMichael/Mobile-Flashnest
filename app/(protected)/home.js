@@ -192,7 +192,7 @@ export default function Home() {
         </View>
 
         {/* Quick Stats */}
-        {decks?.flashcards_count < 0 && (
+        {
           <View className="mb-4">
             <View className="bg-gray-900 rounded-3xl p-6">
               <Text className="text-lg font-semibold text-white mb-4">
@@ -217,7 +217,7 @@ export default function Home() {
               </Text>
             </View>
           </View>
-        )}
+        }
       </ScrollView>
     </SafeAreaView>
   );
