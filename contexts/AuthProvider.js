@@ -246,6 +246,33 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const deleteAccount = async () => {
+    const token = await AsyncStorage.getItem("token");
+
+    try {
+      const res = await fetch(
+        "https://cfbzvbngxttpcspnyfxb.supabase.co/functions/v1/delete-user",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ userId: user.id }),
+        }
+      );
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Delete failed");
+
+      Alert.alert("Account deleted", result.message);
+      await logout();
+      router.replace("/(auth)/login");
+    } catch (err) {
+      Alert.alert("Error", err.message);
+    }
+  };
+
   const handleSignInWithApple = async () => {
     try {
       setIsLoading(true);
@@ -354,6 +381,7 @@ export const AuthProvider = ({ children }) => {
         tokenChecked,
         handleGoogleSignIn,
         updateUserProfile,
+        deleteAccount,
         clearError,
         invalidateUserData,
         handleSignInWithApple, // Expose for manual invalidation if needed

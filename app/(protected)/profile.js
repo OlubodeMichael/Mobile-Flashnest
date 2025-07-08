@@ -16,8 +16,10 @@ import HelpAndSupport from "../../components/HelpAndSupport";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function Profile() {
-  const { logout, userProfile, user } = useAuth();
+  const { logout, userProfile, user, deleteAccount } = useAuth();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [editedFirstName, setEditedFirstName] = useState(
     userProfile?.first_name || ""
   );
@@ -34,6 +36,40 @@ export default function Profile() {
   const handleSaveProfile = async () => {
     // TODO: Implement API call to update user profile
     setIsEditModalVisible(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmation.toLowerCase() !== "delete") {
+      Alert.alert("Error", "Please type 'delete' to confirm account deletion.");
+      return;
+    }
+
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to delete your account? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteAccount();
+              setIsDeleteModalVisible(false);
+              setDeleteConfirmation("");
+            } catch (error) {
+              Alert.alert(
+                "Error",
+                "Failed to delete account. Please try again."
+              );
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -177,6 +213,35 @@ export default function Profile() {
           </View>
         </View>
 
+        {/* Danger Zone Section */}
+        <View className="mb-6">
+          <Text className="text-lg font-semibold text-red-600 mb-4">
+            Danger Zone
+          </Text>
+          <View className="bg-red-50 rounded-3xl p-6 border border-red-200">
+            <View className="flex-row items-center mb-4">
+              <View className="w-12 h-12 bg-red-500 rounded-2xl items-center justify-center mr-4">
+                <Ionicons name="warning" size={24} color="white" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-red-800 text-lg font-semibold mb-1">
+                  Delete Account
+                </Text>
+                <Text className="text-red-600 text-sm">
+                  Permanently delete your account and all data
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => setIsDeleteModalVisible(true)}
+              className="bg-red-500 p-4 rounded-2xl">
+              <Text className="text-white font-semibold text-center">
+                Delete Account
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* Add padding at the bottom to account for the fixed logout button */}
         <View className="h-24" />
         <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4">
@@ -256,6 +321,74 @@ export default function Profile() {
                 className="bg-yellow-500 p-4 rounded-xl mt-4">
                 <Text className="text-black font-semibold text-center">
                   Save Changes
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Delete Account Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isDeleteModalVisible}
+        onRequestClose={() => setIsDeleteModalVisible(false)}>
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-3xl p-6">
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-xl font-bold text-red-600">
+                Delete Account
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsDeleteModalVisible(false);
+                  setDeleteConfirmation("");
+                }}>
+                <Ionicons name="close" size={24} color="#4B5563" />
+              </TouchableOpacity>
+            </View>
+
+            <View className="space-y-4">
+              <View className="bg-red-50 p-4 rounded-xl border border-red-200">
+                <Text className="text-red-800 font-semibold mb-2">
+                  ⚠️ Warning
+                </Text>
+                <Text className="text-red-700 text-sm">
+                  This action cannot be undone. All your data, including decks,
+                  flashcards, and study progress will be permanently deleted.
+                </Text>
+              </View>
+
+              <View>
+                <Text className="text-sm font-medium text-gray-700 mb-2">
+                  Type "delete" to confirm
+                </Text>
+                <TextInput
+                  className="bg-gray-50 p-4 rounded-xl text-gray-900 border border-gray-200"
+                  value={deleteConfirmation}
+                  onChangeText={setDeleteConfirmation}
+                  placeholder="Type 'delete' to confirm"
+                  placeholderTextColor="#9CA3AF"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <TouchableOpacity
+                onPress={handleDeleteAccount}
+                disabled={deleteConfirmation.toLowerCase() !== "delete"}
+                className={`p-4 rounded-xl mt-4 ${
+                  deleteConfirmation.toLowerCase() === "delete"
+                    ? "bg-red-500"
+                    : "bg-gray-300"
+                }`}>
+                <Text
+                  className={`font-semibold text-center ${
+                    deleteConfirmation.toLowerCase() === "delete"
+                      ? "text-white"
+                      : "text-gray-500"
+                  }`}>
+                  Delete Account
                 </Text>
               </TouchableOpacity>
             </View>
