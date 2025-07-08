@@ -6,6 +6,10 @@ import {
   Modal,
   TextInput,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthProvider";
@@ -265,67 +269,79 @@ export default function Profile() {
         transparent={true}
         visible={isEditModalVisible}
         onRequestClose={() => setIsEditModalVisible(false)}>
-        <View className="flex-1 justify-end bg-black/50">
-          <View className="bg-white rounded-t-3xl p-6">
-            <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-xl font-bold text-black">Edit Profile</Text>
-              <TouchableOpacity onPress={() => setIsEditModalVisible(false)}>
-                <Ionicons name="close" size={24} color="#4B5563" />
-              </TouchableOpacity>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View className="flex-1 justify-end bg-black/50">
+              <TouchableWithoutFeedback onPress={() => {}}>
+                <View className="bg-white rounded-t-3xl p-6">
+                  <View className="flex-row justify-between items-center mb-6">
+                    <Text className="text-xl font-bold text-black">
+                      Edit Profile
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => setIsEditModalVisible(false)}>
+                      <Ionicons name="close" size={24} color="#4B5563" />
+                    </TouchableOpacity>
+                  </View>
+
+                  <View className="space-y-4">
+                    <View>
+                      <Text className="text-sm font-medium text-gray-700 mb-2">
+                        First Name
+                      </Text>
+                      <TextInput
+                        className="bg-gray-50 p-4 rounded-xl text-gray-900 border border-gray-200"
+                        value={editedFirstName}
+                        onChangeText={setEditedFirstName}
+                        placeholder="Enter first name"
+                        placeholderTextColor="#9CA3AF"
+                      />
+                    </View>
+
+                    <View>
+                      <Text className="text-sm font-medium text-gray-700 mb-2">
+                        Last Name
+                      </Text>
+                      <TextInput
+                        className="bg-gray-50 p-4 rounded-xl text-gray-900 border border-gray-200"
+                        value={editedLastName}
+                        onChangeText={setEditedLastName}
+                        placeholder="Enter last name"
+                        placeholderTextColor="#9CA3AF"
+                      />
+                    </View>
+
+                    <View>
+                      <Text className="text-sm font-medium text-gray-700 mb-2">
+                        Email
+                      </Text>
+                      <TextInput
+                        className="bg-gray-50 p-4 rounded-xl text-gray-900 border border-gray-200"
+                        value={editedEmail}
+                        onChangeText={setEditedEmail}
+                        placeholder="Enter email"
+                        placeholderTextColor="#9CA3AF"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                      />
+                    </View>
+
+                    <TouchableOpacity
+                      onPress={handleSaveProfile}
+                      className="bg-yellow-500 p-4 rounded-xl mt-4">
+                      <Text className="text-black font-semibold text-center">
+                        Save Changes
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
-
-            <View className="space-y-4">
-              <View>
-                <Text className="text-sm font-medium text-gray-700 mb-2">
-                  First Name
-                </Text>
-                <TextInput
-                  className="bg-gray-50 p-4 rounded-xl text-gray-900 border border-gray-200"
-                  value={editedFirstName}
-                  onChangeText={setEditedFirstName}
-                  placeholder="Enter first name"
-                  placeholderTextColor="#9CA3AF"
-                />
-              </View>
-
-              <View>
-                <Text className="text-sm font-medium text-gray-700 mb-2">
-                  Last Name
-                </Text>
-                <TextInput
-                  className="bg-gray-50 p-4 rounded-xl text-gray-900 border border-gray-200"
-                  value={editedLastName}
-                  onChangeText={setEditedLastName}
-                  placeholder="Enter last name"
-                  placeholderTextColor="#9CA3AF"
-                />
-              </View>
-
-              <View>
-                <Text className="text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </Text>
-                <TextInput
-                  className="bg-gray-50 p-4 rounded-xl text-gray-900 border border-gray-200"
-                  value={editedEmail}
-                  onChangeText={setEditedEmail}
-                  placeholder="Enter email"
-                  placeholderTextColor="#9CA3AF"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
-
-              <TouchableOpacity
-                onPress={handleSaveProfile}
-                className="bg-yellow-500 p-4 rounded-xl mt-4">
-                <Text className="text-black font-semibold text-center">
-                  Save Changes
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Delete Account Modal */}
@@ -334,66 +350,76 @@ export default function Profile() {
         transparent={true}
         visible={isDeleteModalVisible}
         onRequestClose={() => setIsDeleteModalVisible(false)}>
-        <View className="flex-1 justify-end bg-black/50">
-          <View className="bg-white rounded-t-3xl p-6">
-            <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-xl font-bold text-red-600">
-                Delete Account
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setIsDeleteModalVisible(false);
-                  setDeleteConfirmation("");
-                }}>
-                <Ionicons name="close" size={24} color="#4B5563" />
-              </TouchableOpacity>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View className="flex-1 justify-end bg-black/50">
+              <TouchableWithoutFeedback onPress={() => {}}>
+                <View className="bg-white rounded-t-3xl p-6">
+                  <View className="flex-row justify-between items-center mb-6">
+                    <Text className="text-xl font-bold text-red-600">
+                      Delete Account
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsDeleteModalVisible(false);
+                        setDeleteConfirmation("");
+                      }}>
+                      <Ionicons name="close" size={24} color="#4B5563" />
+                    </TouchableOpacity>
+                  </View>
+
+                  <View className="space-y-4">
+                    <View className="bg-red-50 p-4 rounded-xl border border-red-200">
+                      <Text className="text-red-800 font-semibold mb-2">
+                        ⚠️ Warning
+                      </Text>
+                      <Text className="text-red-700 text-sm">
+                        This action cannot be undone. All your data, including
+                        decks, flashcards, and study progress will be
+                        permanently deleted.
+                      </Text>
+                    </View>
+
+                    <View>
+                      <Text className="text-sm font-medium text-gray-700 mb-2">
+                        Type "delete" to confirm
+                      </Text>
+                      <TextInput
+                        className="bg-gray-50 p-4 rounded-xl text-gray-900 border border-gray-200"
+                        value={deleteConfirmation}
+                        onChangeText={setDeleteConfirmation}
+                        placeholder="Type 'delete' to confirm"
+                        placeholderTextColor="#9CA3AF"
+                        autoCapitalize="none"
+                      />
+                    </View>
+
+                    <TouchableOpacity
+                      onPress={handleDeleteAccount}
+                      disabled={deleteConfirmation.toLowerCase() !== "delete"}
+                      className={`p-4 rounded-xl mt-4 ${
+                        deleteConfirmation.toLowerCase() === "delete"
+                          ? "bg-red-500"
+                          : "bg-gray-300"
+                      }`}>
+                      <Text
+                        className={`font-semibold text-center ${
+                          deleteConfirmation.toLowerCase() === "delete"
+                            ? "text-white"
+                            : "text-gray-500"
+                        }`}>
+                        Delete Account
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
-
-            <View className="space-y-4">
-              <View className="bg-red-50 p-4 rounded-xl border border-red-200">
-                <Text className="text-red-800 font-semibold mb-2">
-                  ⚠️ Warning
-                </Text>
-                <Text className="text-red-700 text-sm">
-                  This action cannot be undone. All your data, including decks,
-                  flashcards, and study progress will be permanently deleted.
-                </Text>
-              </View>
-
-              <View>
-                <Text className="text-sm font-medium text-gray-700 mb-2">
-                  Type "delete" to confirm
-                </Text>
-                <TextInput
-                  className="bg-gray-50 p-4 rounded-xl text-gray-900 border border-gray-200"
-                  value={deleteConfirmation}
-                  onChangeText={setDeleteConfirmation}
-                  placeholder="Type 'delete' to confirm"
-                  placeholderTextColor="#9CA3AF"
-                  autoCapitalize="none"
-                />
-              </View>
-
-              <TouchableOpacity
-                onPress={handleDeleteAccount}
-                disabled={deleteConfirmation.toLowerCase() !== "delete"}
-                className={`p-4 rounded-xl mt-4 ${
-                  deleteConfirmation.toLowerCase() === "delete"
-                    ? "bg-red-500"
-                    : "bg-gray-300"
-                }`}>
-                <Text
-                  className={`font-semibold text-center ${
-                    deleteConfirmation.toLowerCase() === "delete"
-                      ? "text-white"
-                      : "text-gray-500"
-                  }`}>
-                  Delete Account
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Fixed Logout Button at bottom */}
