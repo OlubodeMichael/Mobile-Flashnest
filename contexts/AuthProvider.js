@@ -270,6 +270,7 @@ export const AuthProvider = ({ children }) => {
       router.replace("/(auth)/login");
     } catch (err) {
       Alert.alert("Error", err.message);
+      console.log("err:", err);
     }
   };
 
@@ -294,7 +295,7 @@ export const AuthProvider = ({ children }) => {
 
       // Step 2: Supabase sign-in with Apple identity token
       const {
-        data: { user },
+        data: { user, session },
         error,
       } = await supabase.auth.signInWithIdToken({
         provider: "apple",
@@ -310,7 +311,13 @@ export const AuthProvider = ({ children }) => {
       if (!user) {
         throw new Error("No user returned from Apple authentication");
       }
-      console.log("credential:", credential);
+
+      if (!session) {
+        throw new Error("No session returned from Apple authentication");
+      }
+
+      await AsyncStorage.setItem("token", session.access_token);
+      //console.log("credential:", credential);
 
       setUser(user);
 
